@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>Test server for AWS Lambda</AssemblyTitle>
+    <Description>Provides an in-memory test server for testing AWS Lambda functions</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn)</NoWarn>
+    <OutputType>Library</OutputType>
+    <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
+    <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
+    <Summary>$(Description)</Summary>
+    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <Title>AWS Lambda Test Server</Title>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+</Project>
