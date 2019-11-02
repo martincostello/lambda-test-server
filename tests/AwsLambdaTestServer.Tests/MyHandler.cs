@@ -7,9 +7,9 @@ using Amazon.Lambda.Core;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer
 {
-    internal sealed class MyHandler
+    internal class MyHandler
     {
-        public Task<bool> InitializeAsync()
+        public virtual Task<bool> InitializeAsync()
         {
             return Task.FromResult(true);
         }
@@ -20,7 +20,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             var response = new MyResponse()
             {
-                Sum = request.Values?.Sum() ?? 0,
+                Sum = request.Values.Sum(),
             };
 
             context.Logger.LogLine($"The sum of the {request.Values?.Count} values is {response.Sum}.");

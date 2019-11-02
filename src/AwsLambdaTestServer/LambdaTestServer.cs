@@ -130,13 +130,13 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </exception>
         public async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(LambdaTestRequest request)
         {
-            ThrowIfDisposed();
-            ThrowIfNotStarted();
-
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
+
+            ThrowIfDisposed();
+            ThrowIfNotStarted();
 
             return await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
         }
