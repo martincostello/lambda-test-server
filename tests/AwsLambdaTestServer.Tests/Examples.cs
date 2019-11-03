@@ -37,12 +37,12 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             // Queue the request with the server to invoke the Lambda function and
             // store the ChannelReader into a variable to use to read the response.
-            LambdaTestMessage message = await server.EnqueueAsync(value);
+            LambdaTestContext context = await server.EnqueueAsync(value);
 
             // Queue a task to stop the test server from listening as soon as the response is available
             _ = Task.Run(async () =>
             {
-                await message.Response.WaitToReadAsync(cancellationTokenSource.Token);
+                await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
 
                 if (!cancellationTokenSource.IsCancellationRequested)
                 {
@@ -57,7 +57,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cancellationTokenSource.Token);
 
             // Assert - The channel reader should have the response available
-            message.Response.TryRead(out LambdaTestResponse response).ShouldBeTrue("No Lambda response is available.");
+            context.Response.TryRead(out LambdaTestResponse response).ShouldBeTrue("No Lambda response is available.");
 
             response.ShouldNotBeNull("The Lambda response is null.");
             response.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
@@ -69,7 +69,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
         }
 
-        private static async Task<LambdaTestMessage> EnqueueAsync<T>(this LambdaTestServer server, T value)
+        private static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
             where T : class
         {
             string json = JsonConvert.SerializeObject(value);

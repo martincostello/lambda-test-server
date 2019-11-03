@@ -6,25 +6,25 @@ using System.Threading.Channels;
 namespace MartinCostello.Testing.AwsLambdaTestServer
 {
     /// <summary>
-    /// A class representing a message enqueued to be processed by an AWS Lambda function. This class cannot be inherited.
+    /// A class representing the context for an AWS request enqueued to be processed by an AWS Lambda function. This class cannot be inherited.
     /// </summary>
-    public sealed class LambdaTestMessage
+    public sealed class LambdaTestContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LambdaTestMessage"/> class.
+        /// Initializes a new instance of the <see cref="LambdaTestContext"/> class.
         /// </summary>
-        /// <param name="awsRequestId">The AWS request Id to invoke the Lambda function with.</param>
+        /// <param name="request">The request to invoke the Lambda function with.</param>
         /// <param name="reader">The channel reader associated with the response.</param>
-        internal LambdaTestMessage(string awsRequestId, ChannelReader<LambdaTestResponse> reader)
+        internal LambdaTestContext(LambdaTestRequest request, ChannelReader<LambdaTestResponse> reader)
         {
-            AwsRequestId = awsRequestId;
+            Request = request;
             Response = reader;
         }
 
         /// <summary>
-        /// Gets the AWS request Id for the request to the function.
+        /// Gets the request to invoke the Lambda function with.
         /// </summary>
-        public string AwsRequestId { get; }
+        public LambdaTestRequest Request { get; }
 
         /// <summary>
         /// Gets the channel reader which completes once the request is processed by the function.

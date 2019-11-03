@@ -142,11 +142,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             await server.StartAsync(cts.Token);
 
-            var message = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
+            var context = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
 
             _ = Task.Run(async () =>
             {
-                await message.Response.WaitToReadAsync(cts.Token);
+                await context.Response.WaitToReadAsync(cts.Token);
 
                 if (!cts.IsCancellationRequested)
                 {
@@ -160,7 +160,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
             // Assert
-            message.Response.TryRead(out var response).ShouldBeTrue();
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
             response.IsSuccessful.ShouldBeTrue();
@@ -190,11 +190,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 CognitoIdentity = "{}",
             };
 
-            var message = await server.EnqueueAsync(request);
+            var context = await server.EnqueueAsync(request);
 
             _ = Task.Run(async () =>
             {
-                await message.Response.WaitToReadAsync(cts.Token);
+                await context.Response.WaitToReadAsync(cts.Token);
 
                 if (!cts.IsCancellationRequested)
                 {
@@ -208,7 +208,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
             // Assert
-            message.Response.TryRead(out var response).ShouldBeTrue();
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
             response.IsSuccessful.ShouldBeTrue();
@@ -228,11 +228,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             await server.StartAsync(cts.Token);
 
-            var message = await server.EnqueueAsync(@"{""Values"": null}");
+            var context = await server.EnqueueAsync(@"{""Values"": null}");
 
             _ = Task.Run(async () =>
             {
-                await message.Response.WaitToReadAsync(cts.Token);
+                await context.Response.WaitToReadAsync(cts.Token);
 
                 if (!cts.IsCancellationRequested)
                 {
@@ -246,7 +246,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
             // Assert
-            message.Response.TryRead(out var response).ShouldBeTrue();
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
             response.IsSuccessful.ShouldBeFalse();
@@ -267,11 +267,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             await server.StartAsync(cts.Token);
 
-            var message = await server.EnqueueAsync(@"{""Values"": null}");
+            var context = await server.EnqueueAsync(@"{""Values"": null}");
 
             _ = Task.Run(async () =>
             {
-                await message.Response.WaitToReadAsync(cts.Token);
+                await context.Response.WaitToReadAsync(cts.Token);
 
                 if (!cts.IsCancellationRequested)
                 {
@@ -300,7 +300,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             await server.StartAsync(cts.Token);
 
-            var channels = new List<(int expected, LambdaTestMessage message)>();
+            var channels = new List<(int expected, LambdaTestContext context)>();
 
             for (int i = 0; i < 10; i++)
             {
@@ -316,9 +316,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             _ = Task.Run(async () =>
             {
-                foreach ((var _, var message) in channels)
+                foreach ((var _, var context) in channels)
                 {
-                    await message.Response.WaitToReadAsync(cts.Token);
+                    await context.Response.WaitToReadAsync(cts.Token);
                 }
 
                 if (!cts.IsCancellationRequested)
@@ -333,9 +333,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
             // Assert
-            foreach ((int expected, var message) in channels)
+            foreach ((int expected, var context) in channels)
             {
-                message.Response.TryRead(out var response).ShouldBeTrue();
+                context.Response.TryRead(out var response).ShouldBeTrue();
 
                 response.ShouldNotBeNull();
                 response.IsSuccessful.ShouldBeTrue();

@@ -1,6 +1,6 @@
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage.AwsRequestId.get -> string
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage.Response.get -> System.Threading.Channels.ChannelReader<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse>
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext.Request.get -> MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext.Response.get -> System.Threading.Channels.ChannelReader<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse>
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest.AwsRequestId.get -> string
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest.ClientContext.get -> string
@@ -15,7 +15,7 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.IsSuccessful.get -
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose() -> void
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.EnqueueAsync(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest request) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage>
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.EnqueueAsync(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest request) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions options) -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> configure) -> void
@@ -43,8 +43,8 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogGroupName.
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogStreamName.get -> string
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogStreamName.set -> void
 static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ClearLambdaEnvironmentVariables() -> void
-static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, byte[] content) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage>
-static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, string value) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestMessage>
+static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, byte[] content) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
+static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, string value) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder) -> void
