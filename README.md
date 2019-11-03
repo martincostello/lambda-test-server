@@ -142,6 +142,66 @@ You can find more examples in the [unit tests](https://github.com/martincostello
 
 ### Advanced Usage
 
+#### AWS Mobile SDK with Cognito
+
+If you use either the `ClientContext` or `Identity` properties on `ILambdaContext` in your function, you can specify the serialized JSON for either property as a `string` when enqueueing a request to the test server to be made available to the function invocation.
+
+An example of providing these values from an xunit test is shown below:
+
+```csharp
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using MartinCostello.Testing.AwsLambdaTestServer;
+using Newtonsoft.Json;
+using Xunit;
+
+namespace MyFunctions
+{
+    public static class ReverseFunctionWithMobileSdkTests
+    {
+        [Fact]
+        public static async Task Function_Reverses_Numbers()
+        {
+            // Arrange
+            using var server = new LambdaTestServer();
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+            await server.StartAsync(cancellationTokenSource.Token);
+
+            int[] value = new[] { 1, 2, 3 };
+            string json = JsonConvert.SerializeObject(value);
+            byte[] content = Encoding.UTF8.GetBytes(json);
+
+            var request = new LambdaTestRequest(content)
+            {
+                ClientContext = @"{ ""client"": { ""app_title"": ""my-app"" } }",
+                CognitoIdentity = @"{ ""identityId"": ""my-identity"" }",
+            };
+
+            LambdaTestContext context = await server.EnqueueAsync(json);
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+            Assert.NotNull(response);
+            Assert.True(response.IsSuccessful);
+            Assert.NotNull(response.Content);
+
+            json = Encoding.UTF8.GetString(response.Content);
+            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+
+            Assert.Equal(new[] { 3, 2, 1 }, actual);
+        }
+    }
+}
+```
+
 #### Lambda Runtime Options
 
 If your function makes use of the various properties in the `ILambdaContext` passed to the function, you can pass an instance of `LambdaTestServerOptions` to the constructor of `LambdaTestServer` to change the values the server provides to `LambdaBootstrap` before it invokes your function.
