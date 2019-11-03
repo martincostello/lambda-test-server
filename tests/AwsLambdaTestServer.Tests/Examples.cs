@@ -66,7 +66,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.Content.ShouldNotBeNull("The Lambda function did not return any content.");
 
             string responseJson = Encoding.UTF8.GetString(response.Content);
-            var actual = JsonConvert.DeserializeObject<MyResponse>(requestJson);
+            var actual = JsonConvert.DeserializeObject<MyResponse>(responseJson);
 
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
         }
