@@ -43,7 +43,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public string FunctionHandler { get; set; }
 
         /// <summary>
-        /// Gets or sets the amount of memory available to the function during execution.
+        /// Gets or sets the amount of memory available to the function in megabytes during execution. The default value is 128.
         /// </summary>
         /// <remarks>
         /// This limit is not enforced and is only used for reporting into the Lambda context.
@@ -56,8 +56,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public string FunctionName { get; set; }
 
         /// <summary>
-        /// Gets or sets the function's timeout.
+        /// Gets or sets the function's timeout. The default value is 3 seconds.
         /// </summary>
+        /// <remarks>
+        /// This limit is not enforced and is only used for reporting into the Lambda context.
+        /// </remarks>
         public TimeSpan FunctionTimeout { get; set; }
 
         /// <summary>
