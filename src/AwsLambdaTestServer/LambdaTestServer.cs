@@ -24,6 +24,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
         private bool _disposed;
         private RuntimeHandler _handler;
+        private bool _isStarted;
         private TestServer _server;
         private CancellationTokenSource _onStopped;
 
@@ -64,6 +65,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             Dispose(false);
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the test Lambda runtime server has been started.
+        /// </summary>
+        public bool IsStarted => _isStarted;
 
         /// <summary>
         /// Gets the options in use by the test Lambda runtime server.
@@ -180,6 +186,8 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             _handler.Logger = _server.Services.GetRequiredService<ILogger<RuntimeHandler>>();
 
             SetLambdaEnvironmentVariables(_server.BaseAddress);
+
+            _isStarted = true;
 
             return Task.CompletedTask;
         }

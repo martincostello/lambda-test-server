@@ -16,6 +16,7 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.EnqueueAsync(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest request) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.IsStarted.get -> bool
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions options) -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> configure) -> void

@@ -110,9 +110,17 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         [Fact]
         public async Task StartAsync_Throws_If_Already_Started()
         {
-            // Arrange
+            // Act
             using var target = new LambdaTestServer();
+
+            // Assert
+            target.IsStarted.ShouldBeFalse();
+
+            // Act
             await target.StartAsync();
+
+            // Assert
+            target.IsStarted.ShouldBeTrue();
 
             // Act and Assert
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.StartAsync());
@@ -126,6 +134,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             // Act and Assert
             await Assert.ThrowsAsync<ArgumentNullException>("builder",  () => target.StartAsync());
+            target.IsStarted.ShouldBeFalse();
         }
 
         [Fact]
