@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
@@ -324,9 +323,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     Values = Enumerable.Range(1, i + 1).ToArray(),
                 };
 
-                string json = JsonSerializer.Serialize(request);
-
-                channels.Add((request.Values.Sum(), await server.EnqueueAsync(json)));
+                channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
             }
 
             _ = Task.Run(async () =>
@@ -356,7 +353,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 response.IsSuccessful.ShouldBeTrue();
                 response.Content.ShouldNotBeNull();
 
-                var deserialized = JsonSerializer.Deserialize<MyResponse>(response.Content);
+                var deserialized = response.ReadAs<MyResponse>();
                 deserialized.Sum.ShouldBe(expected);
             }
         }
