@@ -35,9 +35,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 Values = new[] { 1, 2, 3 }, // The function returns the sum of the specified numbers
             };
 
+            string requestJson = JsonConvert.SerializeObject(value);
+
             // Queue the request with the server to invoke the Lambda function and
             // store the ChannelReader into a variable to use to read the response.
-            LambdaTestContext context = await server.EnqueueAsync(value);
+            LambdaTestContext context = await server.EnqueueAsync(requestJson);
 
             // Queue a task to stop the test server from listening as soon as the response is available
             _ = Task.Run(async () =>
@@ -63,17 +65,10 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
             response.Content.ShouldNotBeNull("The Lambda function did not return any content.");
 
-            string json = Encoding.UTF8.GetString(response.Content);
-            var actual = JsonConvert.DeserializeObject<MyResponse>(json);
+            string responseJson = Encoding.UTF8.GetString(response.Content);
+            var actual = JsonConvert.DeserializeObject<MyResponse>(responseJson);
 
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
-        }
-
-        private static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
-            where T : class
-        {
-            string json = JsonConvert.SerializeObject(value);
-            return await server.EnqueueAsync(json);
         }
     }
 }
