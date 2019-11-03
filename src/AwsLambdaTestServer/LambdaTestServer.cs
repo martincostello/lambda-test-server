@@ -116,8 +116,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </summary>
         /// <param name="request">The request to invoke the function with.</param>
         /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation to enqueue the request
-        /// which returns a channel reader which completes once the request is processed by the function.
+        /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
+        /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+        /// which completes once the request is processed by the function.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="request"/> is <see langword="null"/>.
@@ -128,7 +129,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(LambdaTestRequest request)
+        public async Task<LambdaTestContext> EnqueueAsync(LambdaTestRequest request)
         {
             if (request == null)
             {
@@ -138,7 +139,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             ThrowIfDisposed();
             ThrowIfNotStarted();
 
-            return await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
+            var reader = await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
+
+            return new LambdaTestContext(request, reader);
         }
 
         /// <summary>

@@ -21,8 +21,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <param name="server">The server to enqueue the request with.</param>
         /// <param name="value">The request content to process.</param>
         /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation to enqueue the request
-        /// which returns a channel reader which completes once the request is processed by the function.
+        /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
+        /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+        /// which completes once the request is processed by the function.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="server"/> or <paramref name="value"/> is <see langword="null"/>.
@@ -30,7 +31,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public static async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(
+        public static async Task<LambdaTestContext> EnqueueAsync(
             this LambdaTestServer server,
             string value)
         {
@@ -55,8 +56,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <param name="server">The server to enqueue the request with.</param>
         /// <param name="content">The request content to process.</param>
         /// <returns>
-        /// A <see cref="Task"/> representing the asynchronous operation to enqueue the request
-        /// which returns a channel reader which completes once the request is processed by the function.
+        /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
+        /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+        /// which completes once the request is processed by the function.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="server"/> or <paramref name="content"/> is <see langword="null"/>.
@@ -64,7 +66,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public static async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(
+        public static async Task<LambdaTestContext> EnqueueAsync(
             this LambdaTestServer server,
             byte[] content)
         {
