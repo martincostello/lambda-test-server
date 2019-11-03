@@ -132,11 +132,11 @@ namespace MyFunctions
 The key parts to call out here are:
 
   1. An instance of `LambdaTestServer` is created and then the `StartAsync()` method called with a `CancellationToken` that allows the test to stop the function. In the example here the token is signalled with a timeout, but you could also write code to stop the processing based on arbitrary criteria.
-  1. A request that the Lambda function should be invoked with is passed to `EnqueueAsync()`. This can be specified with an instance of `LambdaTestRequest` for fine-grained control, but there are overloads that accept `byte[]` and `string`. You could also make your own extensions to serialize objects to JSON using the serializer of your choice.
+  1. The request that the Lambda function should be invoked with is passed to `EnqueueAsync()`. This can be specified with an instance of `LambdaTestRequest` for fine-grained control, but there are overloads that accept `byte[]` and `string`. You could also make your own extensions to serialize objects to JSON using the serializer of your choice.
   1. `EnqueueAsync()` returns a `LambdaTestContext`. This contains a reference to the `LambdaTestRequest` and a `ChannelReader<LambdaTestResponse>`. This channel reader can be used to await the request being processed by the function under test.
-  1. Once the request is enqueued, an `HttpClient` is obtained from the test server and passed to the function to test to run it.
-  1. Once the function processing completes when the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
-  1. Once this is returned, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
+  1. Once the request is enqueued, an `HttpClient` is obtained from the test server and passed to the function to test with the cancellation token and run by calling `RunAsync()`.
+  1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
+  1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
 
 You can find more examples in the [unit tests](https://github.com/martincostello/lambda-test-server/blob/master/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples").
 
@@ -162,7 +162,7 @@ namespace MyFunctions
     public static class ReverseFunctionWithMobileSdkTests
     {
         [Fact]
-        public static async Task Function_Reverses_Numbers()
+        public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
         {
             // Arrange
             using var server = new LambdaTestServer();
@@ -204,11 +204,11 @@ namespace MyFunctions
 
 #### Lambda Runtime Options
 
-If your function makes use of the various properties in the `ILambdaContext` passed to the function, you can pass an instance of `LambdaTestServerOptions` to the constructor of `LambdaTestServer` to change the values the server provides to `LambdaBootstrap` before it invokes your function.
+If your function makes use of the various other properties in the `ILambdaContext` passed to the function, you can pass an instance of `LambdaTestServerOptions` to the constructor of `LambdaTestServer` to change the values the server provides to `LambdaBootstrap` before it invokes your function.
 
 Options you can specify include the function memory size, timeout and ARN.
 
-> The test server does not enforce these values at runtime, unlike the production AWS Lambda environment. They are provided for you to drive the usage of such properties in the code you are testing and should not be relied on to ensure that your function does not take too long to execute or uses too much memory during execution.
+> The test server does not enforce these values at runtime, unlike the production AWS Lambda environment. They are provided for you to drive the usage of such properties in the code you are testing and should not be relied on to ensure that your function does not take too long to execute or uses too much memory during execution or any other constraints, as appropriate.
 
 An example of this customisation for an xunit test is shown below:
 
@@ -226,7 +226,7 @@ namespace MyFunctions
     public static class ReverseFunctionWithCustomOptionsTests
     {
         [Fact]
-        public static async Task Function_Reverses_Numbers()
+        public static async Task Function_Reverses_Numbers_With_Custom_Options()
         {
             // Arrange
             var options = new LambdaTestServerOptions()
@@ -297,7 +297,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public ITestOutputHelper OutputHelper { get; set; }
 
         [Fact]
-        public async Task Function_Reverses_Numbers()
+        public async Task Function_Reverses_Numbers_With_Logging()
         {
             // Arrange
             using var server = new LambdaTestServer(

@@ -25,7 +25,7 @@ namespace MyFunctions
         public ITestOutputHelper OutputHelper { get; set; }
 
         [Fact]
-        public async Task Function_Reverses_Numbers()
+        public async Task Function_Reverses_Numbers_With_Logging()
         {
             // Arrange
             using var server = new LambdaTestServer(

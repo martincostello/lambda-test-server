@@ -14,7 +14,7 @@ namespace MyFunctions
     public static class ReverseFunctionWithCustomOptionsTests
     {
         [Fact]
-        public static async Task Function_Reverses_Numbers()
+        public static async Task Function_Reverses_Numbers_With_Custom_Options()
         {
             // Arrange
             var options = new LambdaTestServerOptions()
