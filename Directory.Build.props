@@ -50,4 +50,7 @@
     <FileVersion Condition=" '$(BUILD_BUILDID)' != '' ">$(VersionPrefix).$(BUILD_BUILDID)</FileVersion>
     <FileVersion Condition=" '$(TRAVIS_BUILD_NUMBER)' != '' ">$(VersionPrefix).$(TRAVIS_BUILD_NUMBER)</FileVersion>
   </PropertyGroup>
+  <ItemGroup Condition=" '$(PackageIcon)' != '' ">
+    <None Include="$(MSBuildThisFileDirectory)$(PackageIcon)" Pack="True" PackagePath="" />
+  </ItemGroup>
 </Project>
