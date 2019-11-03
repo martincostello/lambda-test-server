@@ -144,6 +144,68 @@ You can find more examples in the [unit tests](https://github.com/martincostello
 
 #### Lambda Runtime Options
 
+If your function makes use of the various properties in the `ILambdaContext` passed to the function, you can pass an instance of `LambdaTestServerOptions` to the constructor of `LambdaTestServer` to change the values the server provides to `LambdaBootstrap` before it invokes your function.
+
+Options you can specify include the function memory size, timeout and ARN.
+
+> The test server does not enforce these values at runtime, unlike the production AWS Lambda environment. They are provided for you to drive the usage of such properties in the code you are testing and should not be relied on to ensure that your function does not take too long to execute or uses too much memory during execution.
+
+An example of this customisation for an xunit test is shown below:
+
+```csharp
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using MartinCostello.Testing.AwsLambdaTestServer;
+using Newtonsoft.Json;
+using Xunit;
+
+namespace MyFunctions
+{
+    public static class ReverseFunctionWithCustomOptionsTests
+    {
+        [Fact]
+        public static async Task Function_Reverses_Numbers()
+        {
+            // Arrange
+            var options = new LambdaTestServerOptions()
+            {
+                FunctionMemorySize = 256,
+                FunctionTimeout = TimeSpan.FromSeconds(30),
+                FunctionVersion = 42,
+            };
+
+            using var server = new LambdaTestServer(options);
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+            await server.StartAsync(cancellationTokenSource.Token);
+
+            int[] value = new[] { 1, 2, 3 };
+            string json = JsonConvert.SerializeObject(value);
+
+            LambdaTestContext context = await server.EnqueueAsync(json);
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+            Assert.NotNull(response);
+            Assert.True(response.IsSuccessful);
+            Assert.NotNull(response.Content);
+
+            json = Encoding.UTF8.GetString(response.Content);
+            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+
+            Assert.Equal(new[] { 3, 2, 1 }, actual);
+        }
+    }
+}
+```
+
 #### Logging from the Test Server
 
 To help diagnose failing tests, the `LambdaTestServer` outputs logs of the requests it receives to the emulated AWS Lambda Runtime it provides. To route the logging output to a location of your choosing, you can use the configuration callbacks, such as the constructor overload that accepts an `Action<IServiceCollection>` or the `Configure` property on the `LambdaTestServerOptions` class.
