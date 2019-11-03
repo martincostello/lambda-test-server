@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.Json;
 
-namespace MartinCostello.Testing.AwsLambdaTestServer
+namespace MyFunctions
 {
     public static class ReverseFunction
     {

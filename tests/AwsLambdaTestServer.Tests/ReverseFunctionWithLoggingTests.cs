@@ -5,19 +5,33 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MartinCostello.Logging.XUnit;
 using MartinCostello.Testing.AwsLambdaTestServer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MyFunctions
 {
-    public static class ReverseFunctionTests
+    public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
     {
+        public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
+        {
+            OutputHelper = outputHelper;
+        }
+
+        public ITestOutputHelper OutputHelper { get; set; }
+
         [Fact]
-        public static async Task Function_Reverses_Numbers()
+        public async Task Function_Reverses_Numbers()
         {
             // Arrange
-            using var server = new LambdaTestServer();
+            using var server = new LambdaTestServer(
+                (services) => services.AddLogging(
+                    (builder) => builder.AddXUnit(this)));
+
             using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
             await server.StartAsync(cancellationTokenSource.Token);

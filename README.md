@@ -87,6 +87,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MartinCostello.Testing.AwsLambdaTestServer;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -141,7 +142,104 @@ You can find more examples in the [unit tests](https://github.com/martincostello
 
 ### Advanced Usage
 
-TODO
+#### Lambda Runtime Options
+
+#### Logging from the Test Server
+
+To help diagnose failing tests, the `LambdaTestServer` outputs logs of the requests it receives to the emulated AWS Lambda Runtime it provides. To route the logging output to a location of your choosing, you can use the configuration callbacks, such as the constructor overload that accepts an `Action<IServiceCollection>` or the `Configure` property on the `LambdaTestServerOptions` class.
+
+Here's an example of configuring the test server to route its logs to xunit using the [xunit-logging](https://www.nuget.org/packages/MartinCostello.Logging.XUnit) library:
+
+```csharp
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using MartinCostello.Logging.XUnit;
+using MartinCostello.Testing.AwsLambdaTestServer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace MartinCostello.Testing.AwsLambdaTestServer
+{
+    public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
+    {
+        public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
+        {
+            OutputHelper = outputHelper;
+        }
+
+        public ITestOutputHelper OutputHelper { get; set; }
+
+        [Fact]
+        public async Task Function_Reverses_Numbers()
+        {
+            // Arrange
+            using var server = new LambdaTestServer(
+                (services) => services.AddLogging(
+                    (builder) => builder.AddXUnit(this)));
+
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+            await server.StartAsync(cancellationTokenSource.Token);
+
+            int[] value = new[] { 1, 2, 3 };
+            string json = JsonConvert.SerializeObject(value);
+
+            LambdaTestContext context = await server.EnqueueAsync(json);
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+            Assert.NotNull(response);
+            Assert.True(response.IsSuccessful);
+            Assert.NotNull(response.Content);
+
+            json = Encoding.UTF8.GetString(response.Content);
+            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+
+            Assert.Equal(new[] { 3, 2, 1 }, actual);
+        }
+    }
+}
+```
+
+This then outputs logs similar to the below into the xunit test results:
+
+```
+Test Name:	Function_Reverses_Numbers
+Test Outcome:	Passed
+Result StandardOutput:
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next  
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint '/{LambdaVersion}/runtime/invocation/next HTTP: GET'
+[2019-11-03 18:35:28Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Waiting for new request for Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function.
+[2019-11-03 18:35:28Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Invoking Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 0e42d2be-2400-4fc6-a75f-1cc33a91dab3 and trace Id eff856e7-b1e3-4d97-99fb-7686b69b3bc4.
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint '/{LambdaVersion}/runtime/invocation/next HTTP: GET'
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished in 51.5962ms 200 application/json
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/0e42d2be-2400-4fc6-a75f-1cc33a91dab3/response application/json
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
+[2019-11-03 18:35:28Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Invoked Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 0e42d2be-2400-4fc6-a75f-1cc33a91dab3: [3,2,1].
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
+[2019-11-03 18:35:28Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished in 20.2114ms 204
+```
 
 ## Feedback
 
