@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Test server for AWS Lambda</AssemblyTitle>
-    <Description>Provides an in-memory test server for testing AWS Lambda functions</Description>
+    <Description>Provides an in-memory test server for testing AWS Lambda functions.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn)</NoWarn>
     <OutputType>Library</OutputType>
