@@ -23,11 +23,125 @@ dotnet add package MartinCostello.Testing.AwsLambdaTestServer
 
 ### Usage
 
+Before you can use the Lambda test server to test your function, you need to factor your function entry-point
+in such a way that you can supply both a `HttpClient` and `CancellationToken` to it from your tests. This is to allow you to both plug in the `HttpClient` for the test server into `LambdaBootstrap`, and to stop the Lambda function running at a time of your choosing by signalling the `CancellationToken`.
+
+Here's an example of how to do this with a simple Lambda function that takes an array of integers and returns them in reverse order:
+
 ```csharp
-// TODO
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Amazon.Lambda.RuntimeSupport;
+using Amazon.Lambda.Serialization.Json;
+
+namespace MyFunctions
+{
+    public static class ReverseFunction
+    {
+        public static async Task Main()
+            => await RunAsync();
+
+        public static async Task RunAsync(
+            HttpClient httpClient = null,
+            CancellationToken cancellationToken = default)
+        {
+            var serializer = new JsonSerializer();
+
+            using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
+            using var bootstrap = new LambdaBootstrap(handlerWrapper);
+
+            if (httpClient != null)
+            {
+                // Use reflection to assign the HttpClient to the LambdaBootstrap instance
+                var client = new RuntimeApiClient(httpClient);
+                var type = bootstrap.GetType();
+                var property = type.GetProperty("Client", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                property.SetValue(bootstrap, client);
+            }
+
+            await bootstrap.RunAsync(cancellationToken);
+        }
+
+        public static Task<int[]> ReverseAsync(int[] values)
+        {
+            return Task.FromResult(values.Reverse().ToArray());
+        }
+    }
+}
 ```
 
+Notice the use of reflection to set a new `RuntimeApiClient` instance using the specified `HttpClient` value onto the created instance of `LambdaBootstrap`. At the time of writing, this is the only way to configure things to use the Lambda test server to process requests.
+
+> I've reached out to the AWS Lambda .NET team with a suggestion to provide a supported way to specify a custom `HttpClient` in a future version of the NuGet package here: https://github.com/aws/aws-lambda-dotnet/pull/540
+
+Once you've done that, you can use `LambdaTestServer` in your tests with your function to verify how it processes requests.
+
+Here's an example using xunit to verify that `ReverseFunction` works as intended:
+
+```csharp
+using System;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Xunit;
+
+namespace MyFunctions
+{
+    public static class ReverseFunctionTests
+    {
+        [Fact]
+        public static async Task Function_Reverses_Numbers()
+        {
+            // Arrange
+            using var server = new LambdaTestServer();
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+            await server.StartAsync(cancellationTokenSource.Token);
+
+            int[] value = new[] { 1, 2, 3 };
+            string json = JsonConvert.SerializeObject(value);
+
+            LambdaTestContext context = await server.EnqueueAsync(json);
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+            Assert.NotNull(response);
+            Assert.True(response.IsSuccessful);
+            Assert.NotNull(response.Content);
+
+            json = Encoding.UTF8.GetString(response.Content);
+            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+
+            Assert.Equal(new[] { 3, 2, 1 }, actual);
+        }
+    }
+}
+```
+
+The key parts to call out here are:
+
+  1. An instance of `LambdaTestServer` is created and then the `StartAsync()` method called with a `CancellationToken` that allows the test to stop the function. In the example here the token is signalled with a timeout, but you could also write code to stop the processing based on arbitrary criteria.
+  1. A request that the Lambda function should be invoked with is passed to `EnqueueAsync()`. This can be specified with an instance of `LambdaTestRequest` for fine-grained control, but there are overloads that accept `byte[]` and `string`. You could also make your own extensions to serialize objects to JSON using the serializer of your choice.
+  1. `EnqueueAsync()` returns a `LambdaTestContext`. This contains a reference to the `LambdaTestRequest` and a `ChannelReader<LambdaTestResponse>`. This channel reader can be used to await the request being processed by the function under test.
+  1. Once the request is enqueued, an `HttpClient` is obtained from the test server and passed to the function to test to run it.
+  1. Once the function processing completes when the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
+  1. Once this is returned, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
+
 You can find more examples in the [unit tests](https://github.com/martincostello/lambda-test-server/blob/master/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples").
+
+### Advanced Usage
+
+TODO
 
 ## Feedback
 
