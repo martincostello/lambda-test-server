@@ -101,7 +101,13 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             var request = new LambdaTestRequest(Array.Empty<byte>());
 
             await target.StartAsync();
-            await target.EnqueueAsync(request);
+
+            var context = await target.EnqueueAsync(request);
+
+            context.ShouldNotBeNull();
+            context.Request.ShouldBe(request);
+            context.Response.ShouldNotBeNull();
+            context.Response.Completion.IsCompleted.ShouldBeFalse();
 
             // Act and Assert
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.EnqueueAsync(request));
@@ -353,6 +359,29 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 var deserialized = JsonSerializer.Deserialize<MyResponse>(response.Content);
                 deserialized.Sum.ShouldBe(expected);
             }
+        }
+
+        [Fact(Timeout = 5_000)]
+        public async Task Function_Returns_If_No_Requests_Within_Timeout()
+        {
+            // Arrange
+            void Configure(IServiceCollection services)
+            {
+                services.AddLogging((builder) => builder.AddXUnit(this));
+            }
+
+            using var server = new LambdaTestServer(Configure);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+            await server.StartAsync(cts.Token);
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            cts.IsCancellationRequested.ShouldBeTrue();
         }
 
         [Fact]
