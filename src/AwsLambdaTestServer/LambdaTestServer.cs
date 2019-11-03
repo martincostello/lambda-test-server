@@ -218,6 +218,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     }
 
                     _server?.Dispose();
+                    _handler?.Dispose();
                 }
 
                 _disposed = true;

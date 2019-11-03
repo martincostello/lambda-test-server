@@ -18,7 +18,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
     /// <summary>
     /// A class representing a handler for AWS Lambda runtime HTTP requests. This class cannot be inherited.
     /// </summary>
-    internal sealed class RuntimeHandler
+    internal sealed class RuntimeHandler : IDisposable
     {
         /// <summary>
         /// The cancellation token that is signalled when request listening should stop. This field is read-only.
@@ -39,6 +39,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// A dictionary containing channels for the responses for enqueued requests. This field is read-only.
         /// </summary>
         private readonly ConcurrentDictionary<string, Channel<LambdaTestResponse>> _responses;
+
+        /// <summary>
+        /// Whether the instance has been disposed.
+        /// </summary>
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeHandler"/> class.
@@ -63,9 +68,24 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         }
 
         /// <summary>
+        /// Finalizes an instance of the <see cref="RuntimeHandler"/> class.
+        /// </summary>
+        ~RuntimeHandler()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
         /// Gets or sets the logger to use.
         /// </summary>
         internal ILogger Logger { get; set; }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Enqueues a request for the Lambda function to process as an asynchronous operation.
@@ -122,7 +142,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 await _requests.Reader.WaitToReadAsync(cts.Token);
                 request = await _requests.Reader.ReadAsync();
             }
-            catch (OperationCanceledException ex)
+            catch (Exception ex) when (ex is OperationCanceledException || ex is ChannelClosedException)
             {
                 Logger.LogInformation(
                     ex,
@@ -310,6 +330,30 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             // Mark the channel as complete as there will be no more responses written
             channel.Writer.Complete();
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Complete the channels so that any callers who do not know
+                    // the server has been disposed do not wait indefinitely for a
+                    // channel to complete that will now never be written to again.
+                    _requests.Writer.TryComplete();
+
+                    var channels = _responses.Values;
+                    _responses.Clear();
+
+                    foreach (var channel in channels)
+                    {
+                        channel.Writer.TryComplete();
+                    }
+                }
+
+                _disposed = true;
+            }
         }
     }
 }
