@@ -128,7 +128,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(LambdaTestRequest request)
+        public async Task<LambdaTestMessage> EnqueueAsync(LambdaTestRequest request)
         {
             if (request == null)
             {
@@ -138,7 +138,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             ThrowIfDisposed();
             ThrowIfNotStarted();
 
-            return await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
+            var reader = await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
+
+            return new LambdaTestMessage(request.AwsRequestId, reader);
         }
 
         /// <summary>

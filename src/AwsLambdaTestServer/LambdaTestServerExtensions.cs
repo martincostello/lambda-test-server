@@ -30,7 +30,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public static async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(
+        public static async Task<LambdaTestMessage> EnqueueAsync(
             this LambdaTestServer server,
             string value)
         {
@@ -64,7 +64,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ObjectDisposedException">
         /// The instance has been disposed.
         /// </exception>
-        public static async Task<ChannelReader<LambdaTestResponse>> EnqueueAsync(
+        public static async Task<LambdaTestMessage> EnqueueAsync(
             this LambdaTestServer server,
             byte[] content)
         {
