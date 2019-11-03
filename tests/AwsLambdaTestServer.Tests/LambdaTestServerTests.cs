@@ -3,14 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.Lambda.RuntimeSupport;
 using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -388,6 +394,128 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             // Act (no Assert)
             _ = new LambdaTestServer();
 #pragma warning restore CA2000
+        }
+
+        [Fact]
+        public async Task Can_Use_Custom_Function_Variables()
+        {
+            // Arrange
+            LambdaTestServer.ClearLambdaEnvironmentVariables();
+
+            var options = new LambdaTestServerOptions()
+            {
+                FunctionArn = "my-custom-arn",
+                FunctionHandler = "my-custom-handler",
+                FunctionMemorySize = 1024,
+                FunctionName = "my-function-name",
+                FunctionTimeout = TimeSpan.FromSeconds(119),
+                FunctionVersion = 42,
+                LogGroupName = "my-log-group",
+                LogStreamName = "my-log-stream",
+            };
+
+            using var server = new LambdaTestServer(options);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+            await server.StartAsync(cts.Token);
+
+            var request = new LambdaTestRequest(Array.Empty<byte>(), "my-request-id")
+            {
+                ClientContext = @"{""client"":{""app_title"":""my-app""}}",
+                CognitoIdentity = @"{""identityId"":""my-identity""}",
+            };
+
+            var context = await server.EnqueueAsync(request);
+
+            _ = Task.Run(async () =>
+            {
+                await context.Response.WaitToReadAsync(cts.Token);
+
+                if (!cts.IsCancellationRequested)
+                {
+                    cts.Cancel();
+                }
+            });
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await CustomFunction.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
+
+            response.ShouldNotBeNull();
+            response.IsSuccessful.ShouldBeTrue();
+            response.Content.ShouldNotBeNull();
+
+            var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+            lambdaContext.ShouldContainKeyAndValue("AwsRequestId", request.AwsRequestId);
+            lambdaContext.ShouldContainKeyAndValue("ClientContext", "my-app");
+            lambdaContext.ShouldContainKeyAndValue("FunctionName", options.FunctionName);
+            lambdaContext.ShouldContainKeyAndValue("FunctionVersion", "42");
+            lambdaContext.ShouldContainKeyAndValue("IdentityId", "my-identity");
+            lambdaContext.ShouldContainKeyAndValue("InvokedFunctionArn", options.FunctionArn);
+            lambdaContext.ShouldContainKeyAndValue("LogGroupName", options.LogGroupName);
+            lambdaContext.ShouldContainKeyAndValue("LogStreamName", options.LogStreamName);
+            lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "1024");
+
+            lambdaContext.ShouldContainKey("RemainingTime");
+            string remainingTimeString = lambdaContext["RemainingTime"];
+
+            TimeSpan.TryParse(remainingTimeString, out var remainingTime).ShouldBeTrue();
+
+            remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
+        }
+
+        private static class CustomFunction
+        {
+            internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
+            {
+                var handler = new CustomHandler();
+                using var bootstrap = new LambdaBootstrap(handler.InvokeAsync);
+
+                if (httpClient != null)
+                {
+                    // Replace the internal runtime API client with one using the specified HttpClient.
+                    // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Bootstrap/LambdaBootstrap.cs#L41
+                    var client = new RuntimeApiClient(httpClient);
+
+                    var property = typeof(LambdaBootstrap).GetProperty("Client", BindingFlags.Instance | BindingFlags.NonPublic);
+                    property.SetValue(bootstrap, client);
+                }
+
+                await bootstrap.RunAsync(cancellationToken);
+            }
+        }
+
+        private sealed class CustomHandler
+        {
+            public async Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+            {
+                var context = new Dictionary<string, string>()
+                {
+                    ["AwsRequestId"] = request.LambdaContext.AwsRequestId,
+                    ["ClientContext"] = request.LambdaContext.ClientContext.Client.AppTitle,
+                    ["FunctionName"] = request.LambdaContext.FunctionName,
+                    ["FunctionVersion"] = request.LambdaContext.FunctionVersion,
+                    ["IdentityId"] = request.LambdaContext.Identity.IdentityId,
+                    ["InvokedFunctionArn"] = request.LambdaContext.InvokedFunctionArn,
+                    ["LogGroupName"] = request.LambdaContext.LogGroupName,
+                    ["LogStreamName"] = request.LambdaContext.LogStreamName,
+                    ["MemoryLimitInMB"] = request.LambdaContext.MemoryLimitInMB.ToString(CultureInfo.InvariantCulture),
+                    ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
+                };
+
+                string json = JsonConvert.SerializeObject(context);
+
+                var stream = new MemoryStream();
+                using var writer = new StreamWriter(stream, leaveOpen: true);
+
+                await writer.WriteAsync(json);
+
+                return new InvocationResponse(stream, true);
+            }
         }
 
         private sealed class MyFailedInitializationHandler : MyHandler
