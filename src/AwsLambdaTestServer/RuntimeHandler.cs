@@ -330,6 +330,12 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             context.DurationTimer.Stop();
 
+            Logger.LogInformation(
+                "Completed processing AWS request Id {AwsRequestId} for Lambda function with ARN {FunctionArn} in {FunctionDuration} milliseconds.",
+                awsRequestId,
+                _options.FunctionArn,
+                context.DurationTimer.ElapsedMilliseconds);
+
             // Make the response available to read by the enqueuer
             var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
             await context.Channel.Writer.WriteAsync(response, cancellationToken);
