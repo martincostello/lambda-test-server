@@ -185,6 +185,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.ShouldNotBeNull();
             response.IsSuccessful.ShouldBeTrue();
             response.Content.ShouldNotBeNull();
+            response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
             Encoding.UTF8.GetString(response.Content).ShouldBe(@"{""Sum"":6}");
         }
 

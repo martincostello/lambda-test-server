@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net.Mime;
@@ -38,7 +39,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <summary>
         /// A dictionary containing channels for the responses for enqueued requests. This field is read-only.
         /// </summary>
-        private readonly ConcurrentDictionary<string, Channel<LambdaTestResponse>> _responses;
+        private readonly ConcurrentDictionary<string, ResponseContext> _responses;
 
         /// <summary>
         /// Whether the instance has been disposed.
@@ -64,7 +65,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             };
 
             _requests = Channel.CreateUnbounded<LambdaTestRequest>(channelOptions);
-            _responses = new ConcurrentDictionary<string, Channel<LambdaTestResponse>>(StringComparer.Ordinal);
+            _responses = new ConcurrentDictionary<string, ResponseContext>(StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -105,8 +106,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             // There is only one response per request, so the channel is bounded to one item
             var channel = Channel.CreateBounded<LambdaTestResponse>(1);
+            var context = new ResponseContext(channel);
 
-            if (!_responses.TryAdd(request.AwsRequestId, channel))
+            if (!_responses.TryAdd(request.AwsRequestId, context))
             {
                 throw new InvalidOperationException($"A request with AWS request Id '{request.AwsRequestId}' is currently in-flight.");
             }
@@ -153,7 +155,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 request = new LambdaTestRequest(new[] { (byte)'{', (byte)'}' }, "xx-lambda-test-server-stopped-xx");
 
                 // This dummy request wasn't enqueued, so it needs manually adding
-                _responses.GetOrAdd(request.AwsRequestId, (_) => Channel.CreateBounded<LambdaTestResponse>(1));
+                _responses.GetOrAdd(request.AwsRequestId, (_) => new ResponseContext(Channel.CreateBounded<LambdaTestResponse>(1)));
             }
 
             // Write the response for the Lambda runtime to pass to the function to invoke
@@ -185,6 +187,10 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             }
 
             var deadline = DateTimeOffset.UtcNow.Add(_options.FunctionTimeout).ToUnixTimeMilliseconds();
+
+            // Record the current time for the response to have the duration measured
+            _responses[request.AwsRequestId].DurationTimer = Stopwatch.StartNew();
+
             httpContext.Response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadline.ToString("F0", CultureInfo.InvariantCulture));
 
             httpContext.Response.ContentType = MediaTypeNames.Application.Json;
@@ -314,7 +320,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             bool isSuccessful,
             CancellationToken cancellationToken)
         {
-            if (!_responses.TryRemove(awsRequestId, out var channel))
+            if (!_responses.TryRemove(awsRequestId, out var context))
             {
                 Logger.LogError(
                     "Could not find response channel with AWS request Id {AwsRequestId} for Lambda function with ARN {FunctionArn}.",
@@ -324,12 +330,14 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 return;
             }
 
+            context.DurationTimer.Stop();
+
             // Make the response available to read by the enqueuer
-            var response = new LambdaTestResponse(content, isSuccessful);
-            await channel.Writer.WriteAsync(response, cancellationToken);
+            var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
+            await context.Channel.Writer.WriteAsync(response, cancellationToken);
 
             // Mark the channel as complete as there will be no more responses written
-            channel.Writer.Complete();
+            context.Channel.Writer.Complete();
         }
 
         private void Dispose(bool disposing)
@@ -343,17 +351,29 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     // channel to complete that will now never be written to again.
                     _requests.Writer.TryComplete();
 
-                    var channels = _responses.Values;
+                    var contexts = _responses.Values;
                     _responses.Clear();
 
-                    foreach (var channel in channels)
+                    foreach (var context in contexts)
                     {
-                        channel.Writer.TryComplete();
+                        context.Channel.Writer.TryComplete();
                     }
                 }
 
                 _disposed = true;
             }
+        }
+
+        private sealed class ResponseContext
+        {
+            internal ResponseContext(Channel<LambdaTestResponse> channel)
+            {
+                Channel = channel;
+            }
+
+            internal Channel<LambdaTestResponse> Channel { get; }
+
+            internal Stopwatch DurationTimer { get; set; }
         }
     }
 }

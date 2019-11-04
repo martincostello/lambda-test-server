@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
+using System;
+
 namespace MartinCostello.Testing.AwsLambdaTestServer
 {
     /// <summary>
@@ -13,9 +15,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </summary>
         /// <param name="content">The raw content of the response from the Lambda function.</param>
         /// <param name="isSuccessful">Whether the response indicates the request was successfully handled.</param>
-        internal LambdaTestResponse(byte[] content, bool isSuccessful)
+        /// <param name="duration">The duration of the Lambda function invocation.</param>
+        internal LambdaTestResponse(byte[] content, bool isSuccessful, TimeSpan duration)
         {
             Content = content;
+            Duration = duration;
             IsSuccessful = isSuccessful;
         }
 
@@ -25,6 +29,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 #pragma warning disable CA1819
         public byte[] Content { get; }
 #pragma warning restore CA1819
+
+        /// <summary>
+        /// Gets the approximate duration of the Lambda function invocation.
+        /// </summary>
+        public TimeSpan Duration { get; }
 
         /// <summary>
         /// Gets a value indicating whether the response indicates the request was successfully handled.

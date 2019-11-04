@@ -11,6 +11,7 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest.Content.get -> byte
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest.LambdaTestRequest(byte[] content, string awsRequestId = null) -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.Content.get -> byte[]
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.Duration.get -> System.TimeSpan
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.IsSuccessful.get -> bool
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient
