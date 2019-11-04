@@ -167,8 +167,6 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 request.AwsRequestId,
                 traceId);
 
-            _responses.GetOrAdd(request.AwsRequestId, (_) => Channel.CreateBounded<LambdaTestResponse>(1));
-
             // These headers are required, as otherwise an exception is thrown
             httpContext.Response.Headers.Add("Lambda-Runtime-Aws-Request-Id", request.AwsRequestId);
             httpContext.Response.Headers.Add("Lambda-Runtime-Invoked-Function-Arn", _options.FunctionArn);
