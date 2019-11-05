@@ -41,11 +41,13 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.2.1</VersionPrefix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(APPVEYOR)' == 'true' AND '$(APPVEYOR_REPO_TAG)' != 'true'">beta$([System.Convert]::ToInt32(`$(APPVEYOR_BUILD_NUMBER)`).ToString(`0000`))</VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(TF_BUILD)' == 'True'">beta$([System.Convert]::ToInt32(`$(BUILD_BUILDID)`).ToString(`0000`))</VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(TRAVIS)' == 'true'">beta$([System.Convert]::ToInt32(`$(TRAVIS_BUILD_NUMBER)`).ToString(`0000`))</VersionSuffix>
     <VersionSuffix Condition=" '$(APPVEYOR_REPO_TAG)' == 'true' AND '$(APPVEYOR_REPO_TAG_NAME)' != '' AND '$(APPVEYOR_REPO_TAG_NAME.Contains(`-`))' == 'true' ">$(APPVEYOR_REPO_TAG_NAME.Substring($(APPVEYOR_REPO_TAG_NAME.IndexOf(`-`))).Substring(1))</VersionSuffix>
+    <VersionPrefix Condition=" $(BUILD_SOURCEBRANCH.StartsWith(`refs/tags/v`)) ">$(BUILD_SOURCEBRANCH.Replace('refs/tags/v', ''))</VersionPrefix>
+    <VersionSuffix Condition=" $(BUILD_SOURCEBRANCH.StartsWith(`refs/tags/v`)) "></VersionSuffix>
     <FileVersion Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(VersionPrefix).$(APPVEYOR_BUILD_NUMBER)</FileVersion>
     <FileVersion Condition=" '$(BUILD_BUILDID)' != '' ">$(VersionPrefix).$(BUILD_BUILDID)</FileVersion>
     <FileVersion Condition=" '$(TRAVIS_BUILD_NUMBER)' != '' ">$(VersionPrefix).$(TRAVIS_BUILD_NUMBER)</FileVersion>
