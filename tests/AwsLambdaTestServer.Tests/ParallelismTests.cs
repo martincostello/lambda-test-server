@@ -6,24 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MartinCostello.Logging.XUnit;
+using MyFunctions;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer
 {
-    public class ParallelismTests : ITestOutputHelperAccessor
+    public static class ParallelismTests
     {
-        public ParallelismTests(ITestOutputHelper outputHelper)
-        {
-            OutputHelper = outputHelper;
-        }
-
-        public ITestOutputHelper OutputHelper { get; set; }
-
         [Fact(Timeout = 30_000)]
-        public async Task Function_Can_Process_Multiple_Requests_On_Different_Threads()
+        public static async Task Function_Can_Process_Multiple_Requests_On_Different_Threads()
         {
             // Arrange
             int messageCount = 1_000;
@@ -43,14 +35,14 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             var completedProcessing = Assert(completedAdding, messageCount, cts);
 
             // Act - Start the function processing
-            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+            await ReverseFunction.RunAsync(httpClient, cts.Token);
 
             // Assert
             int actual = await completedProcessing.Task;
             actual.ShouldBe(expected);
         }
 
-        private TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>> EnqueueInParallel(
+        private static TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>> EnqueueInParallel(
             int count,
             LambdaTestServer server)
         {
@@ -62,12 +54,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             // Enqueue the specified number of items in parallel
             Parallel.For(0, count, async (i) =>
             {
-                var request = new MyRequest()
-                {
-                    Values = new[] { i },
-                };
-
-                var context = await server.EnqueueAsync(request);
+                var context = await server.EnqueueAsync(new[] { i });
 
                 collection.Add(context);
 
@@ -80,7 +67,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             return completionSource;
         }
 
-        private TaskCompletionSource<int> Assert(
+        private static TaskCompletionSource<int> Assert(
             TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>> completedAdding,
             int messages,
             CancellationTokenSource cts)
@@ -100,9 +87,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
                     var result = await context.Response.ReadAsync();
 
-                    var response = result.ReadAs<MyResponse>();
+                    var response = result.ReadAs<int[]>();
 
-                    actual += response.Sum;
+                    actual += response[0];
                 }
 
                 completionSource.SetResult(actual);
