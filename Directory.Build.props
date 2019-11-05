@@ -15,9 +15,9 @@
   </ItemGroup>
   <PropertyGroup>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)LambdaTestServer.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)AwsLambdaTestServer.snk</AssemblyOriginatorKeyFile>
     <Authors>martin_costello</Authors>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)LambdaTestServer.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AwsLambdaTestServer.ruleset</CodeAnalysisRuleSet>
     <Company>https://github.com/martincostello/lambda-test-server</Company>
     <Copyright>Martin Costello (c) $([System.DateTime]::Now.ToString(yyyy))</Copyright>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
