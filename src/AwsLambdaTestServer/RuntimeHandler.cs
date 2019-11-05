@@ -318,16 +318,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             bool isSuccessful,
             CancellationToken cancellationToken)
         {
-            if (!_responses.TryRemove(awsRequestId, out var context))
-            {
-                Logger.LogError(
-                    "Could not find response channel with AWS request Id {AwsRequestId} for Lambda function with ARN {FunctionArn}.",
-                    awsRequestId,
-                    _options.FunctionArn);
-
-                return;
-            }
-
+            var context = _responses[awsRequestId];
             context.DurationTimer.Stop();
 
             Logger.LogInformation(
