@@ -3,7 +3,6 @@
 
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
@@ -23,17 +22,7 @@ namespace MyFunctions
             var serializer = new JsonSerializer();
 
             using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
-            using var bootstrap = new LambdaBootstrap(handlerWrapper);
-
-            if (httpClient != null)
-            {
-                // Use reflection to assign the HttpClient to the LambdaBootstrap instance
-                var client = new RuntimeApiClient(httpClient);
-                var type = bootstrap.GetType();
-                var property = type.GetProperty("Client", BindingFlags.Instance | BindingFlags.NonPublic);
-
-                property.SetValue(bootstrap, client);
-            }
+            using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
 
             await bootstrap.RunAsync(cancellationToken);
         }

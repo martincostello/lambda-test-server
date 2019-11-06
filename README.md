@@ -31,7 +31,6 @@ Here's an example of how to do this with a simple Lambda function that takes an 
 ```csharp
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
@@ -51,17 +50,7 @@ namespace MyFunctions
             var serializer = new JsonSerializer();
 
             using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
-            using var bootstrap = new LambdaBootstrap(handlerWrapper);
-
-            if (httpClient != null)
-            {
-                // Use reflection to assign the HttpClient to the LambdaBootstrap instance
-                var client = new RuntimeApiClient(httpClient);
-                var type = bootstrap.GetType();
-                var property = type.GetProperty("Client", BindingFlags.Instance | BindingFlags.NonPublic);
-
-                property.SetValue(bootstrap, client);
-            }
+            using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
 
             await bootstrap.RunAsync(cancellationToken);
         }
@@ -73,10 +62,6 @@ namespace MyFunctions
     }
 }
 ```
-
-Notice the use of reflection to set a new `RuntimeApiClient` instance using the specified `HttpClient` value onto the created instance of `LambdaBootstrap`. At the time of writing, this is the only way to configure things to use the Lambda test server to process requests.
-
-> I've reached out to the AWS Lambda .NET team with a suggestion to provide a supported way to specify a custom `HttpClient` in a future version of the NuGet package here: https://github.com/aws/aws-lambda-dotnet/pull/540
 
 Once you've done that, you can use `LambdaTestServer` in your tests with your function to verify how it processes requests.
 
@@ -340,7 +325,7 @@ Test Name:	Function_Reverses_Numbers_With_Logging
 Test Outcome:	Passed
 Result StandardOutput:
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next  
+      Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
       Executing endpoint '/{LambdaVersion}/runtime/invocation/next HTTP: GET'
 [2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
@@ -352,7 +337,7 @@ Result StandardOutput:
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
       Request finished in 71.9334ms 200 application/json
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/7e1a283d-6268-4401-921c-0d0d67da1da4/response application/json 
+      Request starting HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/7e1a283d-6268-4401-921c-0d0d67da1da4/response application/json
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
       Executing endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
 [2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
@@ -362,7 +347,7 @@ Result StandardOutput:
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
       Executed endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished in 26.6306ms 204 
+      Request finished in 26.6306ms 204
 ```
 
 ## Feedback
