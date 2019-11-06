@@ -151,11 +151,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     "Stopped listening for additional requests for Lambda function with ARN {FunctionArn}.",
                     _options.FunctionArn);
 
-                // Send a dummy response to prevent the listen loop from erroring
-                request = new LambdaTestRequest(new[] { (byte)'{', (byte)'}' }, "xx-lambda-test-server-stopped-xx");
-
-                // This dummy request wasn't enqueued, so it needs manually adding
-                _responses.GetOrAdd(request.AwsRequestId, (_) => new ResponseContext(Channel.CreateBounded<LambdaTestResponse>(1)));
+                // Throw back into LambdaBootstrap, which will then stop processing.
+                // See https://github.com/aws/aws-lambda-dotnet/pull/540 for details of the change.
+                throw;
             }
 
             // Write the response for the Lambda runtime to pass to the function to invoke

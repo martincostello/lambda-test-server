@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -392,9 +391,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public void Finalizer_Does_Not_Throw()
         {
 #pragma warning disable CA2000
+#pragma warning disable IDE0067
             // Act (no Assert)
             _ = new LambdaTestServer();
 #pragma warning restore CA2000
+#pragma warning restore IDE0067
         }
 
         [Fact]
@@ -474,17 +475,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
             {
                 var handler = new CustomHandler();
-                using var bootstrap = new LambdaBootstrap(handler.InvokeAsync);
-
-                if (httpClient != null)
-                {
-                    // Replace the internal runtime API client with one using the specified HttpClient.
-                    // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Bootstrap/LambdaBootstrap.cs#L41
-                    var client = new RuntimeApiClient(httpClient);
-
-                    var property = typeof(LambdaBootstrap).GetProperty("Client", BindingFlags.Instance | BindingFlags.NonPublic);
-                    property.SetValue(bootstrap, client);
-                }
+                using var bootstrap = new LambdaBootstrap(httpClient, handler.InvokeAsync);
 
                 await bootstrap.RunAsync(cancellationToken);
             }
