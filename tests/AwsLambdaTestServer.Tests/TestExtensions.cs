@@ -15,10 +15,10 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             return await server.EnqueueAsync(json);
         }
 
-        internal static T ReadAs<T>(this LambdaTestResponse response)
+        internal static async Task<T> ReadAsAsync<T>(this LambdaTestResponse response)
             where T : class
         {
-            string json = System.Text.Encoding.UTF8.GetString(response.Content);
+            string json = await response.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(json);
         }
     }

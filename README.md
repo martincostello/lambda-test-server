@@ -69,7 +69,6 @@ Here's an example using xunit to verify that `ReverseFunction` works as intended
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -103,9 +102,8 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -141,7 +139,6 @@ An example of providing these values from an xunit test is shown below:
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -182,9 +179,8 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -205,7 +201,6 @@ An example of this customisation for an xunit test is shown below:
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -246,9 +241,8 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -265,7 +259,6 @@ Here's an example of configuring the test server to route its logs to xunit usin
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
@@ -313,9 +306,8 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);

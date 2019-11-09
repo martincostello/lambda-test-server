@@ -2,7 +2,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -36,9 +35,8 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);

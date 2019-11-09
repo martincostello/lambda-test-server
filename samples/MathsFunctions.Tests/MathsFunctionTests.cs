@@ -2,7 +2,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -41,7 +40,7 @@ namespace MathsFunctions
             Assert.True(context.Response.TryRead(out var response));
             Assert.True(response.IsSuccessful);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             var actual = JsonConvert.DeserializeObject<MathsResponse>(json);
 
             Assert.Equal(expected, actual.Result);

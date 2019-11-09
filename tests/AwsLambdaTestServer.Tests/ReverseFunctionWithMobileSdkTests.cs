@@ -43,9 +43,8 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);

@@ -13,6 +13,7 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.Content.get -> byte[]
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.Duration.get -> System.TimeSpan
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.IsSuccessful.get -> bool
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponseExtensions
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose() -> void
@@ -44,6 +45,7 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogGroupName.
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogGroupName.set -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogStreamName.get -> string
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.LogStreamName.set -> void
+static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponseExtensions.ReadAsStringAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse response) -> System.Threading.Tasks.Task<string>
 static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ClearLambdaEnvironmentVariables() -> void
 static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, byte[] content) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
 static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.EnqueueAsync(this MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer server, string value) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext>
