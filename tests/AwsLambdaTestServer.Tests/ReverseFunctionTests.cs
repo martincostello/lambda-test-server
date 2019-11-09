@@ -33,7 +33,6 @@ namespace MyFunctions
 
             // Assert
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
 
             json = await response.ReadAsStringAsync();

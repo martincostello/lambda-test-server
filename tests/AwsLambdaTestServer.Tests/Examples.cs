@@ -60,7 +60,6 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             // Assert - The channel reader should have the response available
             context.Response.TryRead(out LambdaTestResponse response).ShouldBeTrue("No Lambda response is available.");
 
-            response.ShouldNotBeNull("The Lambda response is null.");
             response.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
             response.Content.ShouldNotBeEmpty("The Lambda function did not return any content.");
 
