@@ -50,7 +50,9 @@ dotnet pack ./src/AwsLambdaTestServer/MartinCostello.Testing.AwsLambdaTestServer
 if [ $skipTests == 0 ]; then
     if [ "$TF_BUILD" != "" ]; then
         dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj --output $artifacts --configuration $configuration --logger trx || exit 1
+        dotnet test ./samples/MathsFunctions.Tests/MathsFunctions.Tests.csproj --output $artifacts --configuration $configuration --logger trx || exit 1
     else
         dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj --output $artifacts --configuration $configuration || exit 1
+        dotnet test ./samples/MathsFunctions.Tests/MathsFunctions.Tests.csproj --output $artifacts --configuration $configuration || exit 1
     fi
 fi

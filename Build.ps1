@@ -19,7 +19,8 @@ $sdkFile = Join-Path $solutionPath "global.json"
 $libraryProject = Join-Path $solutionPath "src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj"
 
 $testProjects = @(
-    (Join-Path $solutionPath "tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj")
+    (Join-Path $solutionPath "tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj"),
+    (Join-Path $solutionPath "samples\MathsFunctions.Tests\MathsFunctions.Tests.csproj")
 )
 
 $dotnetVersion = (Get-Content $sdkFile | Out-String | ConvertFrom-Json).sdk.version
