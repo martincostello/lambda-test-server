@@ -69,7 +69,6 @@ Here's an example using xunit to verify that `ReverseFunction` works as intended
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -101,11 +100,9 @@ namespace MyFunctions
 
             // Assert
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -122,6 +119,8 @@ The key parts to call out here are:
   1. Once the request is enqueued, an `HttpClient` is obtained from the test server and passed to the function to test with the cancellation token and run by calling `RunAsync()`.
   1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
   1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
+
+The library itself targets `netcoreapp3.0` so requires your test project to target at least .NET Core 3.0, but the function you're testing could target a previous version such as .NET Core 2.2.
 
 ### Examples
 
@@ -141,7 +140,6 @@ An example of providing these values from an xunit test is shown below:
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -180,11 +178,9 @@ namespace MyFunctions
 
             // Assert
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -205,7 +201,6 @@ An example of this customisation for an xunit test is shown below:
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
@@ -244,11 +239,9 @@ namespace MyFunctions
 
             // Assert
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
@@ -265,7 +258,6 @@ Here's an example of configuring the test server to route its logs to xunit usin
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
@@ -311,11 +303,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             // Assert
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.NotNull(response);
             Assert.True(response.IsSuccessful);
-            Assert.NotNull(response.Content);
 
-            json = Encoding.UTF8.GetString(response.Content);
+            json = await response.ReadAsStringAsync();
             int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);

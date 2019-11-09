@@ -359,7 +359,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 response.IsSuccessful.ShouldBeTrue();
                 response.Content.ShouldNotBeNull();
 
-                var deserialized = response.ReadAs<MyResponse>();
+                var deserialized = await response.ReadAsAsync<MyResponse>();
                 deserialized.Sum.ShouldBe(expected);
             }
         }
@@ -451,7 +451,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.IsSuccessful.ShouldBeTrue();
             response.Content.ShouldNotBeNull();
 
-            var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+            var lambdaContext = await response.ReadAsAsync<IDictionary<string, string>>();
             lambdaContext.ShouldContainKeyAndValue("AwsRequestId", request.AwsRequestId);
             lambdaContext.ShouldContainKeyAndValue("ClientContext", "my-app");
             lambdaContext.ShouldContainKeyAndValue("FunctionName", options.FunctionName);

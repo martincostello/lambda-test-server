@@ -87,7 +87,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
                     var result = await context.Response.ReadAsync();
 
-                    var response = result.ReadAs<int[]>();
+                    var response = await result.ReadAsAsync<int[]>();
 
                     actual += response[0];
                 }

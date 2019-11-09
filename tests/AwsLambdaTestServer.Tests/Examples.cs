@@ -2,7 +2,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -61,11 +60,10 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             // Assert - The channel reader should have the response available
             context.Response.TryRead(out LambdaTestResponse response).ShouldBeTrue("No Lambda response is available.");
 
-            response.ShouldNotBeNull("The Lambda response is null.");
             response.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
-            response.Content.ShouldNotBeNull("The Lambda function did not return any content.");
+            response.Content.ShouldNotBeEmpty("The Lambda function did not return any content.");
 
-            string responseJson = Encoding.UTF8.GetString(response.Content);
+            string responseJson = await response.ReadAsStringAsync();
             var actual = JsonConvert.DeserializeObject<MyResponse>(responseJson);
 
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
