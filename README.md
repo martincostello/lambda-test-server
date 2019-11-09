@@ -123,7 +123,13 @@ The key parts to call out here are:
   1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
   1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
 
-You can find more examples in the [unit tests](https://github.com/martincostello/lambda-test-server/blob/master/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project, as well as see how I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/f253be4cbeaf559958e1726d33e1756af1aa6d65/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L28 "Alexa London Travel's end-to-end tests").
+### Examples
+
+You can find examples of how to factor your Lambda function and how to test it:
+
+  1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/master/samples "Sample function and tests");
+  1. In the [unit tests](https://github.com/martincostello/lambda-test-server/blob/master/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project;
+  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/f253be4cbeaf559958e1726d33e1756af1aa6d65/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L28 "Alexa London Travel's end-to-end tests").
 
 ### Advanced Usage
 
