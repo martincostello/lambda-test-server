@@ -13,7 +13,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             => await RunAsync();
 
         internal static async Task RunAsync(
-            HttpClient httpClient = null,
+            HttpClient? httpClient = null,
             CancellationToken cancellationToken = default)
         {
             await FunctionRunner.RunAsync<MyHandler>(httpClient, cancellationToken);

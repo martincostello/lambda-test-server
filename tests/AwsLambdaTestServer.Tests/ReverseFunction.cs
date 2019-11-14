@@ -16,7 +16,7 @@ namespace MyFunctions
             => await RunAsync();
 
         public static async Task RunAsync(
-            HttpClient httpClient = null,
+            HttpClient? httpClient = null,
             CancellationToken cancellationToken = default)
         {
             var serializer = new JsonSerializer();

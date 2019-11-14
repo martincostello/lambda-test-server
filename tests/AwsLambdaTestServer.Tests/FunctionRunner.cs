@@ -11,7 +11,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 {
     internal static class FunctionRunner
     {
-        internal static async Task RunAsync<T>(HttpClient httpClient, CancellationToken cancellationToken)
+        internal static async Task RunAsync<T>(HttpClient? httpClient, CancellationToken cancellationToken)
             where T : MyHandler, new()
         {
             var handler = new T();

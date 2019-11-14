@@ -13,7 +13,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public static void Constructor_Throws_If_Content_Null()
         {
             // Arrange
-            byte[] content = null;
+            byte[] content = null!;
 
             // Act and Assert
             Assert.Throws<ArgumentNullException>("content", () => new LambdaTestRequest(content));

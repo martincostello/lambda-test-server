@@ -7,6 +7,6 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 {
     internal sealed class MyRequest
     {
-        public ICollection<int> Values { get; set; }
+        public ICollection<int>? Values { get; set; }
     }
 }

@@ -23,10 +23,10 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         private readonly CancellationTokenSource _onDisposed;
 
         private bool _disposed;
-        private RuntimeHandler _handler;
+        private RuntimeHandler? _handler;
         private bool _isStarted;
-        private TestServer _server;
-        private CancellationTokenSource _onStopped;
+        private TestServer? _server;
+        private CancellationTokenSource? _onStopped;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LambdaTestServer"/> class.
@@ -114,7 +114,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             ThrowIfDisposed();
             ThrowIfNotStarted();
 
-            return _server.CreateClient();
+            return _server!.CreateClient();
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             ThrowIfDisposed();
             ThrowIfNotStarted();
 
-            var reader = await _handler.EnqueueAsync(request, _onStopped.Token).ConfigureAwait(false);
+            var reader = await _handler!.EnqueueAsync(request, _onStopped!.Token).ConfigureAwait(false);
 
             return new LambdaTestContext(request, reader);
         }
@@ -235,7 +235,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             app.UseEndpoints((endpoints) =>
             {
                 // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Client/InternalClientAdapted.cs#L75
-                endpoints.MapGet("/{LambdaVersion}/runtime/invocation/next", _handler.HandleNextAsync);
+                endpoints.MapGet("/{LambdaVersion}/runtime/invocation/next", _handler!.HandleNextAsync);
                 endpoints.MapPost("/{LambdaVersion}/runtime/init/error", _handler.HandleInitializationErrorAsync);
                 endpoints.MapPost("/{LambdaVersion}/runtime/invocation/{AwsRequestId}/error", _handler.HandleInvocationErrorAsync);
                 endpoints.MapPost("/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response", _handler.HandleResponseAsync);
