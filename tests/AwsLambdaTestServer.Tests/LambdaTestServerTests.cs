@@ -35,7 +35,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public void Constructor_Validates_Parameters()
         {
             // Arrange
-            LambdaTestServerOptions options = null;
+            LambdaTestServerOptions options = null!;
 
             // Act and Assert
             Assert.Throws<ArgumentNullException>("options", () => new LambdaTestServer(options));
@@ -67,7 +67,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             // Arrange
             using var target = new LambdaTestServer();
-            LambdaTestRequest request = null;
+            LambdaTestRequest request = null!;
 
             // Act
             await Assert.ThrowsAsync<ArgumentNullException>("request", () => target.EnqueueAsync(request));
@@ -522,7 +522,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             protected override void ConfigureWebHost(IWebHostBuilder builder)
             {
-                base.ConfigureWebHost(null);
+                base.ConfigureWebHost(null!);
             }
         }
     }

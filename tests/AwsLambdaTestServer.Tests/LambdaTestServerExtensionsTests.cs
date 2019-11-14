@@ -14,14 +14,15 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             // Arrange
             using var server = new LambdaTestServer();
-            byte[] content = null;
-            string value = null;
+            using LambdaTestServer nullServer = null!;
+            byte[] content = null!;
+            string value = null!;
 
             // Act
             await Assert.ThrowsAsync<ArgumentNullException>("content", () => server.EnqueueAsync(content));
             await Assert.ThrowsAsync<ArgumentNullException>("value", () => server.EnqueueAsync(value));
-            await Assert.ThrowsAsync<ArgumentNullException>("server", () => (null as LambdaTestServer).EnqueueAsync(Array.Empty<byte>()));
-            await Assert.ThrowsAsync<ArgumentNullException>("server", () => (null as LambdaTestServer).EnqueueAsync(string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>("server", () => nullServer.EnqueueAsync(Array.Empty<byte>()));
+            await Assert.ThrowsAsync<ArgumentNullException>("server", () => nullServer.EnqueueAsync(string.Empty));
         }
     }
 }

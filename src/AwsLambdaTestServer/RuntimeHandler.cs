@@ -79,7 +79,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <summary>
         /// Gets or sets the logger to use.
         /// </summary>
-        internal ILogger Logger { get; set; }
+        internal ILogger? Logger { get; set; }
 
         /// <inheritdoc />
         public void Dispose()
@@ -204,7 +204,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </returns>
         internal async Task HandleResponseAsync(HttpContext httpContext)
         {
-            string awsRequestId = httpContext.Request.RouteValues["AwsRequestId"] as string;
+            string? awsRequestId = httpContext.Request.RouteValues["AwsRequestId"] as string;
 
             byte[] content = await ReadContentAsync(httpContext, httpContext.RequestAborted).ConfigureAwait(false);
 
@@ -215,7 +215,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 ToString(content));
 
             await CompleteRequestChannelAsync(
-                awsRequestId,
+                awsRequestId!,
                 content,
                 isSuccessful: true,
                 httpContext.RequestAborted).ConfigureAwait(false);
@@ -232,7 +232,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </returns>
         internal async Task HandleInvocationErrorAsync(HttpContext httpContext)
         {
-            string awsRequestId = httpContext.Request.RouteValues["AwsRequestId"] as string;
+            string? awsRequestId = httpContext.Request.RouteValues["AwsRequestId"] as string;
 
             byte[] content = await ReadContentAsync(httpContext, httpContext.RequestAborted).ConfigureAwait(false);
 
@@ -243,7 +243,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 ToString(content));
 
             await CompleteRequestChannelAsync(
-                awsRequestId,
+                awsRequestId!,
                 content,
                 isSuccessful: false,
                 httpContext.RequestAborted).ConfigureAwait(false);
@@ -317,7 +317,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             CancellationToken cancellationToken)
         {
             var context = _responses[awsRequestId];
-            context.DurationTimer.Stop();
+            context.DurationTimer!.Stop();
 
             Logger.LogInformation(
                 "Completed processing AWS request Id {AwsRequestId} for Lambda function with ARN {FunctionArn} in {FunctionDuration} milliseconds.",
@@ -366,7 +366,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             internal Channel<LambdaTestResponse> Channel { get; }
 
-            internal Stopwatch DurationTimer { get; set; }
+            internal Stopwatch? DurationTimer { get; set; }
         }
     }
 }

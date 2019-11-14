@@ -13,7 +13,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public static async Task EnqueueAsync_Validates_Parameters()
         {
             // Arrange
-            LambdaTestResponse response = null;
+            LambdaTestResponse response = null!;
 
             // Act
             await Assert.ThrowsAsync<ArgumentNullException>("response", () => response.ReadAsStringAsync());

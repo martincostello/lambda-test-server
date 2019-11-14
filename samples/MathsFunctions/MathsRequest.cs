@@ -9,6 +9,6 @@ namespace MathsFunctions
 
         public double Right { get; set; }
 
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
     }
 }

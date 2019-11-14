@@ -30,7 +30,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <summary>
         /// Gets or sets an optional delegate to invoke when configuring the test Lambda runtime server.
         /// </summary>
-        public Action<IServiceCollection> Configure { get; set; }
+        public Action<IServiceCollection>? Configure { get; set; }
 
         /// <summary>
         /// Gets or sets the ARN of the Lambda function being tested.

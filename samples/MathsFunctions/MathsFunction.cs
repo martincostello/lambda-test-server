@@ -15,7 +15,7 @@ namespace MathsFunctions
         public static async Task Main()
             => await RunAsync();
 
-        public static async Task RunAsync(HttpClient httpClient = null, CancellationToken cancellationToken = default)
+        public static async Task RunAsync(HttpClient? httpClient = null, CancellationToken cancellationToken = default)
         {
             var serializer = new JsonSerializer();
 

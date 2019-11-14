@@ -18,7 +18,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// <exception cref="ArgumentNullException">
         /// <paramref name="content"/> is <see langword="null"/>.
         /// </exception>
-        public LambdaTestRequest(byte[] content, string awsRequestId = null)
+        public LambdaTestRequest(byte[] content, string? awsRequestId = null)
         {
             Content = content ?? throw new ArgumentNullException(nameof(content));
             AwsRequestId = awsRequestId ?? Guid.NewGuid().ToString();
@@ -40,12 +40,12 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// Gets or sets an optional string containing the serialized JSON
         /// for the client context when invoked through the AWS Mobile SDK.
         /// </summary>
-        public string ClientContext { get; set; }
+        public string? ClientContext { get; set; }
 
         /// <summary>
         /// Gets or sets an optional string containing the serialized JSON for the
         /// Amazon Cognito identity provider when invoked through the AWS Mobile SDK.
         /// </summary>
-        public string CognitoIdentity { get; set; }
+        public string? CognitoIdentity { get; set; }
     }
 }
