@@ -21,8 +21,10 @@ namespace MyFunctions
         {
             var serializer = new JsonSerializer();
 
+#pragma warning disable CA2000
             using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
             using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
+#pragma warning restore CA2000
 
             await bootstrap.RunAsync(cancellationToken);
         }
