@@ -2,7 +2,7 @@
 
 [![NuGet](https://buildstats.info/nuget/MartinCostello.Testing.AwsLambdaTestServer?includePreReleases=true)](http://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
 
-[![Build status](https://github.com/martincostello/lambda-test-server/workflows/Build/badge.svg?branch=master&event=push)](https://github.com/martincostello/lambda-test-server/actions?query=workflow%3ABuild+branch%3Amaster+event%3Apush)
+[![Build status](https://github.com/martincostello/lambda-test-server/workflows/build/badge.svg?branch=master&event=push)](https://github.com/martincostello/lambda-test-server/actions?query=workflow%3Abuild+branch%3Amaster+event%3Apush)
 
 ## Introduction
 
