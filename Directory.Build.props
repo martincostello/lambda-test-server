@@ -19,7 +19,10 @@
     <Authors>martin_costello</Authors>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AwsLambdaTestServer.ruleset</CodeAnalysisRuleSet>
     <Company>https://github.com/martincostello/lambda-test-server</Company>
+    <ContinuousIntegrationBuild Condition=" '$(CI)' != '' or '$(GITHUB_ACTIONS)' != '' ">true</ContinuousIntegrationBuild>
     <Copyright>Martin Costello (c) $([System.DateTime]::Now.ToString(yyyy))</Copyright>
+    <!-- Enable deterministic builds for CI once https://github.com/tonerdo/coverlet/issues/363 fixed -->
+    <Deterministic>false</Deterministic>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateGitMetadata Condition=" ('$(CI)' != '' or '$(GITHUB_ACTIONS)' != '') and '$(GenerateGitMetadata)' == '' ">true</GenerateGitMetadata>
