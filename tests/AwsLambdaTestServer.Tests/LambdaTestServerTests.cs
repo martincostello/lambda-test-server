@@ -143,7 +143,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             using var target = new NullWebHostBuilderLambdaTestServer();
 
             // Act and Assert
-            await Assert.ThrowsAsync<ArgumentNullException>("builder",  () => target.StartAsync());
+            await Assert.ThrowsAsync<ArgumentNullException>("builder", () => target.StartAsync());
             target.IsStarted.ShouldBeFalse();
         }
 
