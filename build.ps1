@@ -64,6 +64,7 @@ if ($installDotNetSdk -eq $true) {
         if (($PSVersionTable.PSVersion.Major -ge 6) -And !$IsWindows) {
             $installScript = Join-Path $env:DOTNET_INSTALL_DIR "install.sh"
             Invoke-WebRequest "https://dot.net/v1/dotnet-install.sh" -OutFile $installScript -UseBasicParsing
+            chmod +x $installScript
             & $installScript --version "$dotnetVersion" --install-dir "$env:DOTNET_INSTALL_DIR" --no-path
         }
         else {
