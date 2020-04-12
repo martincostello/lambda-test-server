@@ -50,7 +50,7 @@ jobs:
     - name: Publish artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: artifacts
+        name: artifacts-${{ matrix.os_name }}
         path: /artifacts
 
 # TODO Publish NuGet package to feed
