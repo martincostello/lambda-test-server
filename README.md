@@ -2,10 +2,7 @@
 
 [![NuGet](https://buildstats.info/nuget/MartinCostello.Testing.AwsLambdaTestServer?includePreReleases=true)](http://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
 
-| | Windows | Linux/macOS | Linux/macOS/Windows |
-|:-:|:-:|:-:|:-:|
-| **Build Status** | [![Windows build status](https://img.shields.io/appveyor/ci/martincostello/lambda-test-server/master.svg)](https://ci.appveyor.com/project/martincostello/lambda-test-server) [![Code coverage](https://codecov.io/gh/martincostello/lambda-test-server/branch/master/graph/badge.svg)](https://codecov.io/gh/martincostello/lambda-test-server) | [![Linux/macOS build status](https://img.shields.io/travis/com/martincostello/lambda-test-server/master.svg)](https://travis-ci.com/martincostello/lambda-test-server) | [![Azure Pipelines build status](https://martincostello.visualstudio.com/lambda-test-server/_apis/build/status/martincostello.lambda-test-server?branchName=master)](https://dev.azure.com/martincostello/lambda-test-server/_build/latest?definitionId=74&branchName=master) |
-| **Build History** | [![Windows build history](https://buildstats.info/appveyor/chart/martincostello/lambda-test-server?branch=master&includeBuildsFromPullRequest=false)](https://ci.appveyor.com/project/martincostello/lambda-test-server) | [![Linux build history](https://buildstats.info/travisci/chart/martincostello/lambda-test-server?branch=master&includeBuildsFromPullRequest=false)](https://travis-ci.com/martincostello/lambda-test-server) | [![Build history](https://buildstats.info/azurepipelines/chart/martincostello/lambda-test-server/74?branch=master&includeBuildsFromPullRequest=false)](https://dev.azure.com/martincostello/lambda-test-server/_build?definitionId=74) |
+[![Build status](https://github.com/martincostello/lambda-test-server/workflows/Build/badge.svg?branch=master&event=push)](https://github.com/martincostello/lambda-test-server/actions?query=workflow%3ABuild+branch%3Amaster+event%3Apush)
 
 ## Introduction
 
