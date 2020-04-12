@@ -34,4 +34,10 @@ jobs:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
         NUGET_XMLDOC_MODE: skip
 
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: artifacts
+        path: /artifacts
+
 # TODO Publish NuGet package to feed
