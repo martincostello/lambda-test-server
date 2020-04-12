@@ -12,12 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
 		AwsLambdaTestServer.ruleset = AwsLambdaTestServer.ruleset
 		AwsLambdaTestServer.snk = AwsLambdaTestServer.snk
 		build.ps1 = build.ps1
-		build.sh = build.sh
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
 		Directory.Build.props = Directory.Build.props
@@ -32,12 +29,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MartinCostello.Testing.AwsLambdaTestServer", "src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj", "{97ECDD19-6A08-4FEE-A04D-3B229DA11FB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MartinCostello.Testing.AwsLambdaTestServer.Tests", "tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj", "{12E0A76C-9D8C-4EC6-B79F-DD6EA32A0F36}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".azure-pipelines", ".azure-pipelines", "{5AB3EC90-24EB-411B-B273-DD4AB86DFE33}"
-	ProjectSection(SolutionItems) = preProject
-		.azure-pipelines\build-template.yml = .azure-pipelines\build-template.yml
-		.azure-pipelines\build.yml = .azure-pipelines\build.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{331A4CDC-50D5-498B-AD21-3F6D60DBC4D1}"
 	ProjectSection(SolutionItems) = preProject
@@ -64,6 +55,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathsFunctions", "samples\MathsFunctions\MathsFunctions.csproj", "{50943DAF-B42F-433E-A60B-32DD432A803C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathsFunctions.Tests", "samples\MathsFunctions.Tests\MathsFunctions.Tests.csproj", "{AAEB2F8D-2B12-4253-801D-F19CBA89C905}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{63888346-CEF4-442A-84BB-A07EA5E02FCC}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,12 +90,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{97ECDD19-6A08-4FEE-A04D-3B229DA11FB3} = {81EB9330-1F8F-47B1-AED4-76083FB0CDA0}
 		{12E0A76C-9D8C-4EC6-B79F-DD6EA32A0F36} = {2FA05FFD-3ECE-47CD-8881-B67B31FD939C}
-		{5AB3EC90-24EB-411B-B273-DD4AB86DFE33} = {6ECC4976-28C4-41CE-AB7B-89AEE85A457F}
 		{331A4CDC-50D5-498B-AD21-3F6D60DBC4D1} = {6ECC4976-28C4-41CE-AB7B-89AEE85A457F}
 		{38FF4157-8C77-46BE-8A3A-0E6B924EA885} = {331A4CDC-50D5-498B-AD21-3F6D60DBC4D1}
 		{38C306DF-0EC8-4D09-99D1-F3D89986AB0F} = {6ECC4976-28C4-41CE-AB7B-89AEE85A457F}
 		{50943DAF-B42F-433E-A60B-32DD432A803C} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
 		{AAEB2F8D-2B12-4253-801D-F19CBA89C905} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
+		{63888346-CEF4-442A-84BB-A07EA5E02FCC} = {331A4CDC-50D5-498B-AD21-3F6D60DBC4D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E88F7204-A559-4B27-8795-7CFE2500F0D3}

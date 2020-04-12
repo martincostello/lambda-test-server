@@ -51,13 +51,7 @@ else {
 
 if ($installDotNetSdk -eq $true) {
 
-    if (($null -ne $env:TF_BUILD)) {
-        $env:DOTNET_INSTALL_DIR = Join-Path $env:ProgramFiles "dotnet"
-    }
-    else {
-        $env:DOTNET_INSTALL_DIR = Join-Path "$(Convert-Path "$PSScriptRoot")" ".dotnetcli"
-    }
-
+    $env:DOTNET_INSTALL_DIR = Join-Path "$(Convert-Path "$PSScriptRoot")" ".dotnetcli"
     $sdkPath = Join-Path $env:DOTNET_INSTALL_DIR "sdk\$dotnetVersion"
 
     if (($null -ne $env:TF_BUILD) -or (!(Test-Path $sdkPath))) {
