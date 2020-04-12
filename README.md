@@ -364,18 +364,8 @@ Compiling the library yourself requires Git and the [.NET Core SDK](https://www.
 
 To build and test the library locally from a terminal/command-line, run one of the following set of commands:
 
-**Windows**
-
 ```powershell
 git clone https://github.com/martincostello/lambda-test-server.git
 cd lambda-test-server
-.\Build.ps1
-```
-
-**Linux/macOS**
-
-```sh
-git clone https://github.com/martincostello/lambda-test-server.git
-cd lambda-test-server
-./build.sh
+./build.ps1
 ```
