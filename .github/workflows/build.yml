@@ -15,6 +15,13 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-latest
+            os_name: macos
+          - os: ubuntu-latest
+            os_name: linux
+          - os: windows-latest
+            os_name: windows
 
     steps:
 
@@ -33,6 +40,12 @@ jobs:
         DOTNET_CLI_TELEMETRY_OPTOUT: true
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
         NUGET_XMLDOC_MODE: skip
+
+    - uses: codecov/codecov-action@v1
+      name: Upload coverage to Codecov
+      with:
+        file: ./artifacts/coverage.cobertura.xml
+        flags: ${{ matrix.os_name }}
 
     - name: Publish artifacts
       uses: actions/upload-artifact@v1
