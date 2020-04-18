@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 		README.md = README.md
 		stylecop.json = stylecop.json
+		update-dotnet-sdk.ps1 = update-dotnet-sdk.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MartinCostello.Testing.AwsLambdaTestServer", "src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj", "{97ECDD19-6A08-4FEE-A04D-3B229DA11FB3}"
@@ -59,6 +60,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{63888346-CEF4-442A-84BB-A07EA5E02FCC}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\update-dotnet-sdk.yml = .github\workflows\update-dotnet-sdk.yml
 	EndProjectSection
 EndProject
 Global
