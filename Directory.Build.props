@@ -23,7 +23,6 @@
     <ContinuousIntegrationBuild Condition=" '$(CI)' != '' ">true</ContinuousIntegrationBuild>
     <Copyright>Martin Costello (c) $([System.DateTime]::Now.ToString(yyyy))</Copyright>
     <Deterministic Condition=" '$(CI)' != '' ">true</Deterministic>
-    <DeterministicSourcePaths Condition=" '$(CI)' != '' ">true</DeterministicSourcePaths>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateGitMetadata Condition=" '$(CI)' != '' and '$(GenerateGitMetadata)' == '' ">true</GenerateGitMetadata>
