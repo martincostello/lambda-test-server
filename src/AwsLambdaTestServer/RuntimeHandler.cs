@@ -114,7 +114,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             }
 
             // Enqueue the request for the Lambda runtime to process
-            await _requests.Writer.WriteAsync(request, cancellationToken);
+            await _requests.Writer.WriteAsync(request, cancellationToken).ConfigureAwait(false);
 
             // Return the reader to the caller to await the function being handled
             return channel.Reader;
@@ -141,8 +141,8 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(httpContext.RequestAborted, _cancellationToken);
 
                 // Wait until there is a request to process
-                await _requests.Reader.WaitToReadAsync(cts.Token);
-                request = await _requests.Reader.ReadAsync();
+                await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false);
+                request = await _requests.Reader.ReadAsync().ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is OperationCanceledException || ex is ChannelClosedException)
             {
@@ -192,7 +192,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             httpContext.Response.ContentType = MediaTypeNames.Application.Json;
             httpContext.Response.StatusCode = StatusCodes.Status200OK;
 
-            await httpContext.Response.BodyWriter.WriteAsync(request.Content, httpContext.RequestAborted);
+            await httpContext.Response.BodyWriter.WriteAsync(request.Content, httpContext.RequestAborted).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             // Make the response available to read by the enqueuer
             var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
-            await context.Channel.Writer.WriteAsync(response, cancellationToken);
+            await context.Channel.Writer.WriteAsync(response, cancellationToken).ConfigureAwait(false);
 
             // Mark the channel as complete as there will be no more responses written
             context.Channel.Writer.Complete();

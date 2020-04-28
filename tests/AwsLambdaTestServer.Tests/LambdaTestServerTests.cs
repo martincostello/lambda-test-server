@@ -481,9 +481,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             }
         }
 
-        private sealed class CustomHandler
+        private class CustomHandler
         {
-            public async Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+            public virtual async Task<InvocationResponse> InvokeAsync(InvocationRequest request)
             {
                 var context = new Dictionary<string, string>()
                 {
