@@ -14,7 +14,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             return Task.FromResult(true);
         }
 
-        public Task<MyResponse> SumAsync(MyRequest request, ILambdaContext context)
+        public virtual Task<MyResponse> SumAsync(MyRequest request, ILambdaContext context)
         {
             context.Logger.LogLine($"Handling AWS request Id {context.AwsRequestId}.");
 

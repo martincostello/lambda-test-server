@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
-    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+    <AdditionalFiles Include="PublicAPI.txt" />
   </ItemGroup>
 </Project>
