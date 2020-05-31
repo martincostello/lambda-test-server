@@ -127,7 +127,7 @@ function DotNetTest {
     $CoverletSourceRootsMapping = Join-Path $solutionPath "artifactsCoverletSourceRootsMapping"
 
     if (Test-Path $CoverletSourceRootsMapping) {
-        Move-Item -Path $CoverletSourceRootsMapping -Destination (Join-Path $OutputPath "CoverletSourceRootsMapping")
+        Move-Item -Path $CoverletSourceRootsMapping -Destination (Join-Path $OutputPath "CoverletSourceRootsMapping") -Force
     }
 
     & $dotnet test $Project --output $OutputPath
