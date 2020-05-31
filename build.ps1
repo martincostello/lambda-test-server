@@ -27,7 +27,7 @@ $testProjects = @(
 $dotnetVersion = (Get-Content $sdkFile | Out-String | ConvertFrom-Json).sdk.version
 
 if ($OutputPath -eq "") {
-    $OutputPath = (Join-Path "$(Convert-Path "$PSScriptRoot")" "artifacts") + "/"
+    $OutputPath = Join-Path "$(Convert-Path "$PSScriptRoot")" "artifacts"
 }
 
 $installDotNetSdk = $false;
@@ -122,6 +122,13 @@ function DotNetTest {
 
     $coverageOutput = Join-Path $OutputPath "coverage.*.cobertura.xml"
     $reportOutput = Join-Path $OutputPath "coverage"
+
+    # Workaround incorrect file name
+    $CoverletSourceRootsMapping = Join-Path $solutionPath "artifactsCoverletSourceRootsMapping"
+
+    if (Test-Path $CoverletSourceRootsMapping) {
+        Move-Item -Path $CoverletSourceRootsMapping -Destination (Join-Path $OutputPath "CoverletSourceRootsMapping")
+    }
 
     & $dotnet test $Project --output $OutputPath
 
