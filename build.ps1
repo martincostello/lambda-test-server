@@ -123,13 +123,6 @@ function DotNetTest {
     $coverageOutput = Join-Path $OutputPath "coverage.*.cobertura.xml"
     $reportOutput = Join-Path $OutputPath "coverage"
 
-    # Workaround incorrect file name
-    $CoverletSourceRootsMapping = Join-Path $solutionPath "artifactsCoverletSourceRootsMapping"
-
-    if (Test-Path $CoverletSourceRootsMapping) {
-        Move-Item -Path $CoverletSourceRootsMapping -Destination (Join-Path $OutputPath "CoverletSourceRootsMapping") -Force
-    }
-
     & $dotnet test $Project --output $OutputPath
 
     $dotNetTestExitCode = $LASTEXITCODE
