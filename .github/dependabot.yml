@@ -1,0 +1,10 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: Europe/London
+  reviewers:
+    - "martincostello"
+  open-pull-requests-limit: 99
