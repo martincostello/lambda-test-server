@@ -14,7 +14,7 @@ A NuGet package that builds on top of the `TestServer` class in the [Microsoft.A
 
 To install the library from [NuGet](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer/ "MartinCostello.Testing.AwsLambdaTestServer on NuGet.org") using the .NET SDK run:
 
-```
+```sh
 dotnet add package MartinCostello.Testing.AwsLambdaTestServer
 ```
 
@@ -313,9 +313,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
 This then outputs logs similar to the below into the xunit test results:
 
-```
-Test Name:	Function_Reverses_Numbers_With_Logging
-Test Outcome:	Passed
+```sh
+Test Name:     Function_Reverses_Numbers_With_Logging
+Test Outcome:  Passed
 Result StandardOutput:
 [2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
       Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next
@@ -349,7 +349,7 @@ Any feedback or issues can be added to the issues for this project in [GitHub](h
 
 ## Repository
 
-The repository is hosted in [GitHub](https://github.com/martincostello/lambda-test-server "This project on GitHub.com"): https://github.com/martincostello/lambda-test-server.git
+The repository is hosted in [GitHub](https://github.com/martincostello/lambda-test-server "This project on GitHub.com"): [https://github.com/martincostello/lambda-test-server.git](https://github.com/martincostello/lambda-test-server.git)
 
 ## License
 

@@ -1,28 +1,45 @@
 ---
 name: Bug report
 about: Create a bug report to help us improve the library
+title: ''
+labels: 'bug'
+assignees: ''
+
 ---
 
-**Describe the bug**
-_A clear and concise description of what the bug is._
+# Bug
 
-**Steps To reproduce**
-_A concise, repeatable, example of how to reproduce the issue._
+<!--
+  This is a template. Feel free to delete any sections that are not relevant.
+ -->
 
-**Expected behaviour**
-_A clear and concise description of what you expected to happen._
+## Describe the bug
 
-**Actual behaviour**
-_A clear and concise description of what actually happened. If an exception occurred, please include a stack trace if available._
+<!-- A clear and concise description of what the bug is. -->
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Steps To reproduce
 
-**System information:**
- - OS: [e.g. Windows 10]
- - Library Version [e.g. 0.1.0]
- - .NET version [e.g. output from `dotnet --info`]
- - IDE and version [e.g. Visual Studio 16.3.7]
+<!-- A concise, repeatable, example of how to reproduce the issue. -->
 
-**Additional context**
-Add any other context about the problem here.
+## Expected behaviour
+
+<!-- A clear and concise description of what you expected to happen. -->
+
+## Actual behaviour
+
+<!-- A clear and concise description of what actually happened. If an exception occurred, please include a stack trace if available. -->
+
+## Screenshots
+
+<!-- If applicable, add screenshots to help explain your problem. -->
+
+## System information
+
+- OS: [e.g. Windows 10]
+- Library Version [e.g. 0.1.0]
+- .NET version [e.g. output from `dotnet --info`]
+- IDE and version [e.g. Visual Studio 16.3.7]
+
+## Additional context
+
+<!-- Add any other context about the problem here. -->
