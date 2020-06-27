@@ -7,13 +7,11 @@ assignees: ''
 
 ---
 
-# Feature request
-
 <!--
   This is a template. Feel free to delete any sections that are not relevant.
  -->
 
-## Is your feature request related to a problem? Please describe.
+## Is your feature request related to a problem?
 
 <!-- A clear and concise description of what the problem is. For example: _I'm always frustrated when [...]_ -->
 

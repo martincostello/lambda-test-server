@@ -7,8 +7,6 @@ assignees: ''
 
 ---
 
-# Bug
-
 <!--
   This is a template. Feel free to delete any sections that are not relevant.
  -->
