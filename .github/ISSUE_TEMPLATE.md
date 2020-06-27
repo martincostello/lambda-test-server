@@ -1,11 +1,13 @@
-### Expected behaviour
+# Issue
 
-_Explain what you expected to happen._
+## Expected behaviour
 
-### Actual behaviour
+<!-- Explain what you expected to happen. -->
 
-_Explain what actually happened. If an exception occurred, please include a stack trace if available._
+## Actual behaviour
 
-### Steps to reproduce
+<!-- Explain what actually happened. If an exception occurred, please include a stack trace if available. -->
 
-_A concise and repeatable example of how to illustrate the issue, including any screenshots if relevant._
+## Steps to reproduce
+
+<!-- A concise and repeatable example of how to illustrate the issue, including any screenshots if relevant. -->
