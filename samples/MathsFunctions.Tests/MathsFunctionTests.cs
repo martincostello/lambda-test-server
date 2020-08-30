@@ -2,10 +2,10 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MathsFunctions
@@ -27,7 +27,7 @@ namespace MathsFunctions
             await server.StartAsync(cancellationTokenSource.Token);
 
             var value = new MathsRequest() { Left = left, Operator = op, Right = right };
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonSerializer.Serialize(value);
 
             var context = await server.EnqueueAsync(json);
 
@@ -41,7 +41,7 @@ namespace MathsFunctions
             Assert.True(response.IsSuccessful);
 
             json = await response.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<MathsResponse>(json);
+            var actual = JsonSerializer.Deserialize<MathsResponse>(json);
 
             Assert.Equal(expected, actual.Result);
         }

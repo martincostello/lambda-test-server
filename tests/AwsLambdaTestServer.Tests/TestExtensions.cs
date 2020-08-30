@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer
 {
@@ -11,7 +11,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
             where T : class
         {
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonSerializer.Serialize(value);
             return await server.EnqueueAsync(json);
         }
 
@@ -19,7 +19,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             where T : class
         {
             string json = await response.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonSerializer.Deserialize<T>(json);
         }
     }
 }

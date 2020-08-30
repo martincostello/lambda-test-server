@@ -2,10 +2,10 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MyFunctions
@@ -29,7 +29,7 @@ namespace MyFunctions
             await server.StartAsync(cancellationTokenSource.Token);
 
             int[] value = new[] { 1, 2, 3 };
-            string json = JsonConvert.SerializeObject(value);
+            string json = JsonSerializer.Serialize(value);
 
             LambdaTestContext context = await server.EnqueueAsync(json);
 
@@ -43,7 +43,7 @@ namespace MyFunctions
             Assert.True(response.IsSuccessful);
 
             json = await response.ReadAsStringAsync();
-            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+            int[] actual = JsonSerializer.Deserialize<int[]>(json);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
         }

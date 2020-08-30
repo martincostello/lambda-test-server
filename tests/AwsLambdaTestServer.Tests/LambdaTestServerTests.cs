@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
@@ -15,7 +16,6 @@ using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -499,7 +499,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
                 };
 
-                string json = JsonConvert.SerializeObject(context);
+                string json = JsonSerializer.Serialize(context);
 
                 var stream = new MemoryStream();
                 using var writer = new StreamWriter(stream, leaveOpen: true);
