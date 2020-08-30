@@ -16,11 +16,11 @@
     <PackageVersion Include="xunit" Version="2.4.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(IsTestProject)' != 'true' ">
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.0.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.0' " />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
   </ItemGroup>
-  <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
+  <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.7" />
   </ItemGroup>
   <ItemGroup>
