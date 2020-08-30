@@ -2,7 +2,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,16 +22,15 @@ namespace MyFunctions
             await server.StartAsync(cancellationTokenSource.Token);
 
             int[] value = new[] { 1, 2, 3 };
-            string json = JsonSerializer.Serialize(value);
-            byte[] content = Encoding.UTF8.GetBytes(json);
+            byte[] content = JsonSerializer.SerializeToUtf8Bytes(value);
 
             var request = new LambdaTestRequest(content)
             {
-                ClientContext = @"{ ""client"": { ""app_title"": ""my-app"" } }",
-                CognitoIdentity = @"{ ""identityId"": ""my-identity"" }",
+                ClientContext = JsonSerializer.Serialize(new { client = new { app_title = "my-app" } }),
+                CognitoIdentity = JsonSerializer.Serialize(new { identityId = "my-identity" }),
             };
 
-            LambdaTestContext context = await server.EnqueueAsync(json);
+            LambdaTestContext context = await server.EnqueueAsync(content);
 
             using var httpClient = server.CreateClient();
 
@@ -43,8 +41,7 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.True(response.IsSuccessful);
 
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonSerializer.Deserialize<int[]>(json);
+            int[] actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
         }

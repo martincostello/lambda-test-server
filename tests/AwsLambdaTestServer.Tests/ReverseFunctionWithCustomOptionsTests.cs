@@ -29,7 +29,7 @@ namespace MyFunctions
             await server.StartAsync(cancellationTokenSource.Token);
 
             int[] value = new[] { 1, 2, 3 };
-            string json = JsonSerializer.Serialize(value);
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
 
             LambdaTestContext context = await server.EnqueueAsync(json);
 
@@ -42,8 +42,7 @@ namespace MyFunctions
             Assert.True(context.Response.TryRead(out LambdaTestResponse response));
             Assert.True(response.IsSuccessful);
 
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonSerializer.Deserialize<int[]>(json);
+            int[] actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
             Assert.Equal(new[] { 3, 2, 1 }, actual);
         }
