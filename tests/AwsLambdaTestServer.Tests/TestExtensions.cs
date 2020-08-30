@@ -11,15 +11,14 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
             where T : class
         {
-            string json = JsonSerializer.Serialize(value);
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
             return await server.EnqueueAsync(json);
         }
 
-        internal static async Task<T> ReadAsAsync<T>(this LambdaTestResponse response)
+        internal static T ReadAs<T>(this LambdaTestResponse response)
             where T : class
         {
-            string json = await response.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(response.Content);
         }
     }
 }
