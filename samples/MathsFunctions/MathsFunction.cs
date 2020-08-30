@@ -34,6 +34,7 @@ namespace MathsFunctions
                 "*" => request.Left * request.Right,
                 "/" => request.Left / request.Right,
                 "%" => request.Left % request.Right,
+                "^" => Math.Pow(request.Left, request.Right),
                 _ => throw new NotSupportedException($"The '{request.Operator}' operator is not supported."),
             };
 

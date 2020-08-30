@@ -2,9 +2,9 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -34,7 +34,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 Values = new[] { 1, 2, 3 }, // The function returns the sum of the specified numbers
             };
 
-            string requestJson = JsonConvert.SerializeObject(value);
+            string requestJson = JsonSerializer.Serialize(value);
 
             // Queue the request with the server to invoke the Lambda function and
             // store the ChannelReader into a variable to use to read the response.
@@ -64,7 +64,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.Content.ShouldNotBeEmpty("The Lambda function did not return any content.");
 
             string responseJson = await response.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<MyResponse>(responseJson);
+            var actual = JsonSerializer.Deserialize<MyResponse>(responseJson);
 
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
         }

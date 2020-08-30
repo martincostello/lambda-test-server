@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CA2000;CA2007;SA1600</NoWarn>
     <OutputType>Library</OutputType>
     <RootNamespace>MathsFunctions</RootNamespace>

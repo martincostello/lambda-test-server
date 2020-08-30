@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
@@ -15,7 +16,6 @@ using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -359,7 +359,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 response.IsSuccessful.ShouldBeTrue();
                 response.Content.ShouldNotBeNull();
 
-                var deserialized = await response.ReadAsAsync<MyResponse>();
+                var deserialized = response.ReadAs<MyResponse>();
                 deserialized.Sum.ShouldBe(expected);
             }
         }
@@ -451,7 +451,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             response.IsSuccessful.ShouldBeTrue();
             response.Content.ShouldNotBeNull();
 
-            var lambdaContext = await response.ReadAsAsync<IDictionary<string, string>>();
+            var lambdaContext = response.ReadAs<IDictionary<string, string>>();
             lambdaContext.ShouldContainKeyAndValue("AwsRequestId", request.AwsRequestId);
             lambdaContext.ShouldContainKeyAndValue("ClientContext", "my-app");
             lambdaContext.ShouldContainKeyAndValue("FunctionName", options.FunctionName);
@@ -483,7 +483,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
         private class CustomHandler
         {
-            public virtual async Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+            public virtual Task<InvocationResponse> InvokeAsync(InvocationRequest request)
             {
                 var context = new Dictionary<string, string>()
                 {
@@ -499,14 +499,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
                 };
 
-                string json = JsonConvert.SerializeObject(context);
+                byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);
 
-                var stream = new MemoryStream();
-                using var writer = new StreamWriter(stream, leaveOpen: true);
+                var stream = new MemoryStream(json);
 
-                await writer.WriteAsync(json);
-
-                return new InvocationResponse(stream, true);
+                return Task.FromResult(new InvocationResponse(stream, true));
             }
         }
 
