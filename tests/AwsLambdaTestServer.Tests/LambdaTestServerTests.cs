@@ -483,7 +483,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
         private class CustomHandler
         {
-            public virtual async Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+            public virtual Task<InvocationResponse> InvokeAsync(InvocationRequest request)
             {
                 var context = new Dictionary<string, string>()
                 {
@@ -499,14 +499,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                     ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
                 };
 
-                string json = JsonSerializer.Serialize(context);
+                byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);
 
-                var stream = new MemoryStream();
-                using var writer = new StreamWriter(stream, leaveOpen: true);
+                var stream = new MemoryStream(json);
 
-                await writer.WriteAsync(json);
-
-                return new InvocationResponse(stream, true);
+                return Task.FromResult(new InvocationResponse(stream, true));
             }
         }
 
