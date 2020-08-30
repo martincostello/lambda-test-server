@@ -18,11 +18,12 @@ namespace MathsFunctions
         [InlineData(2, "*", 2, 4)]
         [InlineData(9, "/", 3, 3)]
         [InlineData(7, "%", 2, 1)]
+        [InlineData(3, "^", 3, 27)]
         public static async Task Function_Computes_Results(double left, string op, double right, double expected)
         {
             // Arrange
             using var server = new LambdaTestServer();
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(0.2));
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
             await server.StartAsync(cancellationTokenSource.Token);
 
