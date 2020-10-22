@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.1.1" />
+    <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.2.0" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="1.7.0" />
     <PackageVersion Include="coverlet.msbuild" Version="2.9.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.1.0" />
