@@ -182,7 +182,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
-            response.IsSuccessful.ShouldBeTrue();
+            response!.IsSuccessful.ShouldBeTrue();
             response.Content.ShouldNotBeNull();
             response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
             Encoding.UTF8.GetString(response.Content).ShouldBe(@"{""Sum"":6}");
@@ -231,7 +231,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
-            response.IsSuccessful.ShouldBeTrue();
+            response!.IsSuccessful.ShouldBeTrue();
         }
 
         [Fact]
@@ -269,7 +269,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
-            response.IsSuccessful.ShouldBeFalse();
+            response!.IsSuccessful.ShouldBeFalse();
             response.Content.ShouldNotBeNull();
         }
 
@@ -356,7 +356,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
                 context.Response.TryRead(out var response).ShouldBeTrue();
 
                 response.ShouldNotBeNull();
-                response.IsSuccessful.ShouldBeTrue();
+                response!.IsSuccessful.ShouldBeTrue();
                 response.Content.ShouldNotBeNull();
 
                 var deserialized = response.ReadAs<MyResponse>();
@@ -391,11 +391,9 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         public void Finalizer_Does_Not_Throw()
         {
 #pragma warning disable CA2000
-#pragma warning disable IDE0067
             // Act (no Assert)
             _ = new LambdaTestServer();
 #pragma warning restore CA2000
-#pragma warning restore IDE0067
         }
 
         [Fact]
@@ -448,7 +446,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             context.Response.TryRead(out var response).ShouldBeTrue();
 
             response.ShouldNotBeNull();
-            response.IsSuccessful.ShouldBeTrue();
+            response!.IsSuccessful.ShouldBeTrue();
             response.Content.ShouldNotBeNull();
 
             var lambdaContext = response.ReadAs<IDictionary<string, string>>();

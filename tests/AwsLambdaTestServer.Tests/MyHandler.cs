@@ -20,7 +20,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             var response = new MyResponse()
             {
-                Sum = request.Values.Sum(),
+                Sum = request.Values!.Sum(),
             };
 
             context.Logger.LogLine($"The sum of the {request.Values?.Count} values is {response.Sum}.");

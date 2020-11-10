@@ -88,10 +88,10 @@ function DotNetBuild {
     param([string]$Project)
 
     if ($VersionSuffix) {
-        & $dotnet build $Project --output $OutputPath --configuration $Configuration --version-suffix "$VersionSuffix"
+        & $dotnet build --configuration $Configuration --version-suffix "$VersionSuffix"
     }
     else {
-        & $dotnet build $Project --output $OutputPath --configuration $Configuration
+        & $dotnet build --configuration $Configuration
     }
     if ($LASTEXITCODE -ne 0) {
         throw "dotnet build failed with exit code $LASTEXITCODE"
@@ -120,10 +120,10 @@ function DotNetTest {
     $reportGeneratorVersion = (Select-Xml -Path $propsFile -XPath "//PackageVersion[@Include='ReportGenerator']/@Version").Node.'#text'
     $reportGeneratorPath = Join-Path $nugetPath "reportgenerator\$reportGeneratorVersion\tools\netcoreapp3.0\ReportGenerator.dll"
 
-    $coverageOutput = Join-Path $OutputPath "coverage.*.cobertura.xml"
+    $coverageOutput = Join-Path "./tests/AwsLambdaTestServer.Tests" "coverage.*.cobertura.xml"
     $reportOutput = Join-Path $OutputPath "coverage"
 
-    & $dotnet test $Project --output $OutputPath
+    & $dotnet test $Project
 
     $dotNetTestExitCode = $LASTEXITCODE
 

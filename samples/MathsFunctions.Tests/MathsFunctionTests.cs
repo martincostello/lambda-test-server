@@ -39,12 +39,14 @@ namespace MathsFunctions
 
             // Assert
             Assert.True(context.Response.TryRead(out var response));
-            Assert.True(response.IsSuccessful);
+            Assert.NotNull(response);
+            Assert.True(response!.IsSuccessful);
 
             json = await response.ReadAsStringAsync();
             var actual = JsonSerializer.Deserialize<MathsResponse>(json);
 
-            Assert.Equal(expected, actual.Result);
+            Assert.NotNull(actual);
+            Assert.Equal(expected, actual!.Result);
         }
     }
 }

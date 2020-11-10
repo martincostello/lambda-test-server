@@ -58,14 +58,15 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             await MyFunctionEntrypoint.RunAsync(httpClient, cancellationTokenSource.Token);
 
             // Assert - The channel reader should have the response available
-            context.Response.TryRead(out LambdaTestResponse response).ShouldBeTrue("No Lambda response is available.");
+            context.Response.TryRead(out LambdaTestResponse? response).ShouldBeTrue("No Lambda response is available.");
 
-            response.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
+            response!.IsSuccessful.ShouldBeTrue("The Lambda function failed to handle the request.");
             response.Content.ShouldNotBeEmpty("The Lambda function did not return any content.");
 
             string responseJson = await response.ReadAsStringAsync();
             var actual = JsonSerializer.Deserialize<MyResponse>(responseJson);
 
+            actual.ShouldNotBeNull();
             actual.Sum.ShouldBe(6, "The Lambda function returned an incorrect response.");
         }
     }

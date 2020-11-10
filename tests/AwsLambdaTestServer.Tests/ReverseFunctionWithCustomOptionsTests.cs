@@ -39,11 +39,12 @@ namespace MyFunctions
             await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
 
             // Assert
-            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.True(response.IsSuccessful);
+            Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
+            Assert.True(response!.IsSuccessful);
 
-            int[] actual = JsonSerializer.Deserialize<int[]>(response.Content);
+            var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
+            Assert.NotNull(actual);
             Assert.Equal(new[] { 3, 2, 1 }, actual);
         }
     }
