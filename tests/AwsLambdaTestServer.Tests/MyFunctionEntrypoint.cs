@@ -9,9 +9,6 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 {
     internal static class MyFunctionEntrypoint
     {
-        internal static async Task Main()
-            => await RunAsync();
-
         internal static async Task RunAsync(
             HttpClient? httpClient = null,
             CancellationToken cancellationToken = default)

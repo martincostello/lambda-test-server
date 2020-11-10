@@ -18,7 +18,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         internal static T ReadAs<T>(this LambdaTestResponse response)
             where T : class
         {
-            return JsonSerializer.Deserialize<T>(response.Content);
+            return JsonSerializer.Deserialize<T>(response.Content) !;
         }
     }
 }
