@@ -29,7 +29,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             OutputHelper = outputHelper;
         }
 
-        public ITestOutputHelper OutputHelper { get; set; }
+        public ITestOutputHelper? OutputHelper { get; set; }
 
         [Fact]
         public void Constructor_Validates_Parameters()

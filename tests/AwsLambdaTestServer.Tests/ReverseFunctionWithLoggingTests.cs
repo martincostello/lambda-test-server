@@ -21,7 +21,7 @@ namespace MyFunctions
             OutputHelper = outputHelper;
         }
 
-        public ITestOutputHelper OutputHelper { get; set; }
+        public ITestOutputHelper? OutputHelper { get; set; }
 
         [Fact]
         public async Task Function_Reverses_Numbers_With_Logging()
