@@ -129,7 +129,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         /// </returns>
         internal async Task HandleNextAsync(HttpContext httpContext)
         {
-            Logger.LogInformation(
+            Logger?.LogInformation(
                 "Waiting for new request for Lambda function with ARN {FunctionArn}.",
                 _options.FunctionArn);
 
@@ -146,7 +146,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             }
             catch (Exception ex) when (ex is OperationCanceledException || ex is ChannelClosedException)
             {
-                Logger.LogInformation(
+                Logger?.LogInformation(
                     ex,
                     "Stopped listening for additional requests for Lambda function with ARN {FunctionArn}.",
                     _options.FunctionArn);
@@ -159,7 +159,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             // Write the response for the Lambda runtime to pass to the function to invoke
             string traceId = Guid.NewGuid().ToString();
 
-            Logger.LogInformation(
+            Logger?.LogInformation(
                 "Invoking Lambda function with ARN {FunctionArn} for request Id {AwsRequestId} and trace Id {AwsTraceId}.",
                 _options.FunctionArn,
                 request.AwsRequestId,
@@ -208,7 +208,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             byte[] content = await ReadContentAsync(httpContext, httpContext.RequestAborted).ConfigureAwait(false);
 
-            Logger.LogInformation(
+            Logger?.LogInformation(
                 "Invoked Lambda function with ARN {FunctionArn} for request Id {AwsRequestId}: {ResponseContent}.",
                 _options.FunctionArn,
                 awsRequestId,
@@ -236,7 +236,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
 
             byte[] content = await ReadContentAsync(httpContext, httpContext.RequestAborted).ConfigureAwait(false);
 
-            Logger.LogError(
+            Logger?.LogError(
                 "Error invoking Lambda function with ARN {FunctionArn} for request Id {AwsRequestId}: {ErrorContent}",
                 _options.FunctionArn,
                 awsRequestId,
@@ -262,7 +262,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
         {
             byte[] content = await ReadContentAsync(httpContext, httpContext.RequestAborted).ConfigureAwait(false);
 
-            Logger.LogError(
+            Logger?.LogError(
                 "Error initializing Lambda function with ARN {FunctionArn}: {ErrorContent}",
                 _options.FunctionArn,
                 ToString(content));
@@ -319,7 +319,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer
             var context = _responses[awsRequestId];
             context.DurationTimer!.Stop();
 
-            Logger.LogInformation(
+            Logger?.LogInformation(
                 "Completed processing AWS request Id {AwsRequestId} for Lambda function with ARN {FunctionArn} in {FunctionDuration} milliseconds.",
                 awsRequestId,
                 _options.FunctionArn,
