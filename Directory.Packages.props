@@ -5,7 +5,7 @@
     <PackageVersion Include="coverlet.msbuild" Version="3.1.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.2.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.3" />
-    <PackageVersion Include="Microsoft.DotNet.PackageValidation" Version="1.0.0-preview.6.21355.3" />
+    <PackageVersion Include="Microsoft.DotNet.PackageValidation" Version="1.0.0-preview.7.21379.12" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
     <PackageVersion Include="Moq" Version="4.16.1" />
@@ -17,11 +17,11 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0-preview.6.21355.2" Condition=" '$(TargetFramework)' == 'net6.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0-preview.7.21378.6" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.20" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0-preview.6.21355.2" Condition=" '$(TargetFramework)' == 'net6.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0-preview.7.21378.6" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
