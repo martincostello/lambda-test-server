@@ -10,7 +10,7 @@
       "args": [
         "test"
       ],
-      "cwd": "${workspaceRoot}/tests/AwsLambdaTestServer.Tests",
+      "cwd": "${workspaceFolder}/tests/AwsLambdaTestServer.Tests",
       "console": "internalConsole",
       "stopAtEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
