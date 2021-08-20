@@ -119,7 +119,9 @@ The key parts to call out here are:
 
 The library itself targets `netcoreapp3.1` and `net5.0` so requires your test project to target at least .NET Core 3.1.
 
-The sequence diagram below illustrates the flow of events for a test using the test server.
+#### Sequence Diagram
+
+The sequence diagram below illustrates the flow of events for a test using the test server for the above example.
 
 ![Sequence diagram](./docs/sequence-diagram.png "Sequence diagram showing a test using the library")
 
