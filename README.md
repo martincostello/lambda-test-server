@@ -134,9 +134,6 @@ Generated with https://sequencediagram.org/.
 ```
 title How AWS Lambda Test Server Works
 
-note o```
-title How AWS Lambda Test Server Works
-
 note over Test Method:Arrange
 
 Test Method->Lambda Test Server:Start test server
