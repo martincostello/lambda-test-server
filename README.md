@@ -138,6 +138,10 @@ note over Test Method:Arrange
 
 Test Method->Lambda Test Server:Start test server
 
+Lambda Test Server->Lambda Test Server:Start HTTP server
+
+Test Method<--Lambda Test Server:
+
 Test Method->Lambda Test Server:Queue request
 
 note over Lambda Test Server:Request is queued
@@ -182,7 +186,7 @@ Test Method<--Lambda Function:
 
 Test Method->Lambda Test Server:Stop server
 
-Lambda Test Server->Lambda Test Server:Terminate server
+Lambda Test Server->Lambda Test Server:Stop HTTP server
 
 Test Method<--Lambda Test Server:
 
