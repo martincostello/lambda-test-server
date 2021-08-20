@@ -117,7 +117,83 @@ The key parts to call out here are:
   1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
   1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
 
-The library itself targets `netcoreapp3.1` and `net5.0` so requires your test project to target at least .NET Core 3.1, but the function you're testing could target a previous version such as .NET Core 2.2.
+The library itself targets `netcoreapp3.1` and `net5.0` so requires your test project to target at least .NET Core 3.1.
+
+#### Sequence Diagram
+
+The sequence diagram below illustrates the flow of events for a test using the test server for the above example.
+
+![Sequence diagram](./docs/sequence-diagram.png "Sequence diagram showing a test using the library")
+
+<!--
+Generated with https://sequencediagram.org/.
+-->
+
+<details>
+
+```
+title How AWS Lambda Test Server Works
+
+note over Test Method:Arrange
+
+Test Method->Lambda Test Server:Start test server
+
+Lambda Test Server->Lambda Test Server:Start HTTP server
+
+Test Method<--Lambda Test Server:
+
+Test Method->Lambda Test Server:Queue request
+
+note over Lambda Test Server:Request is queued
+
+Test Method<--Lambda Test Server:LambdaTestContext
+
+Test Method->Lambda Function:Create function with HttpClient for Test Server
+
+Lambda Function->Lambda Test Server:Poll for Lambda invocations
+
+note over Test Method:Act
+
+note over Test Method:Wait for request\nto be handled
+
+note over Lambda Test Server:Dequeue request
+
+Lambda Test Server-->Lambda Function:Lambda invocation payload
+
+Lambda Function->Handler:Invoke Handler
+
+note over Handler:System Under Test
+
+Handler-->Lambda Function:Response
+
+Lambda Function->Lambda Test Server:Post successful invocation
+
+note over Lambda Test Server:Associate response with\n   LambdaTestContext
+
+Test Method<-Lambda Test Server:Signal request handled\non LambdaTestContext
+
+Lambda Function<--Lambda Test Server:HTTP 204
+
+Lambda Function->Lambda Test Server:Poll for Lambda invocations
+
+Test Method->Lambda Function:Stop Lambda function
+
+note over Lambda Function:Terminate client\n     listen loop
+
+Lambda Function<--Lambda Test Server:
+
+Test Method<--Lambda Function:
+
+Test Method->Lambda Test Server:Stop server
+
+Lambda Test Server->Lambda Test Server:Stop HTTP server
+
+Test Method<--Lambda Test Server:
+
+note over Test Method:Assert
+```
+
+</details>
 
 ### Examples
 
