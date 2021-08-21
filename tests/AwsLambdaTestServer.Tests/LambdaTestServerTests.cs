@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text;
@@ -309,7 +309,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cts.Token);
 
-        var channels = new List<(int expected, LambdaTestContext context)>();
+        var channels = new List<(int Expected, LambdaTestContext Context)>();
 
         for (int i = 0; i < 10; i++)
         {
