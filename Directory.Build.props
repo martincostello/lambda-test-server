@@ -17,6 +17,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateGitMetadata Condition=" '$(CI)' != '' and '$(GenerateGitMetadata)' == '' ">true</GenerateGitMetadata>
+    <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -46,5 +47,13 @@
   </PropertyGroup>
   <ItemGroup Condition=" '$(PackageIcon)' != '' ">
     <None Include="$(MSBuildThisFileDirectory)$(PackageIcon)" Pack="True" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System.Globalization" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
+    <Using Include="Shouldly" />
+    <Using Include="Xunit" />
+    <Using Include="Xunit.Abstractions" />
   </ItemGroup>
 </Project>

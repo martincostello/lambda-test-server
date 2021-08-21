@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace MyFunctions
 {
