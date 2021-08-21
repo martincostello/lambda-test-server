@@ -1,23 +1,22 @@
-﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
+// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
 
-namespace MartinCostello.Testing.AwsLambdaTestServer
-{
-    internal static class TestExtensions
-    {
-        internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
-            where T : class
-        {
-            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
-            return await server.EnqueueAsync(json);
-        }
+namespace MartinCostello.Testing.AwsLambdaTestServer;
 
-        internal static T ReadAs<T>(this LambdaTestResponse response)
-            where T : class
-        {
-            return JsonSerializer.Deserialize<T>(response.Content) !;
-        }
+internal static class TestExtensions
+{
+    internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
+        where T : class
+    {
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
+        return await server.EnqueueAsync(json);
+    }
+
+    internal static T ReadAs<T>(this LambdaTestResponse response)
+        where T : class
+    {
+        return JsonSerializer.Deserialize<T>(response.Content) !;
     }
 }
