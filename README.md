@@ -201,7 +201,7 @@ You can find examples of how to factor your Lambda function and how to test it:
 
   1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample function and tests");
   1. In the [unit tests](https://github.com/martincostello/lambda-test-server/blob/main/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project;
-  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/f253be4cbeaf559958e1726d33e1756af1aa6d65/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L28 "Alexa London Travel's end-to-end tests").
+  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/e363ff77a1368e9da694c37fff33a1102ea6accf/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L22 "Alexa London Travel's end-to-end tests").
 
 ### Advanced Usage
 
