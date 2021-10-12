@@ -21,6 +21,13 @@
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <!--
+      TODO Use [LoggerMessage]
+    -->
+    <NoWarn>$(NoWarn);CA1848</NoWarn>
+    <!--
+      TODO Remove once .NET 6 reaches RTM.
+    -->
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
     <Nullable>enable</Nullable>
