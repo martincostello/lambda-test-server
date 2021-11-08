@@ -1,34 +1,29 @@
-﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
+// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.Json;
 
-namespace MyFunctions
+namespace MyFunctions;
+
+public static class ReverseFunction
 {
-    public static class ReverseFunction
+    public static async Task RunAsync(
+        HttpClient? httpClient = null,
+        CancellationToken cancellationToken = default)
     {
-        public static async Task RunAsync(
-            HttpClient? httpClient = null,
-            CancellationToken cancellationToken = default)
-        {
-            var serializer = new JsonSerializer();
+        var serializer = new JsonSerializer();
 
 #pragma warning disable CA2000
-            using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
-            using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
+        using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
+        using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
 #pragma warning restore CA2000
 
-            await bootstrap.RunAsync(cancellationToken);
-        }
+        await bootstrap.RunAsync(cancellationToken);
+    }
 
-        public static Task<int[]> ReverseAsync(int[] values)
-        {
-            return Task.FromResult(values.Reverse().ToArray());
-        }
+    public static Task<int[]> ReverseAsync(int[] values)
+    {
+        return Task.FromResult(values.Reverse().ToArray());
     }
 }

@@ -10,17 +10,18 @@
     <PackageVersion Include="Moq" Version="4.16.1" />
     <PackageVersion Include="ReportGenerator" Version="4.8.13" />
     <PackageVersion Include="Shouldly" Version="4.0.3" />
-    <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.354" />
     <PackageVersion Include="xunit" Version="2.4.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" Condition=" '$(TargetFramework)' == 'net5.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.20" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="5.0.11" Condition=" '$(TargetFramework)' == 'net5.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />

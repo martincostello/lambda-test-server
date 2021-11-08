@@ -17,10 +17,11 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <GenerateGitMetadata Condition=" '$(CI)' != '' and '$(GenerateGitMetadata)' == '' ">true</GenerateGitMetadata>
+    <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <NoWarn>$(NoWarn)</NoWarn>
+    <NoWarn>$(NoWarn);CA1848</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
     <Nullable>enable</Nullable>
     <PackageIcon></PackageIcon>
@@ -37,8 +38,8 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UseSharedCompilation>false</UseSharedCompilation>
-    <AssemblyVersion>0.4.0.0</AssemblyVersion>
-    <VersionPrefix>0.4.2</VersionPrefix>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
+    <VersionPrefix>0.5.0</VersionPrefix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(GITHUB_ACTIONS)' != '' ">beta$([System.Convert]::ToInt32(`$(GITHUB_RUN_NUMBER)`).ToString(`0000`))</VersionSuffix>
     <VersionPrefix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) ">$(GITHUB_REF.Replace('refs/tags/v', ''))</VersionPrefix>
     <VersionSuffix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) "></VersionSuffix>
@@ -46,5 +47,13 @@
   </PropertyGroup>
   <ItemGroup Condition=" '$(PackageIcon)' != '' ">
     <None Include="$(MSBuildThisFileDirectory)$(PackageIcon)" Pack="True" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System.Globalization" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
+    <Using Include="Shouldly" />
+    <Using Include="Xunit" />
+    <Using Include="Xunit.Abstractions" />
   </ItemGroup>
 </Project>

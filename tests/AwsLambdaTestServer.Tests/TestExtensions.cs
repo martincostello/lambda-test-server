@@ -2,23 +2,21 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
-using System.Threading.Tasks;
 
-namespace MartinCostello.Testing.AwsLambdaTestServer
+namespace MartinCostello.Testing.AwsLambdaTestServer;
+
+internal static class TestExtensions
 {
-    internal static class TestExtensions
+    internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
+        where T : class
     {
-        internal static async Task<LambdaTestContext> EnqueueAsync<T>(this LambdaTestServer server, T value)
-            where T : class
-        {
-            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
-            return await server.EnqueueAsync(json);
-        }
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
+        return await server.EnqueueAsync(json);
+    }
 
-        internal static T ReadAs<T>(this LambdaTestResponse response)
-            where T : class
-        {
-            return JsonSerializer.Deserialize<T>(response.Content) !;
-        }
+    internal static T ReadAs<T>(this LambdaTestResponse response)
+        where T : class
+    {
+        return JsonSerializer.Deserialize<T>(response.Content)!;
     }
 }
