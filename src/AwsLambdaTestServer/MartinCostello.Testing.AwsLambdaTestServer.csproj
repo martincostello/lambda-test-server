@@ -6,7 +6,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputType>Library</OutputType>
     <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
-    <PackageValidationBaselineVersion>0.4.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>0.5.0</PackageValidationBaselineVersion>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
     <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
