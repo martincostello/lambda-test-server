@@ -411,7 +411,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         var request = new LambdaTestRequest(Array.Empty<byte>(), "my-request-id")
         {
             ClientContext = @"{""client"":{""app_title"":""my-app""}}",
-            CognitoIdentity = @"{""identityId"":""my-identity""}",
+            CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
         };
 
         var context = await server.EnqueueAsync(request);
