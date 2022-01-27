@@ -125,7 +125,14 @@ function DotNetTest {
     $coverageOutput = Join-Path "./tests/AwsLambdaTestServer.Tests" "coverage.*.cobertura.xml"
     $reportOutput = Join-Path $OutputPath "coverage"
 
-    & $dotnet test $Project
+    $additionalArgs = @()
+
+    if (![string]::IsNullOrEmpty($env:GITHUB_SHA)) {
+        $additionalArgs += "--logger"
+        $additionalArgs += "GitHubActions;report-warnings=false"
+    }
+
+    & $dotnet test $Project --output $OutputPath --configuration $Configuration $additionalArgs
 
     $dotNetTestExitCode = $LASTEXITCODE
 
