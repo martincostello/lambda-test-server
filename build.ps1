@@ -132,7 +132,7 @@ function DotNetTest {
         $additionalArgs += "GitHubActions;report-warnings=false"
     }
 
-    & $dotnet test $Project --output $OutputPath --configuration $Configuration $additionalArgs
+    & $dotnet test $Project --output $OutputPath --configuration $Configuration $additionalArgs -- RunConfiguration.TestSessionTimeout=300000
 
     $dotNetTestExitCode = $LASTEXITCODE
 
