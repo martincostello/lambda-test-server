@@ -16,7 +16,6 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.Duration.get -> Sy
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponse.IsSuccessful.get -> bool
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestResponseExtensions
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient!
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.EnqueueAsync(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestRequest! request) -> System.Threading.Tasks.Task<MartinCostello.Testing.AwsLambdaTestServer.LambdaTestContext!>!
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.IsStarted.get -> bool
@@ -53,5 +52,7 @@ static MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions.Enq
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> void
+virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient!
+virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose(bool disposing) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.StartAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
