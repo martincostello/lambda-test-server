@@ -6,6 +6,7 @@ using System.Text.Json;
 using Amazon.Lambda.RuntimeSupport;
 using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -123,6 +124,19 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.StartAsync());
+    }
+
+    [Fact]
+    public async Task StartAsync_Throws_If_Server_Null()
+    {
+        // Arrange
+        using var target = new NullServerLambdaTestServer();
+
+        // Act and Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+
+        target.IsStarted.ShouldBeFalse();
+        exception.Message.ShouldBe("No IServer was returned by the CreateServer() method.");
     }
 
     [Fact]
@@ -508,5 +522,10 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         {
             base.ConfigureWebHost(null!);
         }
+    }
+
+    private sealed class NullServerLambdaTestServer : LambdaTestServer
+    {
+        protected override IServer CreateServer(WebHostBuilder builder) => null!;
     }
 }
