@@ -116,15 +116,7 @@ public class LambdaTestServer : IDisposable
             return testServer.CreateClient();
         }
 
-        var serverAddresses = _server!.Features.Get<IServerAddressesFeature>();
-        var serverUrl = serverAddresses?.Addresses?.FirstOrDefault();
-
-        if (serverUrl is null)
-        {
-            throw new InvalidOperationException("No server addresses are available.");
-        }
-
-        var baseAddress = new Uri(serverUrl, UriKind.Absolute);
+        var baseAddress = GetServerBaseAddress();
 
         return new() { BaseAddress = baseAddress };
     }
@@ -204,8 +196,7 @@ public class LambdaTestServer : IDisposable
         }
         else
         {
-            var addresses = _server.Features.Get<IServerAddressesFeature>();
-            baseAddress = new Uri(addresses!.Addresses!.First(), UriKind.Absolute);
+            baseAddress = GetServerBaseAddress();
         }
 
         SetLambdaEnvironmentVariables(baseAddress);
@@ -337,5 +328,18 @@ public class LambdaTestServer : IDisposable
         {
             throw new InvalidOperationException("The test server has not been started.");
         }
+    }
+
+    private Uri GetServerBaseAddress()
+    {
+        var serverAddresses = _server!.Features.Get<IServerAddressesFeature>();
+        var serverUrl = serverAddresses?.Addresses?.FirstOrDefault();
+
+        if (serverUrl is null)
+        {
+            throw new InvalidOperationException("No server addresses are available.");
+        }
+
+        return new Uri(serverUrl, UriKind.Absolute);
     }
 }
