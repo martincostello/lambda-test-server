@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+[Collection(nameof(LambdaTestServerCollection))]
 public class HttpLambdaTestServerTests : ITestOutputHelperAccessor
 {
     public HttpLambdaTestServerTests(ITestOutputHelper outputHelper)

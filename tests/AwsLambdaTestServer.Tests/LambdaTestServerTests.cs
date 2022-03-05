@@ -15,6 +15,7 @@ using Moq;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+[Collection(nameof(LambdaTestServerCollection))]
 public class LambdaTestServerTests : ITestOutputHelperAccessor
 {
     public LambdaTestServerTests(ITestOutputHelper outputHelper)
