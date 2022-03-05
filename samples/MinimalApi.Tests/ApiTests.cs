@@ -107,7 +107,7 @@ public class ApiTests : IAsyncLifetime
         var cts = new CancellationTokenSource(timeout.Value);
 
         // Queue a task to stop the test server from listening as soon as the response is available
-        _ = Task.Factory.StartNew(
+        _ = Task.Run(
             async () =>
             {
                 await context.Response.WaitToReadAsync(cts.Token);
@@ -117,9 +117,7 @@ public class ApiTests : IAsyncLifetime
                     cts.Cancel();
                 }
             },
-            cts.Token,
-            TaskCreationOptions.None,
-            TaskScheduler.Default);
+            cts.Token);
 
         return cts;
     }
