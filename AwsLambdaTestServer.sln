@@ -65,6 +65,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\update-dotnet-sdk.yml = .github\workflows\update-dotnet-sdk.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApi", "samples\MinimalApi\MinimalApi.csproj", "{D27E75B3-DAFF-485C-8D91-8ACF1190822A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApi.Tests", "samples\MinimalApi.Tests\MinimalApi.Tests.csproj", "{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{AAEB2F8D-2B12-4253-801D-F19CBA89C905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAEB2F8D-2B12-4253-801D-F19CBA89C905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAEB2F8D-2B12-4253-801D-F19CBA89C905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D27E75B3-DAFF-485C-8D91-8ACF1190822A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D27E75B3-DAFF-485C-8D91-8ACF1190822A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D27E75B3-DAFF-485C-8D91-8ACF1190822A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D27E75B3-DAFF-485C-8D91-8ACF1190822A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +112,8 @@ Global
 		{50943DAF-B42F-433E-A60B-32DD432A803C} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
 		{AAEB2F8D-2B12-4253-801D-F19CBA89C905} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
 		{63888346-CEF4-442A-84BB-A07EA5E02FCC} = {331A4CDC-50D5-498B-AD21-3F6D60DBC4D1}
+		{D27E75B3-DAFF-485C-8D91-8ACF1190822A} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
+		{9D598E1A-EA93-4B4B-BC08-E6C78A10B9F4} = {93C9B9F8-CDE1-4E8D-BBFD-D2EFEC0F209A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E88F7204-A559-4B27-8795-7CFE2500F0D3}

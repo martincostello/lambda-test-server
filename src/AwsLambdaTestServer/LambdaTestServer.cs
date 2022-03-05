@@ -4,6 +4,8 @@
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,7 +22,7 @@ public class LambdaTestServer : IDisposable
     private bool _disposed;
     private RuntimeHandler? _handler;
     private bool _isStarted;
-    private TestServer? _server;
+    private IServer? _server;
     private CancellationTokenSource? _onStopped;
 
     /// <summary>
@@ -104,12 +106,19 @@ public class LambdaTestServer : IDisposable
     /// <exception cref="ObjectDisposedException">
     /// The instance has been disposed.
     /// </exception>
-    public HttpClient CreateClient()
+    public virtual HttpClient CreateClient()
     {
         ThrowIfDisposed();
         ThrowIfNotStarted();
 
-        return _server!.CreateClient();
+        if (_server is TestServer testServer)
+        {
+            return testServer.CreateClient();
+        }
+
+        var baseAddress = GetServerBaseAddress();
+
+        return new() { BaseAddress = baseAddress };
     }
 
     /// <summary>
@@ -132,7 +141,7 @@ public class LambdaTestServer : IDisposable
     /// </exception>
     public async Task<LambdaTestContext> EnqueueAsync(LambdaTestRequest request)
     {
-        if (request == null)
+        if (request is null)
         {
             throw new ArgumentNullException(nameof(request));
         }
@@ -176,16 +185,36 @@ public class LambdaTestServer : IDisposable
 
         ConfigureWebHost(builder);
 
-        _server = new TestServer(builder);
+        _server = CreateServer(builder) ?? throw new InvalidOperationException($"No {nameof(IServer)} was returned by the {nameof(CreateServer)}() method.");
 
-        _handler.Logger = _server.Services.GetRequiredService<ILogger<RuntimeHandler>>();
+        Uri baseAddress;
 
-        SetLambdaEnvironmentVariables(_server.BaseAddress);
+        if (_server is TestServer testServer)
+        {
+            _handler.Logger = testServer.Services.GetRequiredService<ILogger<RuntimeHandler>>();
+            baseAddress = testServer.BaseAddress;
+        }
+        else
+        {
+            baseAddress = GetServerBaseAddress();
+        }
+
+        SetLambdaEnvironmentVariables(baseAddress);
 
         _isStarted = true;
 
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Creates the server to use for the Lambda runtime.
+    /// </summary>
+    /// <param name="builder">The <see cref="WebHostBuilder"/> to use to create the server.</param>
+    /// <returns>
+    /// The <see cref="IServer"/> to use.
+    /// </returns>
+    protected virtual IServer CreateServer(WebHostBuilder builder)
+        => new TestServer(builder);
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -257,7 +286,7 @@ public class LambdaTestServer : IDisposable
     /// </exception>
     protected virtual void ConfigureWebHost(IWebHostBuilder builder)
     {
-        if (builder == null)
+        if (builder is null)
         {
             throw new ArgumentNullException(nameof(builder));
         }
@@ -290,11 +319,27 @@ public class LambdaTestServer : IDisposable
         }
     }
 
+#if NET5_0_OR_GREATER
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(_server))]
+#endif
     private void ThrowIfNotStarted()
     {
-        if (_server == null)
+        if (_server is null)
         {
             throw new InvalidOperationException("The test server has not been started.");
         }
+    }
+
+    private Uri GetServerBaseAddress()
+    {
+        var serverAddresses = _server!.Features.Get<IServerAddressesFeature>();
+        var serverUrl = serverAddresses?.Addresses?.FirstOrDefault();
+
+        if (serverUrl is null)
+        {
+            throw new InvalidOperationException("No server addresses are available.");
+        }
+
+        return new Uri(serverUrl, UriKind.Absolute);
     }
 }

@@ -6,11 +6,16 @@ using System.Text.Json;
 using Amazon.Lambda.RuntimeSupport;
 using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+[Collection(nameof(LambdaTestServerCollection))]
 public class LambdaTestServerTests : ITestOutputHelperAccessor
 {
     public LambdaTestServerTests(ITestOutputHelper outputHelper)
@@ -123,6 +128,32 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.StartAsync());
+    }
+
+    [Fact]
+    public async Task StartAsync_Throws_If_Server_Null()
+    {
+        // Arrange
+        using var target = new NullServerLambdaTestServer();
+
+        // Act and Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+
+        target.IsStarted.ShouldBeFalse();
+        exception.Message.ShouldBe("No IServer was returned by the CreateServer() method.");
+    }
+
+    [Fact]
+    public async Task StartAsync_Throws_If_Server_Has_No_Addresses()
+    {
+        // Arrange
+        using var target = new NullServerAddressesLambdaTestServer();
+
+        // Act and Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+
+        target.IsStarted.ShouldBeFalse();
+        exception.Message.ShouldBe("No server addresses are available.");
     }
 
     [Fact]
@@ -507,6 +538,33 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             base.ConfigureWebHost(null!);
+        }
+    }
+
+    private sealed class NullServerLambdaTestServer : LambdaTestServer
+    {
+        protected override IServer CreateServer(WebHostBuilder builder) => null!;
+    }
+
+    private sealed class NullServerAddressesLambdaTestServer : LambdaTestServer
+    {
+        protected override IServer CreateServer(WebHostBuilder builder)
+        {
+            var serverAddresses = new Mock<IServerAddressesFeature>();
+
+            serverAddresses
+                .Setup((p) => p.Addresses)
+                .Returns(Array.Empty<string>());
+
+            var server = new Mock<IServer>();
+
+            var featureCollection = new FeatureCollection();
+
+            server
+                .Setup((p) => p.Features)
+                .Returns(featureCollection);
+
+            return server.Object;
         }
     }
 }

@@ -1,4 +1,4 @@
-# AWS Lambda Test Server for .NET Core
+# AWS Lambda Test Server for .NET
 
 [![NuGet](https://buildstats.info/nuget/MartinCostello.Testing.AwsLambdaTestServer?includePreReleases=true)](http://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
 
@@ -8,7 +8,7 @@
 
 A NuGet package that builds on top of the `TestServer` class in the [Microsoft.AspNetCore.TestHost](https://www.nuget.org/packages/Microsoft.AspNetCore.TestHost) NuGet package to provide infrastructure to use with end-to-end/integration tests of .NET Core 3.1 and .NET 6.0 AWS Lambda Functions using a custom runtime with the `LambdaBootstrap` class from the [Amazon.Lambda.RuntimeSupport](https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/) NuGet package.
 
-[_.NET Core 3.0 on Lambda with AWS Lambda’s Custom Runtime_](https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda’s Custom Runtime on the AWS Developer Blog")
+[_.NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime_](https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog")
 
 ### Installation
 
@@ -199,7 +199,7 @@ note over Test Method:Assert
 
 You can find examples of how to factor your Lambda function and how to test it:
 
-  1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample function and tests");
+  1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests");
   1. In the [unit tests](https://github.com/martincostello/lambda-test-server/blob/main/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project;
   1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/e363ff77a1368e9da694c37fff33a1102ea6accf/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L22 "Alexa London Travel's end-to-end tests").
 
@@ -419,6 +419,14 @@ Result StandardOutput:
       Request finished in 26.6306ms 204
 ```
 
+#### Custom Lambda Server
+
+It is also possible to use `LambdaTestServer` with a custom [`IServer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.server.iserver "IServer Interface on docs.microsoft.com") implementation by overriding the [`CreateServer()`](https://github.com/martincostello/lambda-test-server/blob/cd5e038660d6e607d06833c03a4a0e8740d643a2/src/AwsLambdaTestServer/LambdaTestServer.cs#L209-L217 "LambdaTestServer.CreateServer() method") method in a derived class.
+
+This can be used, for example, to host the Lambda test server in a real HTTP server that can be accessed remotely instead of being hosted in-memory with the [`TestServer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.testhost.testserver "TestServer Class on docs.microsoft.com") class.
+
+For examples of this use case, see the `MinimalApi` example project and its test project in the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests").
+
 ## Feedback
 
 Any feedback or issues can be added to the issues for this project in [GitHub](https://github.com/martincostello/lambda-test-server/issues "Issues for this project on GitHub.com").
@@ -433,7 +441,7 @@ This project is licensed under the [Apache 2.0](http://www.apache.org/licenses/L
 
 ## Building and Testing
 
-Compiling the library yourself requires Git and the [.NET Core SDK](https://www.microsoft.com/net/download/core "Download the .NET Core SDK") to be installed (version `3.1.201` or later).
+Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/en-us/download "Download the .NET SDK") to be installed (version `3.1.201` or later).
 
 To build and test the library locally from a terminal/command-line, run one of the following set of commands:
 
