@@ -17,12 +17,12 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" Condition=" '$(TargetFramework)' == 'net5.0' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" Condition=" '$(TargetFramework)' == 'net5.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="3.1.23" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" Condition=" '$(TargetFramework)' == 'net6.0' " />
   </ItemGroup>
   <ItemGroup>
