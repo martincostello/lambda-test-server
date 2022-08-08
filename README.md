@@ -123,77 +123,75 @@ The library itself targets `netcoreapp3.1` and `net6.0` so requires your test pr
 
 The sequence diagram below illustrates the flow of events for a test using the test server for the above example.
 
-![Sequence diagram](./docs/sequence-diagram.png "Sequence diagram showing a test using the library")
+```mermaid
+sequenceDiagram
+    autonumber
+    title How AWS Lambda Test Server Works
+
+    note over Test Method: Arrange
+
+    Test Method ->> Lambda Test Server: Start test server
+
+    Lambda Test Server ->> Lambda Test Server: Start HTTP server
+
+    Lambda Test Server -->> Test Method: 
+
+    Test Method ->> Lambda Test Server: Queue request
+
+    note over Lambda Test Server: Request is queued
+
+    Lambda Test Server -->> Test Method: LambdaTestContext
+
+    Test Method ->> Lambda Function: Create function with HttpClient for Test Server
+
+    Lambda Function -->> Test Method: 
+
+    Lambda Function ->> Lambda Test Server: Poll for Lambda invocations
+
+    note over Test Method: Act
+
+    note over Test Method: Wait for request<br/>to be handled
+
+    note over Lambda Test Server: Dequeue request
+
+    Lambda Test Server -->> Lambda Function: Lambda invocation payload
+
+    Lambda Function ->> Handler: Invoke Handler
+
+    note over Handler: System Under Test
+
+    Handler -->> Lambda Function: Response
+
+    Lambda Function ->> Lambda Test Server: Post successful invocation
+
+    note over Lambda Test Server: Associate response with<br/>LambdaTestContext
+
+    Lambda Test Server ->> Test Method: Signal request handled<br/>on LambdaTestContext
+
+    Lambda Test Server -->> Lambda Function: HTTP 204
+
+    Lambda Function ->> Lambda Test Server: Poll for Lambda invocations
+
+    Test Method ->> Lambda Function: Stop Lambda function
+
+    note over Lambda Function:Terminate client<br/>listen loop
+
+    Lambda Test Server -->> Lambda Function: 
+
+    Lambda Function -->> Test Method: 
+
+    Test Method ->> Lambda Test Server: Stop server
+
+    Lambda Test Server ->> Lambda Test Server: Stop HTTP server
+
+    Lambda Test Server -->> Test Method: 
+
+    note over Test Method: Assert
+```
 
 <!--
-Generated with https://sequencediagram.org/.
+Generated with https://mermaid.live/.
 -->
-
-<details>
-
-```
-title How AWS Lambda Test Server Works
-
-note over Test Method:Arrange
-
-Test Method->Lambda Test Server:Start test server
-
-Lambda Test Server->Lambda Test Server:Start HTTP server
-
-Test Method<--Lambda Test Server:
-
-Test Method->Lambda Test Server:Queue request
-
-note over Lambda Test Server:Request is queued
-
-Test Method<--Lambda Test Server:LambdaTestContext
-
-Test Method->Lambda Function:Create function with HttpClient for Test Server
-
-Lambda Function->Lambda Test Server:Poll for Lambda invocations
-
-note over Test Method:Act
-
-note over Test Method:Wait for request\nto be handled
-
-note over Lambda Test Server:Dequeue request
-
-Lambda Test Server-->Lambda Function:Lambda invocation payload
-
-Lambda Function->Handler:Invoke Handler
-
-note over Handler:System Under Test
-
-Handler-->Lambda Function:Response
-
-Lambda Function->Lambda Test Server:Post successful invocation
-
-note over Lambda Test Server:Associate response with\n   LambdaTestContext
-
-Test Method<-Lambda Test Server:Signal request handled\non LambdaTestContext
-
-Lambda Function<--Lambda Test Server:HTTP 204
-
-Lambda Function->Lambda Test Server:Poll for Lambda invocations
-
-Test Method->Lambda Function:Stop Lambda function
-
-note over Lambda Function:Terminate client\n     listen loop
-
-Lambda Function<--Lambda Test Server:
-
-Test Method<--Lambda Function:
-
-Test Method->Lambda Test Server:Stop server
-
-Lambda Test Server->Lambda Test Server:Stop HTTP server
-
-Test Method<--Lambda Test Server:
-
-note over Test Method:Assert
-```
-
-</details>
 
 ### Examples
 
