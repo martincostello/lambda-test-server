@@ -126,67 +126,81 @@ The sequence diagram below illustrates the flow of events for a test using the t
 ```mermaid
 sequenceDiagram
     autonumber
+
+    participant T as Test Method
+    participant S as Lambda Test Server
+    participant F as Lambda Function
+    participant H as Handler
+
     title How AWS Lambda Test Server Works
 
-    note over Test Method: Arrange
+    note over T:Arrange
 
-    Test Method ->> Lambda Test Server: Start test server
+    T->>+S: Start test server
 
-    Lambda Test Server ->> Lambda Test Server: Start HTTP server
+    S->>S:Start HTTP server
 
-    Lambda Test Server -->> Test Method: 
+    S-->>T: 
 
-    Test Method ->> Lambda Test Server: Queue request
+    T->>S:Queue request
 
-    note over Lambda Test Server: Request is queued
+    note over S:Request is queued
 
-    Lambda Test Server -->> Test Method: LambdaTestContext
+    S-->>T:LambdaTestContext
 
-    Test Method ->> Lambda Function: Create function with HttpClient for Test Server
+    T->>+F:Create function with HttpClient for Test Server
 
-    Lambda Function -->> Test Method: 
+    note over T:Act
 
-    Lambda Function ->> Lambda Test Server: Poll for Lambda invocations
+    note over T:Wait for request(s)<br/>to be handled
 
-    note over Test Method: Act
+    loop Poll for Lambda invocations
 
-    note over Test Method: Wait for request<br/>to be handled
+        F->>S:GET /{LambdaVersion}/runtime/invocation/next
 
-    note over Lambda Test Server: Dequeue request
+        note over S:Request is dequeued
 
-    Lambda Test Server -->> Lambda Function: Lambda invocation payload
+        S-->>F:HTTP 200
 
-    Lambda Function ->> Handler: Invoke Handler
+        F->>+H:Invoke Handler
 
-    note over Handler: System Under Test
+        note over H:System Under Test
 
-    Handler -->> Lambda Function: Response
+        H-->>-F:Response
 
-    Lambda Function ->> Lambda Test Server: Post successful invocation
+        alt Invocation is handled successfully
 
-    note over Lambda Test Server: Associate response with<br/>LambdaTestContext
+        F->>S:POST /{LambdaVersion}/runtime/invocation/{AwsRequestId}/response
 
-    Lambda Test Server ->> Test Method: Signal request handled<br/>on LambdaTestContext
+        else Invocation throws an exception
 
-    Lambda Test Server -->> Lambda Function: HTTP 204
+        F->>S:POST /{LambdaVersion}/runtime/invocation/{AwsRequestId}/error
 
-    Lambda Function ->> Lambda Test Server: Poll for Lambda invocations
+        end
 
-    Test Method ->> Lambda Function: Stop Lambda function
+        note over S:Associate response with<br/>LambdaTestContext
 
-    note over Lambda Function:Terminate client<br/>listen loop
+        S-)T:Signal request handled<br/>on LambdaTestContext
 
-    Lambda Test Server -->> Lambda Function: 
+        S-->>F:HTTP 204
 
-    Lambda Function -->> Test Method: 
+        T->>F:Stop Lambda function
 
-    Test Method ->> Lambda Test Server: Stop server
+        note over F:Terminate client<br/>listen loop
 
-    Lambda Test Server ->> Lambda Test Server: Stop HTTP server
+        deactivate F
 
-    Lambda Test Server -->> Test Method: 
+    end
 
-    note over Test Method: Assert
+    T->>S:Stop server
+
+    S->>S:Stop HTTP server
+
+    S-->> T: 
+
+    deactivate S
+
+    note over T:Assert
 ```
 
 <!--
