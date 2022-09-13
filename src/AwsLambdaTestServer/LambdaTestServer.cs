@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Threading.Channels;
@@ -51,7 +51,8 @@ public class LambdaTestServer : IDisposable
     /// </exception>
     public LambdaTestServer(LambdaTestServerOptions options)
     {
-        Options = options ?? throw new ArgumentNullException(nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
+        Options = options;
         _onDisposed = new CancellationTokenSource();
     }
 
@@ -141,10 +142,7 @@ public class LambdaTestServer : IDisposable
     /// </exception>
     public async Task<LambdaTestContext> EnqueueAsync(LambdaTestRequest request)
     {
-        if (request is null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
+        ArgumentNullException.ThrowIfNull(request);
 
         ThrowIfDisposed();
         ThrowIfNotStarted();
@@ -286,13 +284,9 @@ public class LambdaTestServer : IDisposable
     /// </exception>
     protected virtual void ConfigureWebHost(IWebHostBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.UseContentRoot(Environment.CurrentDirectory);
-
         builder.ConfigureServices(ConfigureServices);
         builder.Configure(Configure);
     }
@@ -313,10 +307,14 @@ public class LambdaTestServer : IDisposable
 
     private void ThrowIfDisposed()
     {
+#if NET7_0_OR_GREATER
+        ObjectDisposedException.ThrowIf(_disposed, this);
+#else
         if (_disposed)
         {
             throw new ObjectDisposedException(nameof(LambdaTestServer));
         }
+#endif
     }
 
 #if NET5_0_OR_GREATER

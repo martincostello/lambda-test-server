@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
@@ -18,7 +18,8 @@ public class LambdaTestRequest
     /// </exception>
     public LambdaTestRequest(byte[] content, string? awsRequestId = null)
     {
-        Content = content ?? throw new ArgumentNullException(nameof(content));
+        ArgumentNullException.ThrowIfNull(content);
+        Content = content;
         AwsRequestId = awsRequestId ?? Guid.NewGuid().ToString();
     }
 
