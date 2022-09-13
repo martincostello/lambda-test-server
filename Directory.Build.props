@@ -23,6 +23,8 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWarn>$(NoWarn);CA1848</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
+    <!-- TODO Remove NU5104 once .NET 7 is released -->
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
     <PackageIcon></PackageIcon>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -38,9 +40,9 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UseSharedCompilation>false</UseSharedCompilation>
-    <AssemblyVersion>0.6.0.0</AssemblyVersion>
-    <VersionPrefix>0.6.1</VersionPrefix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(GITHUB_ACTIONS)' != '' ">beta$([System.Convert]::ToInt32(`$(GITHUB_RUN_NUMBER)`).ToString(`0000`))</VersionSuffix>
+    <AssemblyVersion>0.7.0.0</AssemblyVersion>
+    <VersionPrefix>0.7.0</VersionPrefix>
     <VersionPrefix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) ">$(GITHUB_REF.Replace('refs/tags/v', ''))</VersionPrefix>
     <VersionSuffix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) "></VersionSuffix>
     <FileVersion Condition=" '$(GITHUB_RUN_NUMBER)' != '' ">$(VersionPrefix).$(GITHUB_RUN_NUMBER)</FileVersion>

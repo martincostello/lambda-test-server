@@ -6,7 +6,7 @@
 
 ## Introduction
 
-A NuGet package that builds on top of the `TestServer` class in the [Microsoft.AspNetCore.TestHost](https://www.nuget.org/packages/Microsoft.AspNetCore.TestHost) NuGet package to provide infrastructure to use with end-to-end/integration tests of .NET Core 3.1 and .NET 6 AWS Lambda Functions using a custom runtime with the `LambdaBootstrap` class from the [Amazon.Lambda.RuntimeSupport](https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/) NuGet package.
+A NuGet package that builds on top of the `TestServer` class in the [Microsoft.AspNetCore.TestHost](https://www.nuget.org/packages/Microsoft.AspNetCore.TestHost) NuGet package to provide infrastructure to use with end-to-end/integration tests of .NET 6 AWS Lambda Functions using a custom runtime with the `LambdaBootstrap` class from the [Amazon.Lambda.RuntimeSupport](https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/) NuGet package.
 
 [_.NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime_](https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog")
 
@@ -117,7 +117,7 @@ The key parts to call out here are:
   1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
   1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
 
-The library itself targets `netcoreapp3.1` and `net6.0` so requires your test project to target at least .NET Core 3.1.
+The library itself targets `net6.0` and `net7.0` so requires your test project to target at least .NET 6.
 
 #### Sequence Diagram
 
@@ -453,7 +453,7 @@ This project is licensed under the [Apache 2.0](http://www.apache.org/licenses/L
 
 ## Building and Testing
 
-Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/en-us/download "Download the .NET SDK") to be installed (version `3.1.201` or later).
+Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/en-us/download "Download the .NET SDK") to be installed.
 
 To build and test the library locally from a terminal/command-line, run one of the following set of commands:
 
