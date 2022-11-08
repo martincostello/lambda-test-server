@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
@@ -33,15 +33,8 @@ public static class LambdaTestServerExtensions
         this LambdaTestServer server,
         string value)
     {
-        if (server == null)
-        {
-            throw new ArgumentNullException(nameof(server));
-        }
-
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentNullException.ThrowIfNull(server);
+        ArgumentNullException.ThrowIfNull(value);
 
         byte[] content = Encoding.UTF8.GetBytes(value);
 
@@ -68,10 +61,7 @@ public static class LambdaTestServerExtensions
         this LambdaTestServer server,
         byte[] content)
     {
-        if (server == null)
-        {
-            throw new ArgumentNullException(nameof(server));
-        }
+        ArgumentNullException.ThrowIfNull(server);
 
         var request = new LambdaTestRequest(content);
 
