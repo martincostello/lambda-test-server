@@ -499,9 +499,11 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         }
     }
 
-    private class CustomHandler
+    private sealed class CustomHandler
     {
-        public virtual Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+#pragma warning disable CA1822
+        public Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+#pragma warning restore CA1822
         {
             var context = new Dictionary<string, string>()
             {
