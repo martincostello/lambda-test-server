@@ -499,9 +499,9 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         }
     }
 
-    private class CustomHandler
+    private sealed class CustomHandler
     {
-        public virtual Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+        public Task<InvocationResponse> InvokeAsync(InvocationRequest request)
         {
             var context = new Dictionary<string, string>()
             {
