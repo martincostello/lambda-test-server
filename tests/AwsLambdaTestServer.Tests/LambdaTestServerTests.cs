@@ -501,7 +501,9 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
     private sealed class CustomHandler
     {
+#pragma warning disable CA1822
         public Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+#pragma warning restore CA1822
         {
             var context = new Dictionary<string, string>()
             {

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace MinimalApi;
 
-public class ApiTests : IAsyncLifetime
+public sealed class ApiTests : IAsyncLifetime, IDisposable
 {
     private readonly HttpLambdaTestServer _server;
 
@@ -18,6 +18,9 @@ public class ApiTests : IAsyncLifetime
     {
         _server = new() { OutputHelper = outputHelper };
     }
+
+    public void Dispose()
+        => _server.Dispose();
 
     public async Task DisposeAsync()
         => await _server.DisposeAsync();
