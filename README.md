@@ -33,29 +33,28 @@ using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.Json;
 
-namespace MyFunctions
+namespace MyFunctions;
+
+public static class ReverseFunction
 {
-    public static class ReverseFunction
+    public static async Task Main()
+        => await RunAsync();
+
+    public static async Task RunAsync(
+        HttpClient httpClient = null,
+        CancellationToken cancellationToken = default)
     {
-        public static async Task Main()
-            => await RunAsync();
+        var serializer = new JsonSerializer();
 
-        public static async Task RunAsync(
-            HttpClient httpClient = null,
-            CancellationToken cancellationToken = default)
-        {
-            var serializer = new JsonSerializer();
+        using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
+        using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
 
-            using var handlerWrapper = HandlerWrapper.GetHandlerWrapper<int[], int[]>(ReverseAsync, serializer);
-            using var bootstrap = new LambdaBootstrap(httpClient ?? new HttpClient(), handlerWrapper);
+        await bootstrap.RunAsync(cancellationToken);
+    }
 
-            await bootstrap.RunAsync(cancellationToken);
-        }
-
-        public static Task<int[]> ReverseAsync(int[] values)
-        {
-            return Task.FromResult(values.Reverse().ToArray());
-        }
+    public static Task<int[]> ReverseAsync(int[] values)
+    {
+        return Task.FromResult(values.Reverse().ToArray());
     }
 }
 ```
@@ -72,38 +71,37 @@ using MartinCostello.Testing.AwsLambdaTestServer;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MyFunctions
+namespace MyFunctions;
+
+public static class ReverseFunctionTests
 {
-    public static class ReverseFunctionTests
+    [Fact]
+    public static async Task Function_Reverses_Numbers()
     {
-        [Fact]
-        public static async Task Function_Reverses_Numbers()
-        {
-            // Arrange
-            using var server = new LambdaTestServer();
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        // Arrange
+        using var server = new LambdaTestServer();
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-            await server.StartAsync(cancellationTokenSource.Token);
+        await server.StartAsync(cancellationTokenSource.Token);
 
-            int[] value = new[] { 1, 2, 3 };
-            string json = JsonConvert.SerializeObject(value);
+        int[] value = new[] { 1, 2, 3 };
+        string json = JsonConvert.SerializeObject(value);
 
-            LambdaTestContext context = await server.EnqueueAsync(json);
+        LambdaTestContext context = await server.EnqueueAsync(json);
 
-            using var httpClient = server.CreateClient();
+        using var httpClient = server.CreateClient();
 
-            // Act
-            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        // Act
+        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
 
-            // Assert
-            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.True(response.IsSuccessful);
+        // Assert
+        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(response.IsSuccessful);
 
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        json = await response.ReadAsStringAsync();
+        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
-            Assert.Equal(new[] { 3, 2, 1 }, actual);
-        }
+        Assert.Equal(new[] { 3, 2, 1 }, actual);
     }
 }
 ```
@@ -231,45 +229,44 @@ using MartinCostello.Testing.AwsLambdaTestServer;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MyFunctions
+namespace MyFunctions;
+
+public static class ReverseFunctionWithMobileSdkTests
 {
-    public static class ReverseFunctionWithMobileSdkTests
+    [Fact]
+    public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
     {
-        [Fact]
-        public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
+        // Arrange
+        using var server = new LambdaTestServer();
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+        await server.StartAsync(cancellationTokenSource.Token);
+
+        int[] value = new[] { 1, 2, 3 };
+        string json = JsonConvert.SerializeObject(value);
+        byte[] content = Encoding.UTF8.GetBytes(json);
+
+        var request = new LambdaTestRequest(content)
         {
-            // Arrange
-            using var server = new LambdaTestServer();
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+            ClientContext = @"{ ""client"": { ""app_title"": ""my-app"" } }",
+            CognitoIdentity = @"{ ""identityId"": ""my-identity"" }",
+        };
 
-            await server.StartAsync(cancellationTokenSource.Token);
+        LambdaTestContext context = await server.EnqueueAsync(json);
 
-            int[] value = new[] { 1, 2, 3 };
-            string json = JsonConvert.SerializeObject(value);
-            byte[] content = Encoding.UTF8.GetBytes(json);
+        using var httpClient = server.CreateClient();
 
-            var request = new LambdaTestRequest(content)
-            {
-                ClientContext = @"{ ""client"": { ""app_title"": ""my-app"" } }",
-                CognitoIdentity = @"{ ""identityId"": ""my-identity"" }",
-            };
+        // Act
+        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
 
-            LambdaTestContext context = await server.EnqueueAsync(json);
+        // Assert
+        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(response.IsSuccessful);
 
-            using var httpClient = server.CreateClient();
+        json = await response.ReadAsStringAsync();
+        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
-            // Act
-            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
-
-            // Assert
-            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.True(response.IsSuccessful);
-
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
-
-            Assert.Equal(new[] { 3, 2, 1 }, actual);
-        }
+        Assert.Equal(new[] { 3, 2, 1 }, actual);
     }
 }
 ```
@@ -292,45 +289,44 @@ using MartinCostello.Testing.AwsLambdaTestServer;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MyFunctions
+namespace MyFunctions;
+
+public static class ReverseFunctionWithCustomOptionsTests
 {
-    public static class ReverseFunctionWithCustomOptionsTests
+    [Fact]
+    public static async Task Function_Reverses_Numbers_With_Custom_Options()
     {
-        [Fact]
-        public static async Task Function_Reverses_Numbers_With_Custom_Options()
+        // Arrange
+        var options = new LambdaTestServerOptions()
         {
-            // Arrange
-            var options = new LambdaTestServerOptions()
-            {
-                FunctionMemorySize = 256,
-                FunctionTimeout = TimeSpan.FromSeconds(30),
-                FunctionVersion = 42,
-            };
+            FunctionMemorySize = 256,
+            FunctionTimeout = TimeSpan.FromSeconds(30),
+            FunctionVersion = 42,
+        };
 
-            using var server = new LambdaTestServer(options);
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var server = new LambdaTestServer(options);
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-            await server.StartAsync(cancellationTokenSource.Token);
+        await server.StartAsync(cancellationTokenSource.Token);
 
-            int[] value = new[] { 1, 2, 3 };
-            string json = JsonConvert.SerializeObject(value);
+        int[] value = new[] { 1, 2, 3 };
+        string json = JsonConvert.SerializeObject(value);
 
-            LambdaTestContext context = await server.EnqueueAsync(json);
+        LambdaTestContext context = await server.EnqueueAsync(json);
 
-            using var httpClient = server.CreateClient();
+        using var httpClient = server.CreateClient();
 
-            // Act
-            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        // Act
+        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
 
-            // Assert
-            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.True(response.IsSuccessful);
+        // Assert
+        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(response.IsSuccessful);
 
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        json = await response.ReadAsStringAsync();
+        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
-            Assert.Equal(new[] { 3, 2, 1 }, actual);
-        }
+        Assert.Equal(new[] { 3, 2, 1 }, actual);
     }
 }
 ```
@@ -353,48 +349,47 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MartinCostello.Testing.AwsLambdaTestServer
+namespace MartinCostello.Testing.AwsLambdaTestServer;
+
+public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
 {
-    public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
+    public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
     {
-        public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
-        {
-            OutputHelper = outputHelper;
-        }
+        OutputHelper = outputHelper;
+    }
 
-        public ITestOutputHelper OutputHelper { get; set; }
+    public ITestOutputHelper OutputHelper { get; set; }
 
-        [Fact]
-        public async Task Function_Reverses_Numbers_With_Logging()
-        {
-            // Arrange
-            using var server = new LambdaTestServer(
-                (services) => services.AddLogging(
-                    (builder) => builder.AddXUnit(this)));
+    [Fact]
+    public async Task Function_Reverses_Numbers_With_Logging()
+    {
+        // Arrange
+        using var server = new LambdaTestServer(
+            (services) => services.AddLogging(
+                (builder) => builder.AddXUnit(this)));
 
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-            await server.StartAsync(cancellationTokenSource.Token);
+        await server.StartAsync(cancellationTokenSource.Token);
 
-            int[] value = new[] { 1, 2, 3 };
-            string json = JsonConvert.SerializeObject(value);
+        int[] value = new[] { 1, 2, 3 };
+        string json = JsonConvert.SerializeObject(value);
 
-            LambdaTestContext context = await server.EnqueueAsync(json);
+        LambdaTestContext context = await server.EnqueueAsync(json);
 
-            using var httpClient = server.CreateClient();
+        using var httpClient = server.CreateClient();
 
-            // Act
-            await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        // Act
+        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
 
-            // Assert
-            Assert.True(context.Response.TryRead(out LambdaTestResponse response));
-            Assert.True(response.IsSuccessful);
+        // Assert
+        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(response.IsSuccessful);
 
-            json = await response.ReadAsStringAsync();
-            int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        json = await response.ReadAsStringAsync();
+        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
 
-            Assert.Equal(new[] { 3, 2, 1 }, actual);
-        }
+        Assert.Equal(new[] { 3, 2, 1 }, actual);
     }
 }
 ```
