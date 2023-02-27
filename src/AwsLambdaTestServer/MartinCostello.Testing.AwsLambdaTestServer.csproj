@@ -9,7 +9,7 @@
     <PackageValidationBaselineVersion>0.7.0</PackageValidationBaselineVersion>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Title>AWS Lambda Test Server</Title>
   </PropertyGroup>
   <ItemGroup>
