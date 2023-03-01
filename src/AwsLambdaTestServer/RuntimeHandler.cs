@@ -161,20 +161,20 @@ internal sealed class RuntimeHandler : IDisposable
             traceId);
 
         // These headers are required, as otherwise an exception is thrown
-        httpContext.Response.Headers.Add("Lambda-Runtime-Aws-Request-Id", request.AwsRequestId);
-        httpContext.Response.Headers.Add("Lambda-Runtime-Invoked-Function-Arn", _options.FunctionArn);
+        httpContext.Response.Headers["Lambda-Runtime-Aws-Request-Id"] = request.AwsRequestId;
+        httpContext.Response.Headers["Lambda-Runtime-Invoked-Function-Arn"] = _options.FunctionArn;
 
         // These headers are optional
-        httpContext.Response.Headers.Add("Lambda-Runtime-Trace-Id", traceId);
+        httpContext.Response.Headers["Lambda-Runtime-Trace-Id"] = traceId;
 
         if (request.ClientContext != null)
         {
-            httpContext.Response.Headers.Add("Lambda-Runtime-Client-Context", request.ClientContext);
+            httpContext.Response.Headers["Lambda-Runtime-Client-Context"] = request.ClientContext;
         }
 
         if (request.CognitoIdentity != null)
         {
-            httpContext.Response.Headers.Add("Lambda-Runtime-Cognito-Identity", request.CognitoIdentity);
+            httpContext.Response.Headers["Lambda-Runtime-Cognito-Identity"] = request.CognitoIdentity;
         }
 
         var deadline = DateTimeOffset.UtcNow.Add(_options.FunctionTimeout).ToUnixTimeMilliseconds();
@@ -182,7 +182,7 @@ internal sealed class RuntimeHandler : IDisposable
         // Record the current time for the response to have the duration measured
         _responses[request.AwsRequestId].DurationTimer = Stopwatch.StartNew();
 
-        httpContext.Response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadline.ToString("F0", CultureInfo.InvariantCulture));
+        httpContext.Response.Headers["Lambda-Runtime-Deadline-Ms"] = deadline.ToString("F0", CultureInfo.InvariantCulture);
 
         httpContext.Response.ContentType = MediaTypeNames.Application.Json;
         httpContext.Response.StatusCode = StatusCodes.Status200OK;
