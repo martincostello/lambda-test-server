@@ -117,7 +117,7 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
 
                 if (!cts.IsCancellationRequested)
                 {
-                    cts.Cancel();
+                    await cts.CancelAsync();
                 }
             },
             cts.Token);
