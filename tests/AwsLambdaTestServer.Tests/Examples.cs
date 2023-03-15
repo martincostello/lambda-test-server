@@ -42,7 +42,7 @@ public static class Examples
 
             if (!cancellationTokenSource.IsCancellationRequested)
             {
-                cancellationTokenSource.Cancel();
+                await cancellationTokenSource.CancelAsync();
             }
         });
 
