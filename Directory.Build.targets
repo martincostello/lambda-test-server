@@ -39,12 +39,4 @@
     <ReportGenerator ReportFiles="@(CoverletReport)" ReportTypes="$(ReportGeneratorReportTypes)" Tag="$(Version)" TargetDirectory="$(ReportGeneratorTargetDirectory)" Title="$(AssemblyName)" VerbosityLevel="Warning" />
     <Exec Condition=" '$(ReportGeneratorOutputMarkdown)' == 'true' " Command="pwsh -Command %22('$(_MarkdownSummaryPrefix)' + [System.Environment]::NewLine + [System.Environment]::NewLine + (Get-Content $([System.IO.Path]::Combine($(ReportGeneratorTargetDirectory), 'SummaryGithub.md')) | Out-String) + [System.Environment]::NewLine + [System.Environment]::NewLine + '$(_MarkdownSummarySuffix)') >> $(GITHUB_STEP_SUMMARY)%22" />
   </Target>
-  <!-- HACK Workaround for https://github.com/dotnet/aspnetcore/issues/47202 -->
-  <Target Name="RemoveRequestDelegateGenerator" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Analyzer
-        Remove="@(Analyzer->HasMetadata('FileName')->WithMetadataValue('FileName', 'Microsoft.AspNetCore.Http.Generators'))"
-        Condition="'$(Language)'=='C#' AND '$(EnableRequestDelegateGenerator)' != 'true'" />
-    </ItemGroup>
-  </Target>
 </Project>
