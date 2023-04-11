@@ -9,6 +9,9 @@ on:
     - cron:  '00 19 * * TUE'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   update-dotnet-sdk:
     name: Update .NET SDK
@@ -51,7 +54,7 @@ jobs:
 
         $tempPath = [System.IO.Path]::GetTempPath()
         $updatesPath = (Join-Path $tempPath "dotnet-outdated.json")
-        
+
         Write-Host "Checking for .NET NuGet package(s) to update..."
 
         dotnet outdated `
@@ -113,11 +116,11 @@ jobs:
 
           git config user.email "${{ vars.GIT_COMMIT_USER_EMAIL }}"
           git config user.name "${{ vars.GIT_COMMIT_USER_NAME }}"
-          
+
           git add .
           git commit -m $commitMessage
           git push
-          
+
           Write-Host "Pushed update to $($dependencies.Count) NuGet package(s)." -ForegroundColor Green
         }
         else {
