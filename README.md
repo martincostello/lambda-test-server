@@ -3,6 +3,8 @@
 [![NuGet](https://buildstats.info/nuget/MartinCostello.Testing.AwsLambdaTestServer?includePreReleases=true)](http://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
 
 [![Build status](https://github.com/martincostello/lambda-test-server/workflows/build/badge.svg?branch=main&event=push)](https://github.com/martincostello/lambda-test-server/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush)
+[![codecov](https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg)](https://codecov.io/gh/martincostello/lambda-test-server)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/martincostello/lambda-test-server/badge)](https://api.securityscorecards.dev/projects/github.com/martincostello/lambda-test-server)
 
 ## Introduction
 
