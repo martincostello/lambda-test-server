@@ -42,6 +42,7 @@
     <SignAssembly>true</SignAssembly>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
     <UseSharedCompilation>false</UseSharedCompilation>
     <AssemblyVersion>0.7.0.0</AssemblyVersion>
     <VersionPrefix>0.7.1</VersionPrefix>
