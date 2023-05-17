@@ -19,10 +19,10 @@
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.0" Condition=" '$(TargetFramework)' == 'net7.0' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0-preview.3.23177.8" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0-preview.4.23260.4" Condition=" '$(TargetFramework)' == 'net8.0' " />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0-preview.3.23177.8" Condition=" '$(TargetFramework)' == 'net8.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0-preview.4.23260.4" Condition=" '$(TargetFramework)' == 'net8.0' " />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
