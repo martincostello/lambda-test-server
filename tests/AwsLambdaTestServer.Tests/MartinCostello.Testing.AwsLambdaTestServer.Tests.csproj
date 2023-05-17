@@ -29,7 +29,7 @@
   </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
-    <CoverletOutput>$([System.IO.Path]::Combine($(OutputPath), 'coverage', 'coverage'))</CoverletOutput>
+    <CoverletOutput>$([System.IO.Path]::Combine($(ArtifactsPath), 'coverage', 'coverage'))</CoverletOutput>
     <CoverletOutputFormat>cobertura,json</CoverletOutputFormat>
     <Exclude>[Amazon.Lambda*]*,[MathsFunctions*]*,[MinimalApi*]*,[xunit.*]*</Exclude>
     <ExcludeByAttribute>System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
