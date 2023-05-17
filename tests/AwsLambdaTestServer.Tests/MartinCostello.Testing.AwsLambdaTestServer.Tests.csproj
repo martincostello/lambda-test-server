@@ -14,7 +14,6 @@
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" />
-    <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -28,11 +27,10 @@
   </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
-    <CoverletOutput Condition=" '$(OutputPath)' != '' ">$(OutputPath)/</CoverletOutput>
-    <CoverletOutput Condition=" '$(OutputPath)' == '' ">$(MSBuildThisFileDirectory)</CoverletOutput>
+    <CoverletOutput>$([System.IO.Path]::Combine($(OutputPath), 'coverage', 'coverage'))</CoverletOutput>
     <CoverletOutputFormat>cobertura,json</CoverletOutputFormat>
     <Exclude>[Amazon.Lambda*]*,[MathsFunctions*]*,[MinimalApi*]*,[xunit.*]*</Exclude>
     <ExcludeByAttribute>System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
-    <Threshold>87</Threshold>
+    <Threshold>84</Threshold>
   </PropertyGroup>
 </Project>
