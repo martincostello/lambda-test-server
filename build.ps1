@@ -1,7 +1,6 @@
 #! /usr/bin/env pwsh
 param(
     [Parameter(Mandatory = $false)][string] $Configuration = "Release",
-    [Parameter(Mandatory = $false)][string] $VersionSuffix = "",
     [Parameter(Mandatory = $false)][string] $OutputPath = "",
     [Parameter(Mandatory = $false)][switch] $SkipTests
 )
@@ -14,15 +13,14 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 $solutionPath = $PSScriptRoot
-$solutionFile = Join-Path $solutionPath "AwsLambdaTestServer.sln"
 $sdkFile = Join-Path $solutionPath "global.json"
 
-$libraryProject = Join-Path $solutionPath "src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj"
+$libraryProject = Join-Path $solutionPath "src" "AwsLambdaTestServer" "MartinCostello.Testing.AwsLambdaTestServer.csproj"
 
 $testProjects = @(
-    (Join-Path $solutionPath "tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj"),
-    (Join-Path $solutionPath "samples\MathsFunctions.Tests\MathsFunctions.Tests.csproj"),
-    (Join-Path $solutionPath "samples\MinimalApi.Tests\MinimalApi.Tests.csproj")
+    (Join-Path $solutionPath "tests" "AwsLambdaTestServer.Tests" "MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj"),
+    (Join-Path $solutionPath "samples" "MathsFunctions.Tests" "MathsFunctions.Tests.csproj"),
+    (Join-Path $solutionPath "samples" "MinimalApi.Tests" "MinimalApi.Tests.csproj")
 )
 
 $dotnetVersion = (Get-Content $sdkFile | Out-String | ConvertFrom-Json).sdk.version
@@ -54,7 +52,7 @@ else {
 if ($installDotNetSdk -eq $true) {
 
     $env:DOTNET_INSTALL_DIR = Join-Path $PSScriptRoot ".dotnetcli"
-    $sdkPath = Join-Path $env:DOTNET_INSTALL_DIR "sdk\$dotnetVersion"
+    $sdkPath = Join-Path $env:DOTNET_INSTALL_DIR "sdk" $dotnetVersion
 
     if (!(Test-Path $sdkPath)) {
         if (!(Test-Path $env:DOTNET_INSTALL_DIR)) {
@@ -85,31 +83,13 @@ if ($installDotNetSdk -eq $true) {
     $env:PATH = "$env:DOTNET_INSTALL_DIR;$env:PATH"
 }
 
-function DotNetBuild {
-    param([string]$Project)
-
-    if ($VersionSuffix) {
-        & $dotnet build --configuration $Configuration --version-suffix "$VersionSuffix"
-    }
-    else {
-        & $dotnet build --configuration $Configuration
-    }
-    if ($LASTEXITCODE -ne 0) {
-        throw "dotnet build failed with exit code $LASTEXITCODE"
-    }
-}
-
 function DotNetPack {
     param([string]$Project)
 
     $PackageOutputPath = (Join-Path $OutputPath "packages")
 
-    if ($VersionSuffix) {
-        & $dotnet pack $Project --output $PackageOutputPath --configuration $Configuration --version-suffix "$VersionSuffix" --include-symbols --include-source
-    }
-    else {
-        & $dotnet pack $Project --output $PackageOutputPath --configuration $Configuration --include-symbols --include-source
-    }
+    & $dotnet pack $Project --output $PackageOutputPath --configuration $Configuration --include-symbols --include-source
+
     if ($LASTEXITCODE -ne 0) {
         throw "dotnet pack failed with exit code $LASTEXITCODE"
     }
@@ -132,9 +112,6 @@ function DotNetTest {
     }
 }
 
-Write-Host "Building solution..." -ForegroundColor Green
-DotNetBuild $solutionFile
-
 Write-Host "Packaging library..." -ForegroundColor Green
 DotNetPack $libraryProject
 
@@ -142,4 +119,3 @@ Write-Host "Running tests..." -ForegroundColor Green
 ForEach ($testProject in $testProjects) {
     DotNetTest $testProject
 }
-
