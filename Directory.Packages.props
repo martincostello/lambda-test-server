@@ -4,7 +4,7 @@
     <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.8.7" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
-    <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.0" />
+    <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.1" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
