@@ -17,8 +17,8 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.8" Condition=" '$(TargetFramework)' == 'net6.0' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.8" Condition=" '$(TargetFramework)' == 'net7.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.0" Condition=" '$(TargetFramework)' == 'net7.0' " />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.8" Condition=" '$(TargetFramework)' == 'net7.0' " />
