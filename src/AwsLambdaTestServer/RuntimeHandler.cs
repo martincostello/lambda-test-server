@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Mime;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Http;
@@ -149,7 +150,7 @@ internal sealed class RuntimeHandler : IDisposable
         }
 
         // Write the response for the Lambda runtime to pass to the function to invoke
-        string traceId = Guid.NewGuid().ToString();
+        string traceId = GenerateTraceId();
 
         Logger?.LogInformation(
             "Invoking Lambda function with ARN {FunctionArn} for request Id {AwsRequestId} and trace Id {AwsTraceId}.",
@@ -260,6 +261,26 @@ internal sealed class RuntimeHandler : IDisposable
             ToString(content));
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
+    }
+
+    /// <summary>
+    /// Generates an trace identifier for AWS X-Ray.
+    /// </summary>
+    /// <returns>
+    /// The generated trace identifier.
+    /// </returns>
+    /// <remarks>
+    /// See https://docs.aws.amazon.com/xray/latest/devguide/xray-api-sendingdata.html#xray-api-traceids.
+    /// </remarks>
+    private static string GenerateTraceId()
+    {
+#pragma warning disable CA1308
+        var epoch = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var buffer = RandomNumberGenerator.GetBytes(96 / 8);
+        var identifier = Convert.ToHexString(buffer).ToLowerInvariant();
+#pragma warning restore CA1308
+
+        return FormattableString.Invariant($"Root=1-{epoch:x8}-{identifier}");
     }
 
     /// <summary>
