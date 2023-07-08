@@ -264,7 +264,7 @@ internal sealed class RuntimeHandler : IDisposable
     }
 
     /// <summary>
-    /// Generates an trace identifier for AWS X-Ray.
+    /// Generates a valid trace identifier for AWS X-Ray.
     /// </summary>
     /// <returns>
     /// The generated trace identifier.
