@@ -66,10 +66,7 @@ internal sealed class RuntimeHandler : IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="RuntimeHandler"/> class.
     /// </summary>
-    ~RuntimeHandler()
-    {
-        Dispose(false);
-    }
+    ~RuntimeHandler() => Dispose(false);
 
     /// <summary>
     /// Gets or sets the logger to use.
@@ -290,10 +287,7 @@ internal sealed class RuntimeHandler : IDisposable
     /// <returns>
     /// The UTF-8 representation of <paramref name="content"/>.
     /// </returns>
-    private static string ToString(byte[] content)
-    {
-        return Encoding.UTF8.GetString(content);
-    }
+    private static string ToString(byte[] content) => Encoding.UTF8.GetString(content);
 
     /// <summary>
     /// Completes the request channel for the specified request.
