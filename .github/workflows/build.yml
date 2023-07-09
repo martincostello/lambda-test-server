@@ -125,6 +125,11 @@ jobs:
       github.event.repository.fork == false &&
       (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) ||
        startsWith(github.ref, 'refs/tags/v'))
+
+    environment:
+      name: MyGet.org
+      url: https://www.myget.org/feed/martincostello/package/nuget/MartinCostello.Testing.AwsLambdaTestServer
+
     steps:
 
     - name: Download packages
@@ -144,6 +149,11 @@ jobs:
     if: |
       github.event.repository.fork == false &&
       startsWith(github.ref, 'refs/tags/v')
+
+    environment:
+      name: NuGet.org
+      url: https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer
+
     steps:
 
     - name: Download packages
