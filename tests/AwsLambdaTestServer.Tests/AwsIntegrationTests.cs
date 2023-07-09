@@ -16,12 +16,7 @@ public static class AwsIntegrationTests
     public static async Task Runtime_Generates_Valid_Aws_Trace_Id()
     {
         // Arrange
-        var accessToken = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-        var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_KEY");
-
-        Skip.If(
-            string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(secretKey),
-            "No AWS credentials are configured.");
+        Skip.If(GetAwsCredentials() is null, "No AWS credentials are configured.");
 
         using var server = new LambdaTestServer();
         using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
@@ -67,6 +62,27 @@ public static class AwsIntegrationTests
         await bootstrap.RunAsync(cancellationToken);
     }
 
+    private static AWSCredentials? GetAwsCredentials()
+    {
+        try
+        {
+            return new EnvironmentVariablesAWSCredentials();
+        }
+        catch (InvalidOperationException)
+        {
+            // Not configured
+        }
+
+        try
+        {
+            return AssumeRoleWithWebIdentityCredentials.FromEnvironmentVariables();
+        }
+        catch (ArgumentException)
+        {
+            return null;
+        }
+    }
+
     private static class SqsFunction
     {
         public static Task<bool> InitializeAsync() => Task.FromResult(true);
@@ -75,10 +91,7 @@ public static class AwsIntegrationTests
         {
             context.Logger.LogLine($"Handling AWS request Id {context.AwsRequestId} to check if SQS queue ${request.QueueName} exists.");
 
-            var accessToken = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-            var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_KEY");
-
-            var credentials = new BasicAWSCredentials(accessToken, secretKey);
+            var credentials = GetAwsCredentials();
             var region = RegionEndpoint.EUWest2;
 
             bool exists;

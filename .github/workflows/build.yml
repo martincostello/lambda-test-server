@@ -28,6 +28,9 @@ jobs:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      id-token: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -55,12 +58,17 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props') }}
         restore-keys: ${{ runner.os }}-nuget-
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355 # v2.2.0
+      if: ${{ github.event.repository.fork == false && !contains('["costellobot[bot]", "dependabot[bot]", "github-actions[bot]"]', github.actor) }}
+      with:
+        role-to-assume: arn:aws:iam::492538393790:role/github-actions-test
+        role-session-name: ${{ github.event.repository.name }}-${{ github.run_id }}-build
+        aws-region: eu-west-2
+
     - name: Build, Test and Package
       shell: pwsh
       run: ./build.ps1
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
