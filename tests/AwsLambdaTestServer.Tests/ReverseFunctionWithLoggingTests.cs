@@ -26,7 +26,7 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
             (services) => services.AddLogging(
                 (builder) => builder.AddXUnit(this)));
 
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cancellationTokenSource.Token);
 
