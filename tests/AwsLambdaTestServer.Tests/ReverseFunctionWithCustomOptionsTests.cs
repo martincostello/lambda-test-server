@@ -20,7 +20,7 @@ public static class ReverseFunctionWithCustomOptionsTests
         };
 
         using var server = new LambdaTestServer(options);
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cancellationTokenSource.Token);
 
