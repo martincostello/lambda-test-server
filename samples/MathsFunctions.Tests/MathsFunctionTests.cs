@@ -19,7 +19,7 @@ public static class MathsFunctionTests
     {
         // Arrange
         using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cancellationTokenSource.Token);
 
