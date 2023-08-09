@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
@@ -552,21 +552,17 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
     {
         protected override IServer CreateServer(WebHostBuilder builder)
         {
-            var serverAddresses = new Mock<IServerAddressesFeature>();
+            var serverAddresses = Substitute.For<IServerAddressesFeature>();
 
-            serverAddresses
-                .Setup((p) => p.Addresses)
-                .Returns(Array.Empty<string>());
+            serverAddresses.Addresses.Returns(Array.Empty<string>());
 
-            var server = new Mock<IServer>();
+            var server = Substitute.For<IServer>();
 
             var featureCollection = new FeatureCollection();
 
-            server
-                .Setup((p) => p.Features)
-                .Returns(featureCollection);
+            server.Features.Returns(featureCollection);
 
-            return server.Object;
+            return server;
         }
     }
 }
