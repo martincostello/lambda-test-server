@@ -62,7 +62,7 @@ jobs:
         restore-keys: ${{ runner.os }}-nuget-
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@ef93a73b1313f148011965ef7361f667f371f58b # v3.0.0
+      uses: aws-actions/configure-aws-credentials@04b98b3f9e85f563fb061be8751a0352327246b0 # v3.0.1
       if: ${{ github.event.repository.fork == false && !contains('["costellobot[bot]", "dependabot[bot]", "github-actions[bot]"]', github.actor) }}
       with:
         role-to-assume: arn:aws:iam::492538393790:role/github-actions-test
