@@ -189,7 +189,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -238,7 +238,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -276,7 +276,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -315,7 +315,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -361,7 +361,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -453,7 +453,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
