@@ -87,7 +87,7 @@ public static class ParallelismTests
             }
 
             completionSource.SetResult(actual);
-            cts.Cancel();
+            await cts.CancelAsync();
         });
 
         return completionSource;

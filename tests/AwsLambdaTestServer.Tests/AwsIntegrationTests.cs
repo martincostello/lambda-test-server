@@ -37,7 +37,7 @@ public static class AwsIntegrationTests
 
             if (!cancellationTokenSource.IsCancellationRequested)
             {
-                cancellationTokenSource.Cancel();
+                await cancellationTokenSource.CancelAsync();
             }
         });
 
