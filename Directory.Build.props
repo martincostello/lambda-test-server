@@ -26,6 +26,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWarn>$(NoWarn);CA1848</NoWarn>
+    <!--
+      TODO Remove NU5104 once .NET 8 reaches 8.0.0.
+    -->
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
     <Nullable>enable</Nullable>
     <PackageIcon></PackageIcon>
@@ -42,6 +46,7 @@
     <SignAssembly>true</SignAssembly>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
     <UseSharedCompilation>false</UseSharedCompilation>
     <AssemblyVersion>0.7.0.0</AssemblyVersion>
     <VersionPrefix>0.7.2</VersionPrefix>
