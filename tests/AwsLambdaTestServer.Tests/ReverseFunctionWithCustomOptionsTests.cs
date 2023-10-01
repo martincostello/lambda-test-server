@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
@@ -24,7 +24,7 @@ public static class ReverseFunctionWithCustomOptionsTests
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
+        int[] value = [1, 2, 3];
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
@@ -41,6 +41,6 @@ public static class ReverseFunctionWithCustomOptionsTests
         var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
         Assert.NotNull(actual);
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }

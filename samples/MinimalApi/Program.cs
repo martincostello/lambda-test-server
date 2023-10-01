@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
-#pragma warning disable CA1852
-
 using System.Security.Cryptography;
 using System.Text;
 using MinimalApi;
@@ -56,7 +54,7 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
             statusCode: StatusCodes.Status400BadRequest);
     }
 
-    byte[] buffer = Encoding.UTF8.GetBytes((string)(request.Plaintext ?? string.Empty));
+    byte[] buffer = Encoding.UTF8.GetBytes(request.Plaintext ?? string.Empty);
     byte[] hash = request.Algorithm.ToUpperInvariant() switch
     {
         "MD5" => MD5.HashData(buffer),
@@ -64,7 +62,7 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
         "SHA256" => SHA256.HashData(buffer),
         "SHA384" => SHA384.HashData(buffer),
         "SHA512" => SHA512.HashData(buffer),
-        _ => Array.Empty<byte>(),
+        _ => [],
     };
 
     if (hash.Length == 0)

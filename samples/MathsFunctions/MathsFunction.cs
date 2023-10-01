@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using Amazon.Lambda.RuntimeSupport;
@@ -34,6 +34,6 @@ public static class MathsFunction
             _ => throw new NotSupportedException($"The '{request.Operator}' operator is not supported."),
         };
 
-        return new MathsResponse() { Result = result };
+        return new() { Result = result };
     }
 }

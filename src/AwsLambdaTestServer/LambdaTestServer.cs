@@ -333,11 +333,8 @@ public class LambdaTestServer : IDisposable
         var serverAddresses = _server!.Features.Get<IServerAddressesFeature>();
         var serverUrl = serverAddresses?.Addresses?.FirstOrDefault();
 
-        if (serverUrl is null)
-        {
-            throw new InvalidOperationException("No server addresses are available.");
-        }
-
-        return new Uri(serverUrl, UriKind.Absolute);
+        return serverUrl is null
+            ? throw new InvalidOperationException("No server addresses are available.")
+            : new Uri(serverUrl, UriKind.Absolute);
     }
 }

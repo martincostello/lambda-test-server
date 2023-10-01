@@ -9,14 +9,9 @@ using Microsoft.Extensions.Logging;
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 [Collection(nameof(LambdaTestServerCollection))]
-public class HttpLambdaTestServerTests : ITestOutputHelperAccessor
+public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
-    public HttpLambdaTestServerTests(ITestOutputHelper outputHelper)
-    {
-        OutputHelper = outputHelper;
-    }
-
-    public ITestOutputHelper? OutputHelper { get; set; }
+    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
     [Fact]
     public async Task Function_Can_Process_Request()

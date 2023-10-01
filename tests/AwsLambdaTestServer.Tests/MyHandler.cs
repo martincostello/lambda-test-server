@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using Amazon.Lambda.Core;
@@ -8,9 +8,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 internal class MyHandler
 {
     public virtual Task<bool> InitializeAsync()
-    {
-        return Task.FromResult(true);
-    }
+        => Task.FromResult(true);
 
     public virtual Task<MyResponse> SumAsync(MyRequest request, ILambdaContext context)
     {
