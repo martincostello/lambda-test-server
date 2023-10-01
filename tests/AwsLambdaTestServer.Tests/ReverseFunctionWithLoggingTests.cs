@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
@@ -9,14 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MyFunctions;
 
-public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
+public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
-    public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
-    {
-        OutputHelper = outputHelper;
-    }
-
-    public ITestOutputHelper? OutputHelper { get; set; }
+    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
     [RetryFact]
     public async Task Function_Reverses_Numbers_With_Logging()
@@ -30,7 +25,7 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
+        int[] value = [1, 2, 3];
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
@@ -48,6 +43,6 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
         var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
         Assert.NotNull(actual);
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }

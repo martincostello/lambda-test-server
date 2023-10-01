@@ -62,7 +62,7 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
         "SHA256" => SHA256.HashData(buffer),
         "SHA384" => SHA384.HashData(buffer),
         "SHA512" => SHA512.HashData(buffer),
-        _ => Array.Empty<byte>(),
+        _ => [],
     };
 
     if (hash.Length == 0)

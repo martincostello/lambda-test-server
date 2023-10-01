@@ -16,14 +16,9 @@ using NSubstitute;
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 [Collection(nameof(LambdaTestServerCollection))]
-public class LambdaTestServerTests : ITestOutputHelperAccessor
+public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
-    public LambdaTestServerTests(ITestOutputHelper outputHelper)
-    {
-        OutputHelper = outputHelper;
-    }
-
-    public ITestOutputHelper? OutputHelper { get; set; }
+    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
     [Fact]
     public void Constructor_Validates_Parameters()
@@ -72,7 +67,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
     {
         // Arrange
         using var target = new LambdaTestServer();
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => target.EnqueueAsync(request));
@@ -85,7 +80,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         var target = new LambdaTestServer();
         target.Dispose();
 
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         // Act
         await Assert.ThrowsAsync<ObjectDisposedException>(() => target.EnqueueAsync(request));
@@ -96,7 +91,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
     {
         // Arrange
         using var target = new LambdaTestServer();
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         await target.StartAsync();
 
@@ -407,7 +402,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cts.Token);
 
-        var request = new LambdaTestRequest(Array.Empty<byte>(), "my-request-id")
+        var request = new LambdaTestRequest([], "my-request-id")
         {
             ClientContext = @"{""client"":{""app_title"":""my-app""}}",
             CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
