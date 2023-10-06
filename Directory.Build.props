@@ -11,6 +11,7 @@
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)AwsLambdaTestServer.snk</AssemblyOriginatorKeyFile>
     <Authors>martin_costello</Authors>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AwsLambdaTestServer.ruleset</CodeAnalysisRuleSet>
     <Company>https://github.com/martincostello/lambda-test-server</Company>
     <ContinuousIntegrationBuild Condition=" '$(CI)' != '' ">true</ContinuousIntegrationBuild>
