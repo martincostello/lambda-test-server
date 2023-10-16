@@ -45,7 +45,7 @@ public sealed class LambdaTestServerOptions
     /// Gets or sets the amount of memory available to the function in megabytes during execution. The default value is 128.
     /// </summary>
     /// <remarks>
-    /// This limit is not enforced and is only used for reporting into the Lambda context.
+    /// This limit is not enforced and is only used for reporting into the Lambda context unless you are using .NET 8 and later.
     /// </remarks>
     public int FunctionMemorySize { get; set; }
 
