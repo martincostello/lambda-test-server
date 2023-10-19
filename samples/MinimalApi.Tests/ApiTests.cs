@@ -90,12 +90,72 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
         actual.ShouldNotBeNull();
         actual.StatusCode.ShouldBe(StatusCodes.Status200OK);
         actual.MultiValueHeaders.ShouldContainKey("Content-Type");
-        actual.MultiValueHeaders["Content-Type"].ShouldBe(new[] { "application/json; charset=utf-8" });
+        actual.MultiValueHeaders["Content-Type"].ShouldBe(["application/json; charset=utf-8"]);
 
         var hash = JsonSerializer.Deserialize<HashResponse>(actual.Body, options);
 
         hash.ShouldNotBeNull();
         hash.Hash.ShouldBe("XXE/IcKhlw/yjLTH7cCWPSr7JfOw5LuYXeBuE5skNfA=");
+    }
+
+    [Fact(Timeout = 5_000, Skip = "Depends on aws/aws-lambda-dotnet#1595.")]
+    public async Task Memory_Limit_Is_Not_Enforced()
+    {
+        // Arrange
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
+        var request = new APIGatewayProxyRequest()
+        {
+            HttpMethod = HttpMethods.Get,
+            Path = "/memory-limit",
+        };
+
+        // Arrange
+        string json = JsonSerializer.Serialize(request, options);
+
+        LambdaTestContext context = await _server.EnqueueAsync(json);
+
+        using var cts = GetCancellationTokenSourceForResponseAvailable(context);
+
+        // Act
+        _ = Task.Run(
+            () =>
+            {
+                try
+                {
+                    typeof(HashRequest).Assembly.EntryPoint!.Invoke(null, new[] { Array.Empty<string>() });
+                }
+                catch (Exception ex) when (LambdaServerWasShutDown(ex))
+                {
+                    // The Lambda runtime server was shut down
+                }
+            },
+            cts.Token);
+
+        // Assert
+        await context.Response.WaitToReadAsync(cts.IsCancellationRequested ? default : cts.Token);
+
+        context.Response.TryRead(out LambdaTestResponse? response).ShouldBeTrue();
+        response.IsSuccessful.ShouldBeTrue($"Failed to process request: {await response.ReadAsStringAsync()}");
+        response.Duration.ShouldBeInRange(TimeSpan.Zero, TimeSpan.FromSeconds(2));
+        response.Content.ShouldNotBeEmpty();
+
+        // Assert
+        var actual = JsonSerializer.Deserialize<APIGatewayProxyResponse>(response.Content, options);
+
+        actual.ShouldNotBeNull();
+
+        actual.ShouldNotBeNull();
+        actual.StatusCode.ShouldBe(StatusCodes.Status200OK);
+        actual.MultiValueHeaders.ShouldContainKey("Content-Type");
+        actual.MultiValueHeaders["Content-Type"].ShouldBe(["application/json; charset=utf-8"]);
+
+        using var memoryInfo = JsonSerializer.Deserialize<JsonDocument>(actual.Body, options);
+
+        memoryInfo.ShouldNotBeNull();
+        memoryInfo.RootElement.TryGetProperty("totalAvailableMemoryBytes", out var property).ShouldBeTrue();
+        property.TryGetInt64(out var value).ShouldBeTrue();
+        value.ShouldBeGreaterThan(128 * 1024 * 1024);
     }
 
     private static CancellationTokenSource GetCancellationTokenSourceForResponseAvailable(
