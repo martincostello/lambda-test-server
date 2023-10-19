@@ -443,9 +443,11 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Enforces_Memory_Limit()
     {
+        Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
+
         // Arrange
         LambdaTestServer.ClearLambdaEnvironmentVariables();
 

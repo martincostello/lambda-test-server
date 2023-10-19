@@ -98,9 +98,11 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
         hash.Hash.ShouldBe("XXE/IcKhlw/yjLTH7cCWPSr7JfOw5LuYXeBuE5skNfA=");
     }
 
-    [Fact(Timeout = 5_000, Skip = "Depends on aws/aws-lambda-dotnet#1595.")]
+    [SkippableFact(Timeout = 5_000, Skip = "Depends on aws/aws-lambda-dotnet#1595.")]
     public async Task Memory_Limit_Is_Not_Enforced()
     {
+        Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
+
         // Arrange
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
