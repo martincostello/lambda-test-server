@@ -443,6 +443,65 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
+    [Fact]
+    public async Task Enforces_Memory_Limit()
+    {
+        // Arrange
+        LambdaTestServer.ClearLambdaEnvironmentVariables();
+
+        var options = new LambdaTestServerOptions()
+        {
+            DisableMemoryLimitCheck = false,
+            FunctionArn = "my-custom-arn",
+            FunctionHandler = "my-custom-handler",
+            FunctionMemorySize = 128,
+            FunctionName = "my-function-name",
+            FunctionTimeout = TimeSpan.FromSeconds(119),
+            FunctionVersion = 42,
+            LogGroupName = "my-log-group",
+            LogStreamName = "my-log-stream",
+        };
+
+        using var server = new LambdaTestServer(options);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+        await server.StartAsync(cts.Token);
+
+        var request = new LambdaTestRequest([], "my-request-id")
+        {
+            ClientContext = @"{""client"":{""app_title"":""my-app""}}",
+            CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
+        };
+
+        var context = await server.EnqueueAsync(request);
+
+        _ = Task.Run(async () =>
+        {
+            await context.Response.WaitToReadAsync(cts.Token);
+
+            if (!cts.IsCancellationRequested)
+            {
+                await cts.CancelAsync();
+            }
+        });
+
+        using var httpClient = server.CreateClient();
+
+        // Act
+        await MemoryInfoFunction.RunAsync(httpClient, cts.Token);
+
+        // Assert
+        context.Response.TryRead(out var response).ShouldBeTrue();
+
+        response.ShouldNotBeNull();
+        response!.IsSuccessful.ShouldBeTrue();
+        response.Content.ShouldNotBeNull();
+
+        var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+        lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "128");
+        lambdaContext.ShouldContainKeyAndValue("TotalAvailableMemoryBytes", "134217728");
+    }
+
     private static void CancelWhenResponseAvailable(
         LambdaTestContext context,
         CancellationTokenSource cancellationTokenSource)
@@ -469,6 +528,17 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         }
     }
 
+    private static class MemoryInfoFunction
+    {
+        internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var handler = new MemoryInfoHandler();
+            using var bootstrap = new LambdaBootstrap(httpClient, handler.InvokeAsync);
+
+            await bootstrap.RunAsync(cancellationToken);
+        }
+    }
+
     private sealed class CustomHandler
     {
 #pragma warning disable CA1822
@@ -487,6 +557,29 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
                 ["LogStreamName"] = request.LambdaContext.LogStreamName,
                 ["MemoryLimitInMB"] = request.LambdaContext.MemoryLimitInMB.ToString(CultureInfo.InvariantCulture),
                 ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
+            };
+
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);
+
+            var stream = new MemoryStream(json);
+
+            return Task.FromResult(new InvocationResponse(stream, true));
+        }
+    }
+
+    private sealed class MemoryInfoHandler
+    {
+#pragma warning disable CA1822
+        public Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+#pragma warning restore CA1822
+        {
+            GC.RefreshMemoryLimit();
+            var memoryInfo = GC.GetGCMemoryInfo();
+
+            var context = new Dictionary<string, string>()
+            {
+                ["MemoryLimitInMB"] = request.LambdaContext.MemoryLimitInMB.ToString(CultureInfo.InvariantCulture),
+                ["TotalAvailableMemoryBytes"] = memoryInfo.TotalAvailableMemoryBytes.ToString(CultureInfo.InvariantCulture),
             };
 
             byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);
