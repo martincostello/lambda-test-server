@@ -313,7 +313,7 @@ public class LambdaTestServer : IDisposable
         // See https://github.com/aws/aws-lambda-dotnet/pull/1595
         if (Options.DisableMemoryLimitCheck)
         {
-            Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", Options.DisableMemoryLimitCheck.ToString());
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", bool.TrueString);
         }
 #endif
     }
