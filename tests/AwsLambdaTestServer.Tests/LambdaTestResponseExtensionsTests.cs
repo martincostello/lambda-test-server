@@ -12,6 +12,6 @@ public static class LambdaTestResponseExtensionsTests
         LambdaTestResponse response = null!;
 
         // Act
-        await Assert.ThrowsAsync<ArgumentNullException>("response", () => response.ReadAsStringAsync());
+        await Assert.ThrowsAsync<ArgumentNullException>("response", response.ReadAsStringAsync);
     }
 }

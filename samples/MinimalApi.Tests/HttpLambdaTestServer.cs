@@ -16,11 +16,6 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
     private bool _disposed;
     private IWebHost? _webHost;
 
-    public HttpLambdaTestServer()
-        : base()
-    {
-    }
-
     public ITestOutputHelper? OutputHelper { get; set; }
 
     public async Task DisposeAsync()
