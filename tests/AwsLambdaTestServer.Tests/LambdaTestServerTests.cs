@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Skip = Xunit.Skip;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
