@@ -183,15 +183,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         var context = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
-            {
-                cts.Cancel();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
@@ -232,15 +224,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         var context = await server.EnqueueAsync(request);
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
-            {
-                cts.Cancel();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
@@ -270,15 +254,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         var context = await server.EnqueueAsync(@"{""Values"": null}");
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
-            {
-                cts.Cancel();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
@@ -309,15 +285,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         var context = await server.EnqueueAsync(@"{""Values"": null}");
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
-            {
-                cts.Cancel();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
@@ -447,15 +415,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         var context = await server.EnqueueAsync(request);
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
-            {
-                cts.Cancel();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
@@ -486,6 +446,21 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         TimeSpan.TryParse(remainingTimeString, out var remainingTime).ShouldBeTrue();
 
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
+    }
+
+    private static void CancelWhenResponseAvailable(
+        LambdaTestContext context,
+        CancellationTokenSource cancellationTokenSource)
+    {
+        _ = Task.Run(async () =>
+        {
+            await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
+
+            if (!cancellationTokenSource.IsCancellationRequested)
+            {
+                cancellationTokenSource.Cancel();
+            }
+        });
     }
 
     private static class CustomFunction
