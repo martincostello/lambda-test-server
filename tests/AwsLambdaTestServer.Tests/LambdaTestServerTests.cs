@@ -459,37 +459,19 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         var options = new LambdaTestServerOptions()
         {
             DisableMemoryLimitCheck = disableMemoryLimitCheck,
-            FunctionArn = "my-custom-arn",
-            FunctionHandler = "my-custom-handler",
             FunctionMemorySize = 128,
-            FunctionName = "my-function-name",
-            FunctionTimeout = TimeSpan.FromSeconds(119),
-            FunctionVersion = 42,
-            LogGroupName = "my-log-group",
-            LogStreamName = "my-log-stream",
         };
 
         using var server = new LambdaTestServer(options);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
 
-        var request = new LambdaTestRequest([], "my-request-id")
-        {
-            ClientContext = @"{""client"":{""app_title"":""my-app""}}",
-            CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
-        };
+        var request = new LambdaTestRequest([]);
 
         var context = await server.EnqueueAsync(request);
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-            if (!cts.IsCancellationRequested)
-            {
-                await cts.CancelAsync();
-            }
-        });
+        CancelWhenResponseAvailable(context, cts);
 
         using var httpClient = server.CreateClient();
 
