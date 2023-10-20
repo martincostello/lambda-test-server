@@ -256,11 +256,13 @@ public class LambdaTestServer : IDisposable
         app.UseRouting();
         app.UseEndpoints((endpoints) =>
         {
+#pragma warning disable ASP0018
             // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Client/InternalClientAdapted.cs#L75
             endpoints.MapGet("/{LambdaVersion}/runtime/invocation/next", _handler!.HandleNextAsync);
             endpoints.MapPost("/{LambdaVersion}/runtime/init/error", _handler.HandleInitializationErrorAsync);
             endpoints.MapPost("/{LambdaVersion}/runtime/invocation/{AwsRequestId}/error", _handler.HandleInvocationErrorAsync);
             endpoints.MapPost("/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response", _handler.HandleResponseAsync);
+#pragma warning restore ASP0018
         });
     }
 
