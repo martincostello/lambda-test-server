@@ -42,7 +42,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         using var target = new LambdaTestServer();
 
         // Act
-        Assert.Throws<InvalidOperationException>(() => target.CreateClient());
+        Assert.Throws<InvalidOperationException>(target.CreateClient);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         target.Dispose();
 
         // Act
-        Assert.Throws<ObjectDisposedException>(() => target.CreateClient());
+        Assert.Throws<ObjectDisposedException>(target.CreateClient);
     }
 
     [Fact]

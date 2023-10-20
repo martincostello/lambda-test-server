@@ -34,6 +34,6 @@ public static class MathsFunction
             _ => throw new NotSupportedException($"The '{request.Operator}' operator is not supported."),
         };
 
-        return new MathsResponse() { Result = result };
+        return new() { Result = result };
     }
 }
