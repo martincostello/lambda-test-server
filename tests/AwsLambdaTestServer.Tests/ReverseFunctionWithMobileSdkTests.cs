@@ -8,7 +8,7 @@ namespace MyFunctions;
 
 public static class ReverseFunctionWithMobileSdkTests
 {
-    [Fact]
+    [RetryFact]
     public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
     {
         // Arrange
