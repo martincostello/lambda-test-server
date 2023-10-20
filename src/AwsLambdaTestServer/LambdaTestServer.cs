@@ -128,7 +128,7 @@ public class LambdaTestServer : IDisposable
     /// <param name="request">The request to invoke the function with.</param>
     /// <returns>
     /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
-    /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+    /// enqueue the request which returns a context containing a <see cref="ChannelReader{LambdaTestResponse}"/>
     /// which completes once the request is processed by the function.
     /// </returns>
     /// <exception cref="ArgumentNullException">

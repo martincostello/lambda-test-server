@@ -20,7 +20,7 @@ public static class LambdaTestServerExtensions
     /// <param name="value">The request content to process.</param>
     /// <returns>
     /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
-    /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+    /// enqueue the request which returns a context containing a <see cref="ChannelReader{LambdaTestResponse}"/>
     /// which completes once the request is processed by the function.
     /// </returns>
     /// <exception cref="ArgumentNullException">
@@ -48,7 +48,7 @@ public static class LambdaTestServerExtensions
     /// <param name="content">The request content to process.</param>
     /// <returns>
     /// A <see cref="Task{LambdaTestContext}"/> representing the asynchronous operation to
-    /// enqueue the request which returns a context containg a <see cref="ChannelReader{LambdaTestResponse}"/>
+    /// enqueue the request which returns a context containing a <see cref="ChannelReader{LambdaTestResponse}"/>
     /// which completes once the request is processed by the function.
     /// </returns>
     /// <exception cref="ArgumentNullException">
