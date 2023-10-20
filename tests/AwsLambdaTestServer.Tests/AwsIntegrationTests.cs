@@ -16,7 +16,7 @@ public static class AwsIntegrationTests
     public static async Task Runtime_Generates_Valid_Aws_Trace_Id()
     {
         // Arrange
-        Skip.If(GetAwsCredentials() is null, "No AWS credentials are configured.");
+        Xunit.Skip.If(GetAwsCredentials() is null, "No AWS credentials are configured.");
 
         using var server = new LambdaTestServer();
         using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
