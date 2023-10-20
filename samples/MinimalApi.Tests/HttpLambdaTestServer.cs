@@ -16,11 +16,6 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
     private bool _disposed;
     private IWebHost? _webHost;
 
-    public HttpLambdaTestServer()
-        : base(new LambdaTestServerOptions() { FunctionMemorySize = 128, DisableMemoryLimitCheck = true })
-    {
-    }
-
     public ITestOutputHelper? OutputHelper { get; set; }
 
     public async Task DisposeAsync()

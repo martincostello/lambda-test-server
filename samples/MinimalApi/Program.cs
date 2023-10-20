@@ -80,12 +80,4 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
     return Results.Json(result);
 });
 
-app.MapGet("/memory-limit", (HttpRequest httpRequest) =>
-{
-    _ = GC.AllocateArray<string>(256 * 1024 * 1024);
-
-    var memoryInfo = GC.GetGCMemoryInfo();
-    return Results.Json(new { totalAvailableMemoryBytes = memoryInfo.TotalAvailableMemoryBytes });
-});
-
 app.Run();

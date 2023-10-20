@@ -443,17 +443,20 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
-    [SkippableFact]
-    public async Task Enforces_Memory_Limit()
+    [SkippableTheory]
+    [InlineData(false)]
+    [InlineData(true, Skip = "Depends on aws/aws-lambda-dotnet#1595.")]
+    public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
     {
         Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
 
         // Arrange
         LambdaTestServer.ClearLambdaEnvironmentVariables();
+        AssemblyFixture.ResetMemoryLimits();
 
         var options = new LambdaTestServerOptions()
         {
-            DisableMemoryLimitCheck = false,
+            DisableMemoryLimitCheck = disableMemoryLimitCheck,
             FunctionArn = "my-custom-arn",
             FunctionHandler = "my-custom-handler",
             FunctionMemorySize = 128,
@@ -480,7 +483,6 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         _ = Task.Run(async () =>
         {
             await context.Response.WaitToReadAsync(cts.Token);
-
             if (!cts.IsCancellationRequested)
             {
                 await cts.CancelAsync();
@@ -501,7 +503,18 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         var lambdaContext = response.ReadAs<IDictionary<string, string>>();
         lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "128");
-        lambdaContext.ShouldContainKeyAndValue("TotalAvailableMemoryBytes", "134217728");
+
+        lambdaContext.ShouldContainKey("TotalAvailableMemoryBytes");
+        var availableMemory = lambdaContext["TotalAvailableMemoryBytes"];
+
+        if (disableMemoryLimitCheck)
+        {
+            availableMemory.ShouldNotBe("134217728");
+        }
+        else
+        {
+            availableMemory.ShouldBe("134217728");
+        }
     }
 
     private static void CancelWhenResponseAvailable(
