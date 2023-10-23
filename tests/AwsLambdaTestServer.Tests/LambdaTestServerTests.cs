@@ -449,7 +449,6 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     [InlineData(true)]
     public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
     {
-        Skip.If(disableMemoryLimitCheck, "Depends on aws/aws-lambda-dotnet#1595.");
         Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
 
         // Arrange
