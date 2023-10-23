@@ -443,11 +443,13 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
-    [Theory]
+    [SkippableTheory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
     {
+        Xunit.Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
+
         // Arrange
         LambdaTestServer.ClearLambdaEnvironmentVariables();
         AssemblyFixture.ResetMemoryLimits();
