@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Skip = Xunit.Skip;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
@@ -444,13 +443,11 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
-    [SkippableTheory]
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
     {
-        Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
-
         // Arrange
         LambdaTestServer.ClearLambdaEnvironmentVariables();
         AssemblyFixture.ResetMemoryLimits();
