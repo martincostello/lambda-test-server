@@ -75,7 +75,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         var request = new LambdaTestRequest(Array.Empty<byte>());
 
         // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.EnqueueAsync(request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => target.EnqueueAsync(request));
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         context.Response.Completion.IsCompleted.ShouldBeFalse();
 
         // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.EnqueueAsync(request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => target.EnqueueAsync(request));
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         target.IsStarted.ShouldBeTrue();
 
         // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await target.StartAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
     }
 
     [Fact]
