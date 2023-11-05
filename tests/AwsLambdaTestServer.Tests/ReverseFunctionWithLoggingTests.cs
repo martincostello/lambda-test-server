@@ -43,6 +43,7 @@ public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : I
         var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
         Assert.NotNull(actual);
-        Assert.Equal([3, 2, 1], actual);
+        int[] expected = [3, 2, 1];
+        Assert.Equal(expected, actual);
     }
 }
