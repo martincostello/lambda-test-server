@@ -31,6 +31,13 @@ public sealed class LambdaTestServerOptions
     /// </summary>
     public Action<IServiceCollection>? Configure { get; set; }
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Gets or sets a value indicating whether to disable the memory limit check for the Lambda function.
+    /// </summary>
+    public bool DisableMemoryLimitCheck { get; set; }
+#endif
+
     /// <summary>
     /// Gets or sets the ARN of the Lambda function being tested.
     /// </summary>
@@ -41,12 +48,21 @@ public sealed class LambdaTestServerOptions
     /// </summary>
     public string FunctionHandler { get; set; }
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Gets or sets the amount of memory available to the function in megabytes during execution.
+    /// </summary>
+    /// <remarks>
+    /// To disable enforcement of this limit by the AWS Lambda runtime, set <see cref="DisableMemoryLimitCheck"/> to <see langword="true"/>.
+    /// </remarks>
+#else
     /// <summary>
     /// Gets or sets the amount of memory available to the function in megabytes during execution. The default value is 128.
     /// </summary>
     /// <remarks>
     /// This limit is not enforced and is only used for reporting into the Lambda context.
     /// </remarks>
+#endif
     public int FunctionMemorySize { get; set; }
 
     /// <summary>

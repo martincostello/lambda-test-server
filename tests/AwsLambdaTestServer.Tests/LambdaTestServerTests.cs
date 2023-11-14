@@ -16,14 +16,9 @@ using NSubstitute;
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 [Collection(nameof(LambdaTestServerCollection))]
-public class LambdaTestServerTests : ITestOutputHelperAccessor
+public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
-    public LambdaTestServerTests(ITestOutputHelper outputHelper)
-    {
-        OutputHelper = outputHelper;
-    }
-
-    public ITestOutputHelper? OutputHelper { get; set; }
+    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
     [Fact]
     public void Constructor_Validates_Parameters()
@@ -72,7 +67,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
     {
         // Arrange
         using var target = new LambdaTestServer();
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         // Act and Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => target.EnqueueAsync(request));
@@ -85,7 +80,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         var target = new LambdaTestServer();
         target.Dispose();
 
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         // Act
         await Assert.ThrowsAsync<ObjectDisposedException>(() => target.EnqueueAsync(request));
@@ -96,7 +91,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
     {
         // Arrange
         using var target = new LambdaTestServer();
-        var request = new LambdaTestRequest(Array.Empty<byte>());
+        var request = new LambdaTestRequest([]);
 
         await target.StartAsync();
 
@@ -329,7 +324,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cts.IsCancellationRequested)
             {
-                cts.Cancel();
+                await cts.CancelAsync();
             }
         });
 
@@ -407,7 +402,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cts.Token);
 
-        var request = new LambdaTestRequest(Array.Empty<byte>(), "my-request-id")
+        var request = new LambdaTestRequest([], "my-request-id")
         {
             ClientContext = @"{""client"":{""app_title"":""my-app""}}",
             CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
@@ -448,6 +443,62 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
+    [SkippableTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
+    {
+        Xunit.Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
+
+        // Arrange
+        LambdaTestServer.ClearLambdaEnvironmentVariables();
+        AssemblyFixture.ResetMemoryLimits();
+
+        var options = new LambdaTestServerOptions()
+        {
+            DisableMemoryLimitCheck = disableMemoryLimitCheck,
+            FunctionMemorySize = 128,
+        };
+
+        using var server = new LambdaTestServer(options);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+        await server.StartAsync(cts.Token);
+
+        var request = new LambdaTestRequest([]);
+
+        var context = await server.EnqueueAsync(request);
+
+        CancelWhenResponseAvailable(context, cts);
+
+        using var httpClient = server.CreateClient();
+
+        // Act
+        await MemoryInfoFunction.RunAsync(httpClient, cts.Token);
+
+        // Assert
+        context.Response.TryRead(out var response).ShouldBeTrue();
+
+        response.ShouldNotBeNull();
+        response!.IsSuccessful.ShouldBeTrue();
+        response.Content.ShouldNotBeNull();
+
+        var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+        lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "128");
+
+        lambdaContext.ShouldContainKey("TotalAvailableMemoryBytes");
+        var availableMemory = lambdaContext["TotalAvailableMemoryBytes"];
+
+        if (disableMemoryLimitCheck)
+        {
+            availableMemory.ShouldNotBe("134217728");
+        }
+        else
+        {
+            availableMemory.ShouldBe("134217728");
+        }
+    }
+
     private static void CancelWhenResponseAvailable(
         LambdaTestContext context,
         CancellationTokenSource cancellationTokenSource)
@@ -458,7 +509,7 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
 
             if (!cancellationTokenSource.IsCancellationRequested)
             {
-                cancellationTokenSource.Cancel();
+                await cancellationTokenSource.CancelAsync();
             }
         });
     }
@@ -468,6 +519,17 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
         internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
         {
             var handler = new CustomHandler();
+            using var bootstrap = new LambdaBootstrap(httpClient, handler.InvokeAsync);
+
+            await bootstrap.RunAsync(cancellationToken);
+        }
+    }
+
+    private static class MemoryInfoFunction
+    {
+        internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var handler = new MemoryInfoHandler();
             using var bootstrap = new LambdaBootstrap(httpClient, handler.InvokeAsync);
 
             await bootstrap.RunAsync(cancellationToken);
@@ -492,6 +554,29 @@ public class LambdaTestServerTests : ITestOutputHelperAccessor
                 ["LogStreamName"] = request.LambdaContext.LogStreamName,
                 ["MemoryLimitInMB"] = request.LambdaContext.MemoryLimitInMB.ToString(CultureInfo.InvariantCulture),
                 ["RemainingTime"] = request.LambdaContext.RemainingTime.ToString("G", CultureInfo.InvariantCulture),
+            };
+
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);
+
+            var stream = new MemoryStream(json);
+
+            return Task.FromResult(new InvocationResponse(stream, true));
+        }
+    }
+
+    private sealed class MemoryInfoHandler
+    {
+#pragma warning disable CA1822
+        public Task<InvocationResponse> InvokeAsync(InvocationRequest request)
+#pragma warning restore CA1822
+        {
+            GC.RefreshMemoryLimit();
+            var memoryInfo = GC.GetGCMemoryInfo();
+
+            var context = new Dictionary<string, string>()
+            {
+                ["MemoryLimitInMB"] = request.LambdaContext.MemoryLimitInMB.ToString(CultureInfo.InvariantCulture),
+                ["TotalAvailableMemoryBytes"] = memoryInfo.TotalAvailableMemoryBytes.ToString(CultureInfo.InvariantCulture),
             };
 
             byte[] json = JsonSerializer.SerializeToUtf8Bytes(context);

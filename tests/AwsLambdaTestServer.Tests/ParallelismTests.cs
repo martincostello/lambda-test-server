@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
@@ -23,46 +23,33 @@ public static class ParallelismTests
         using var httpClient = server.CreateClient();
 
         // Enqueue the requests to process in the background
-        var completedAdding = EnqueueInParallel(messageCount, server);
+        var addTask = EnqueueInParallel(messageCount, server);
 
         // Start a task to consume the responses in the background
-        var completedProcessing = Assert(completedAdding, messageCount, cts);
+        var processTask = Assert(addTask, messageCount, cts);
 
         // Act - Start the function processing
         await ReverseFunction.RunAsync(httpClient, cts.Token);
 
         // Assert
-        int actual = await completedProcessing.Task;
+        int actual = await processTask.Task;
         actual.ShouldBe(expected);
     }
 
-    private static TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>> EnqueueInParallel(
+    private static async Task<IReadOnlyCollection<LambdaTestContext>> EnqueueInParallel(
         int count,
         LambdaTestServer server)
     {
         var collection = new ConcurrentBag<LambdaTestContext>();
-        var completionSource = new TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>>();
 
-        int queued = 0;
+        await Task.Yield();
+        await Parallel.ForAsync(0, count, async (i, _) => collection.Add(await server.EnqueueAsync(new[] { i })));
 
-        // Enqueue the specified number of items in parallel
-        Parallel.For(0, count, async (i) =>
-        {
-            var context = await server.EnqueueAsync(new[] { i });
-
-            collection.Add(context);
-
-            if (Interlocked.Increment(ref queued) == count)
-            {
-                completionSource.SetResult(collection);
-            }
-        });
-
-        return completionSource;
+        return collection;
     }
 
     private static TaskCompletionSource<int> Assert(
-        TaskCompletionSource<IReadOnlyCollection<LambdaTestContext>> completedAdding,
+        Task<IReadOnlyCollection<LambdaTestContext>> addTask,
         int messages,
         CancellationTokenSource cts)
     {
@@ -70,7 +57,7 @@ public static class ParallelismTests
 
         _ = Task.Run(async () =>
         {
-            var collection = await completedAdding.Task;
+            var collection = await addTask;
             collection.Count.ShouldBe(messages);
 
             int actual = 0;
@@ -87,7 +74,7 @@ public static class ParallelismTests
             }
 
             completionSource.SetResult(actual);
-            cts.Cancel();
+            await cts.CancelAsync();
         });
 
         return completionSource;

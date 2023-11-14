@@ -79,6 +79,9 @@ public class LambdaTestServer : IDisposable
     /// </summary>
     public static void ClearLambdaEnvironmentVariables()
     {
+#if NET8_0_OR_GREATER
+        Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", null);
+#endif
         Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", null);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME", null);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_VERSION", null);
@@ -305,6 +308,14 @@ public class LambdaTestServer : IDisposable
         Environment.SetEnvironmentVariable("AWS_LAMBDA_LOG_STREAM_NAME", Options.LogStreamName);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_RUNTIME_API", $"{baseAddress.Host}:{baseAddress.Port}");
         Environment.SetEnvironmentVariable("_HANDLER", Options.FunctionHandler);
+
+#if NET8_0_OR_GREATER
+        // See https://github.com/aws/aws-lambda-dotnet/pull/1595
+        if (Options.DisableMemoryLimitCheck)
+        {
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", bool.TrueString);
+        }
+#endif
     }
 
     private void ThrowIfDisposed()

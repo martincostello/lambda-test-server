@@ -90,7 +90,7 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
         actual.ShouldNotBeNull();
         actual.StatusCode.ShouldBe(StatusCodes.Status200OK);
         actual.MultiValueHeaders.ShouldContainKey("Content-Type");
-        actual.MultiValueHeaders["Content-Type"].ShouldBe(new[] { "application/json; charset=utf-8" });
+        actual.MultiValueHeaders["Content-Type"].ShouldBe(["application/json; charset=utf-8"]);
 
         var hash = JsonSerializer.Deserialize<HashResponse>(actual.Body, options);
 
@@ -117,7 +117,7 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
 
                 if (!cts.IsCancellationRequested)
                 {
-                    cts.Cancel();
+                    await cts.CancelAsync();
                 }
             },
             cts.Token);
