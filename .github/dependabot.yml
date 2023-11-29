@@ -24,3 +24,5 @@ updates:
   ignore:
     - dependency-name: "AWSSDK.SQS"
       update-types: ["version-update:semver-patch"]
+    - dependency-name: "Microsoft.AspNetCore.TestHost"
+      versions: ["6.*", "7.*"]
