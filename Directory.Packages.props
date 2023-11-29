@@ -7,6 +7,7 @@
     <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
@@ -17,14 +18,6 @@
     <PackageVersion Include="xRetry" Version="1.9.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.4" />
     <PackageVersion Include="Xunit.SkippableFact" Version="1.4.13" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="7.0.0" Condition=" '$(TargetFramework)' == 'net7.0' " />
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" Condition=" '$(TargetFramework)' == 'net8.0' " />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(IsPackable)' != 'true' ">
-    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" Condition=" '$(TargetFramework)' == 'net8.0' " />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
