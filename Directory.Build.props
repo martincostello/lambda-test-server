@@ -26,10 +26,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
     <NoWarn>$(NoWarn);CA1848</NoWarn>
-    <!--
-      HACK Workaround for https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3687
-    -->
-    <NoWarn>$(NoWarn);SA1010</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
     <Nullable>enable</Nullable>
     <PackageIcon></PackageIcon>
