@@ -13,7 +13,7 @@
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Title>AWS Lambda Test Server</Title>
   </PropertyGroup>
-  <PropertyGroup Condition=" $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">
+  <PropertyGroup>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
