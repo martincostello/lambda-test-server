@@ -28,6 +28,8 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.Configure.get -> System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection!>?
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.Configure.set -> void
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.DisableMemoryLimitCheck.get -> bool
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.DisableMemoryLimitCheck.set -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.FunctionArn.get -> string!
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.FunctionArn.set -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.FunctionHandler.get -> string!
