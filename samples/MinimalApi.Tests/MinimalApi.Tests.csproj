@@ -4,7 +4,7 @@
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);CA1062;CA1707;CA1861;CA2007;CA2234;SA1600</NoWarn>
     <RootNamespace>MinimalApi</RootNamespace>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
