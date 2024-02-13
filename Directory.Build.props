@@ -25,7 +25,9 @@
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <NoWarn>$(NoWarn);CA1848</NoWarn>
+    <NoWarn>$(NoWarn);CA1515;CA1848</NoWarn>
+    <!-- TODO Re-enable when .NET 9 is stable -->
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
     <NoWarn Condition=" '$(GenerateDocumentationFile)' != 'true' ">$(NoWarn);SA0001</NoWarn>
     <Nullable>enable</Nullable>
     <PackageIcon></PackageIcon>
@@ -44,8 +46,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <UseSharedCompilation>false</UseSharedCompilation>
-    <AssemblyVersion>0.8.0.0</AssemblyVersion>
-    <VersionPrefix>0.8.1</VersionPrefix>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+    <VersionPrefix>0.9.0</VersionPrefix>
     <VersionSuffix Condition=" '$(VersionSuffix)' == '' AND '$(GITHUB_ACTIONS)' != '' ">preview.$(GITHUB_RUN_NUMBER)</VersionSuffix>
     <VersionPrefix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) ">$(GITHUB_REF.Replace('refs/tags/v', ''))</VersionPrefix>
     <VersionSuffix Condition=" $(GITHUB_REF.StartsWith(`refs/tags/v`)) "></VersionSuffix>
