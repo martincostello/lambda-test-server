@@ -117,7 +117,7 @@ The key parts to call out here are:
   1. Once the function processing completes after the `CancellationToken` is signalled, the channel reader is read to obtain the `LambdaTestResponse` for the request that was enqueued.
   1. Once this is returned from the channel reader, the response is checked for success using `IsSuccessful` and then the `Content` (which is a `byte[]`) is deserialized into the expected response to be asserted on. Again, you could make your own extensions to deserialize the response content into `string` or objects from JSON.
 
-The library itself targets `net6.0`, `net7.0` and `net8.0` so requires your test project to target at least .NET 6.
+The library itself targets `net8.0` and `net9.0` so requires your test project to target at least .NET 8.
 
 #### Sequence Diagram
 
