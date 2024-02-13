@@ -25,8 +25,8 @@
     "Lambda Test Tool": {
       "commandName": "Executable",
       "commandLineArgs": "--port 5050",
-      "workingDirectory": ".\\bin\\$(Configuration)\\net6.0",
-      "executablePath": "%USERPROFILE%\\.dotnet\\tools\\dotnet-lambda-test-tool-6.0.exe"
+      "workingDirectory": ".\\bin\\$(Configuration)\\net9.0",
+      "executablePath": "%USERPROFILE%\\.dotnet\\tools\\dotnet-lambda-test-tool-9.0.exe"
     }
   }
 }
