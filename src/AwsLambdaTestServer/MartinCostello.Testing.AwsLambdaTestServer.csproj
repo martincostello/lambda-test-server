@@ -7,10 +7,11 @@
     <IsPackable>true</IsPackable>
     <OutputType>Library</OutputType>
     <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
+    <!-- TODO Update baseline version once .NET 9 support published -->
     <PackageValidationBaselineVersion>0.7.0</PackageValidationBaselineVersion>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Title>AWS Lambda Test Server</Title>
   </PropertyGroup>
   <PropertyGroup>
@@ -22,9 +23,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="6.0.0" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="7.0.0" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))" />
     <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="8.0.0" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="9.0.0-preview.1.24081.5" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="PublicAPI\PublicAPI.Shipped.txt" />
