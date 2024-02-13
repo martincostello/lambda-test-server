@@ -1,3 +1,1 @@
 #nullable enable
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.DisableMemoryLimitCheck.get -> bool
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.DisableMemoryLimitCheck.set -> void
