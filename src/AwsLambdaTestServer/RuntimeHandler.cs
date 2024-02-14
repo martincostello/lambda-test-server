@@ -274,11 +274,15 @@ internal sealed class RuntimeHandler : IDisposable
     /// </remarks>
     private static string GenerateTraceId()
     {
-#pragma warning disable CA1308
         var epoch = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var buffer = RandomNumberGenerator.GetBytes(96 / 8);
+#if NET9_0_OR_GREATER
+        var identifier = Convert.ToHexStringLower(buffer);
+#else
+#pragma warning disable CA1308
         var identifier = Convert.ToHexString(buffer).ToLowerInvariant();
 #pragma warning restore CA1308
+#endif
 
         return FormattableString.Invariant($"Root=1-{epoch:x8}-{identifier}");
     }
