@@ -55,22 +55,24 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
     }
 
     byte[] buffer = Encoding.UTF8.GetBytes(request.Plaintext ?? string.Empty);
-    byte[] hash = request.Algorithm.ToUpperInvariant() switch
+    HashAlgorithmName? hashAlgorithm = request.Algorithm.ToUpperInvariant() switch
     {
-        "MD5" => MD5.HashData(buffer),
-        "SHA1" => SHA1.HashData(buffer),
-        "SHA256" => SHA256.HashData(buffer),
-        "SHA384" => SHA384.HashData(buffer),
-        "SHA512" => SHA512.HashData(buffer),
-        _ => [],
+        "MD5" => HashAlgorithmName.MD5,
+        "SHA1" => HashAlgorithmName.SHA1,
+        "SHA256" => HashAlgorithmName.SHA256,
+        "SHA384" => HashAlgorithmName.SHA384,
+        "SHA512" => HashAlgorithmName.SHA512,
+        _ => null,
     };
 
-    if (hash.Length == 0)
+    if (hashAlgorithm is not { } algorithm)
     {
         return Results.Problem(
             $"The specified hash algorithm '{request.Algorithm}' is not supported.",
             statusCode: StatusCodes.Status400BadRequest);
     }
+
+    byte[] hash = CryptographicOperations.HashData(algorithm, buffer);
 
     var result = new HashResponse()
     {
