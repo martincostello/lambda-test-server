@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +55,7 @@ public sealed class LambdaTestServerOptions
     /// <remarks>
     /// To disable enforcement of this limit by the AWS Lambda runtime, set <see cref="DisableMemoryLimitCheck"/> to <see langword="true"/>.
     /// </remarks>
+    public int FunctionMemorySize { get; set; }
 #else
     /// <summary>
     /// Gets or sets the amount of memory available to the function in megabytes during execution. The default value is 128.
@@ -62,8 +63,8 @@ public sealed class LambdaTestServerOptions
     /// <remarks>
     /// This limit is not enforced and is only used for reporting into the Lambda context.
     /// </remarks>
-#endif
     public int FunctionMemorySize { get; set; }
+#endif
 
     /// <summary>
     /// Gets or sets the name of the Lambda function being tested.
