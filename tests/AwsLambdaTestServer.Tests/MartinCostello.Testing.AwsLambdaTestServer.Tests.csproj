@@ -6,7 +6,7 @@
     <NoWarn>$(NoWarn);CA1062;CA1707;CA1711;CA1861;CA2007;CA2234;SA1600</NoWarn>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
@@ -15,10 +15,13 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" />
     <PackageReference Include="AWSSDK.SQS" />
+    <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="GitHubActionsTestLogger" NoWarn="RT0003" />
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="ReportGenerator" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xRetry" />
     <PackageReference Include="xunit" />

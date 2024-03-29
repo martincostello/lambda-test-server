@@ -15,6 +15,8 @@ using NSubstitute;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+#pragma warning disable JSON002
+
 [Collection(nameof(LambdaTestServerCollection))]
 public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
@@ -166,12 +168,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Can_Process_Request()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -199,12 +196,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Can_Process_Request_With_Mobile_Sdk_Headers()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -237,12 +229,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Can_Handle_Failed_Request()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -268,12 +255,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Can_Handle_Failed_Initialization()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -293,12 +275,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Can_Process_Multiple_Requests()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -351,12 +328,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     public async Task Function_Returns_If_No_Requests_Within_Timeout()
     {
         // Arrange
-        void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
-
-        using var server = new LambdaTestServer(Configure);
+        using var server = new LambdaTestServer(ConfigureLogging);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
         await server.StartAsync(cts.Token);
@@ -514,6 +486,9 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         });
     }
 
+    private void ConfigureLogging(IServiceCollection services)
+        => services.AddLogging((builder) => builder.AddXUnit(this));
+
     private static class CustomFunction
     {
         internal static async Task RunAsync(HttpClient httpClient, CancellationToken cancellationToken)
@@ -614,7 +589,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         {
             var serverAddresses = Substitute.For<IServerAddressesFeature>();
 
-            serverAddresses.Addresses.Returns(Array.Empty<string>());
+            serverAddresses.Addresses.Returns([]);
 
             var server = Substitute.For<IServer>();
 

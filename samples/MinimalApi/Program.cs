@@ -24,7 +24,7 @@ app.MapPost("/hash", async (HttpRequest httpRequest) =>
             statusCode: StatusCodes.Status400BadRequest);
     }
 
-    if (string.IsNullOrWhiteSpace((string)request.Format))
+    if (string.IsNullOrWhiteSpace(request.Format))
     {
         return Results.Problem(
             "No hash output format specified.",
