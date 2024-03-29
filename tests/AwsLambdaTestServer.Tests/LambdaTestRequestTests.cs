@@ -19,7 +19,7 @@ public static class LambdaTestRequestTests
     public static void Constructor_Sets_Properties()
     {
         // Arrange
-        byte[] content = [(byte)1];
+        byte[] content = [1];
 
         // Act
         var actual = new LambdaTestRequest(content);
