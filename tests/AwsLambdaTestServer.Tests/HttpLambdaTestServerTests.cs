@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+#pragma warning disable JSON002
+
 [Collection(nameof(LambdaTestServerCollection))]
 public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
@@ -18,9 +20,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
     {
         // Arrange
         void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
+            => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new HttpLambdaTestServer(Configure);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
@@ -59,9 +59,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
     {
         // Arrange
         void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
+            => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
@@ -98,9 +96,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
     {
         // Arrange
         void Configure(IServiceCollection services)
-        {
-            services.AddLogging((builder) => builder.AddXUnit(this));
-        }
+            => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));

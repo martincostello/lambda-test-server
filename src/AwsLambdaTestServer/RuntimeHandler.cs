@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
@@ -137,7 +137,7 @@ internal sealed class RuntimeHandler : IDisposable
             await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false);
             request = await _requests.Reader.ReadAsync().ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is OperationCanceledException || ex is ChannelClosedException)
+        catch (Exception ex) when (ex is OperationCanceledException or ChannelClosedException)
         {
             Logger?.LogInformation(
                 ex,
