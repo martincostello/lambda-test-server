@@ -3,6 +3,8 @@
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
+#pragma warning disable CA1819
+
 /// <summary>
 /// A class representing a test request to an AWS Lambda function.
 /// </summary>
@@ -31,9 +33,7 @@ public class LambdaTestRequest
     /// <summary>
     /// Gets the raw byte content of the request to the function.
     /// </summary>
-#pragma warning disable CA1819
     public byte[] Content { get; }
-#pragma warning restore CA1819
 
     /// <summary>
     /// Gets or sets an optional string containing the serialized JSON
