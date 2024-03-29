@@ -14,10 +14,12 @@ public static class LambdaTestServerExtensionsTests
         byte[] content = null!;
         string value = null!;
 
+        byte[] emptyBytes = [];
+
         // Act
         await Assert.ThrowsAsync<ArgumentNullException>("content", () => server.EnqueueAsync(content));
         await Assert.ThrowsAsync<ArgumentNullException>("value", () => server.EnqueueAsync(value));
-        await Assert.ThrowsAsync<ArgumentNullException>("server", () => nullServer.EnqueueAsync([]));
+        await Assert.ThrowsAsync<ArgumentNullException>("server", () => nullServer.EnqueueAsync(emptyBytes));
         await Assert.ThrowsAsync<ArgumentNullException>("server", () => nullServer.EnqueueAsync(string.Empty));
     }
 }
