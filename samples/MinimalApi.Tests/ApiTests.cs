@@ -65,7 +65,7 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
             {
                 try
                 {
-                    typeof(HashRequest).Assembly.EntryPoint!.Invoke(null, []);
+                    typeof(HashRequest).Assembly.EntryPoint!.Invoke(null, [Array.Empty<string>()]);
                 }
                 catch (Exception ex) when (LambdaServerWasShutDown(ex))
                 {
