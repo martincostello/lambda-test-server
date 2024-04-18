@@ -9,7 +9,7 @@ on:
       - dotnet-vnext
       - dotnet-nightly
   schedule:
-    - cron: "0 6 * * MON"
+    - cron: '0 6 * * MON'
   workflow_dispatch:
 
 permissions:
@@ -41,7 +41,8 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@c7f9125735019aa87cfc361530512d50ea439c71 # v3.25.1
       with:
-        languages: "csharp"
+        languages: 'csharp'
+        queries: security-and-quality
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@c7f9125735019aa87cfc361530512d50ea439c71 # v3.25.1
@@ -49,4 +50,4 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@c7f9125735019aa87cfc361530512d50ea439c71 # v3.25.1
       with:
-        category: "/language:csharp"
+        category: '/language:csharp'
