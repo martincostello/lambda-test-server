@@ -20,12 +20,6 @@ public static class ReverseFunctionWithMobileSdkTests
         int[] value = [1, 2, 3];
         byte[] content = JsonSerializer.SerializeToUtf8Bytes(value);
 
-        var request = new LambdaTestRequest(content)
-        {
-            ClientContext = JsonSerializer.Serialize(new { client = new { app_title = "my-app" } }),
-            CognitoIdentity = JsonSerializer.Serialize(new { identityId = "my-identity" }),
-        };
-
         LambdaTestContext context = await server.EnqueueAsync(content);
 
         using var httpClient = server.CreateClient();
