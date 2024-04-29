@@ -26,7 +26,6 @@
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <NoWarn>$(NoWarn);CA1515;CA1848</NoWarn>
     <!-- TODO Re-enable when .NET 9 is stable -->
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
