@@ -18,10 +18,13 @@ public static class Examples
 
         // Create a cancellation token that stops the server listening for new requests.
         // Auto-cancel the server after 2 seconds in case something goes wrong and the request is not handled.
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var cancellationTokenSource = new CancellationTokenSource();
 
         // Start the test server so it is ready to listen for requests from the Lambda runtime
         await server.StartAsync(cancellationTokenSource.Token);
+
+        // Now that the server has started, cancel it after 2 seconds if no requests are processed
+        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2));
 
         // Create a test request for the Lambda function being tested
         var value = new MyRequest()
