@@ -23,9 +23,11 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new HttpLambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var cts = new CancellationTokenSource();
 
         await server.StartAsync(cts.Token);
+
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
 
         var context = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
 
@@ -62,9 +64,11 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var cts = new CancellationTokenSource();
 
         await server.StartAsync(cts.Token);
+
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
 
         var context = await server.EnqueueAsync(@"{""Values"": null}");
 
@@ -99,9 +103,11 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var cts = new CancellationTokenSource();
 
         await server.StartAsync(cts.Token);
+
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
 
         var channels = new List<(int Expected, LambdaTestContext Context)>();
 

@@ -19,9 +19,11 @@ public static class AwsIntegrationTests
         Xunit.Skip.If(GetAwsCredentials() is null, "No AWS credentials are configured.");
 
         using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var cancellationTokenSource = new CancellationTokenSource();
 
         await server.StartAsync(cancellationTokenSource.Token);
+
+        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
 
         var request = new QueueExistsRequest()
         {
