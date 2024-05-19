@@ -134,8 +134,12 @@ internal sealed class RuntimeHandler : IDisposable
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(httpContext.RequestAborted, _cancellationToken);
 
             // Wait until there is a request to process
-            await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false);
-            request = await _requests.Reader.ReadAsync().ConfigureAwait(false);
+            if (!await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false))
+            {
+                cts.Token.ThrowIfCancellationRequested();
+            }
+
+            request = await _requests.Reader.ReadAsync(cts.Token).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is OperationCanceledException or ChannelClosedException)
         {
