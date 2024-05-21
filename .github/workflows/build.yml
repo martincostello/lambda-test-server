@@ -37,7 +37,7 @@ jobs:
 
     permissions:
       attestations: write
-      contents: read
+      contents: write
       id-token: write
 
     strategy:
@@ -95,6 +95,7 @@ jobs:
         artifact-name: build-${{ matrix.os-name }}.spdx.json
         output-file: ./artifacts/build.spdx.json
         path: ./artifacts/bin
+        upload-release-assets: ${{ runner.os == 'Windows' }}
 
     - name: Attest artifacts
       uses: actions/attest-build-provenance@173725a1209d09b31f9d30a3890cf2757ebbff0d # v1.1.2
