@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
@@ -292,6 +293,8 @@ public class LambdaTestServer : IDisposable
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.UseContentRoot(Environment.CurrentDirectory);
+        builder.UseShutdownTimeout(TimeSpan.Zero);
+
         builder.ConfigureServices(ConfigureServices);
         builder.Configure(Configure);
     }
