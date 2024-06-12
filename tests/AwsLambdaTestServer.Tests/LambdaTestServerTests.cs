@@ -225,7 +225,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         response!.IsSuccessful.ShouldBeTrue();
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/dotnet/sdk/issues/41541")]
     public async Task Function_Can_Handle_Failed_Request()
     {
         // Arrange
@@ -251,7 +251,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         response.Content.ShouldNotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/dotnet/sdk/issues/41541")]
     public async Task Function_Can_Handle_Failed_Initialization()
     {
         // Arrange
