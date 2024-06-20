@@ -333,9 +333,7 @@ public class LambdaTestServer : IDisposable
 #endif
     }
 
-#if NET5_0_OR_GREATER
     [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(_server))]
-#endif
     private void ThrowIfNotStarted()
     {
         if (_server is null)
