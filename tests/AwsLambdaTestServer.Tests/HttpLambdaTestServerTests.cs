@@ -56,7 +56,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
         Encoding.UTF8.GetString(response.Content).ShouldBe(@"{""Sum"":6}");
     }
 
-    [Fact]
+    [Fact(Skip = "https://github.com/dotnet/sdk/issues/41541")]
     public async Task Function_Can_Handle_Failed_Request()
     {
         // Arrange
