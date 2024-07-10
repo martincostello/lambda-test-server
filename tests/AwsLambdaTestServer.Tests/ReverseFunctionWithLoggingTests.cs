@@ -7,6 +7,7 @@ using MartinCostello.Testing.AwsLambdaTestServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable IDE0130
 namespace MyFunctions;
 
 public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor

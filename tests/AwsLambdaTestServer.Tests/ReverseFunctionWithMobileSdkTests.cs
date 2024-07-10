@@ -4,6 +4,7 @@
 using System.Text.Json;
 using MartinCostello.Testing.AwsLambdaTestServer;
 
+#pragma warning disable IDE0130
 namespace MyFunctions;
 
 public static class ReverseFunctionWithMobileSdkTests
