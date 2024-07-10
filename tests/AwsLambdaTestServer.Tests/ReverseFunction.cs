@@ -4,6 +4,8 @@
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.Json;
 
+#pragma warning disable IDE0130
+
 namespace MyFunctions;
 
 public static class ReverseFunction
