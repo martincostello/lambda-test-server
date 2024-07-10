@@ -16,7 +16,6 @@
     <PackageReference Include="Amazon.Lambda.Serialization.Json" />
     <PackageReference Include="AWSSDK.SQS" />
     <PackageReference Include="MartinCostello.Logging.XUnit" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
