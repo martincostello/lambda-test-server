@@ -55,9 +55,7 @@ public static class ReverseFunction
     }
 
     public static Task<int[]> ReverseAsync(int[] values)
-    {
-        return Task.FromResult(values.Reverse().ToArray());
-    }
+        => Task.FromResult(values.Reverse().ToArray());
 }
 ```
 
@@ -67,10 +65,10 @@ Here's an example using xunit to verify that `ReverseFunction` works as intended
 
 ```csharp
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MyFunctions;
@@ -86,8 +84,8 @@ public static class ReverseFunctionTests
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
-        string json = JsonConvert.SerializeObject(value);
+        int[] value = [1, 2, 3]};
+        string json = JsonSerializer.Serialize(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
 
@@ -101,9 +99,9 @@ public static class ReverseFunctionTests
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        int[] actual = JsonSerializer.Deserialize<int[]>(json);
 
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }
 ```
@@ -225,10 +223,10 @@ An example of providing these values from an xunit test is shown below:
 
 ```csharp
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MyFunctions;
@@ -244,14 +242,14 @@ public static class ReverseFunctionWithMobileSdkTests
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
-        string json = JsonConvert.SerializeObject(value);
+        int[] value = [1, 2, 3];
+        string json = JsonSerializer.Serialize(value);
         byte[] content = Encoding.UTF8.GetBytes(json);
 
         var request = new LambdaTestRequest(content)
         {
-            ClientContext = @"{ ""client"": { ""app_title"": ""my-app"" } }",
-            CognitoIdentity = @"{ ""identityId"": ""my-identity"" }",
+            ClientContext = """{ "client": { "app_title": "my-app" } }""",
+            CognitoIdentity = """{ "identityId": "my-identity" }""",
         };
 
         LambdaTestContext context = await server.EnqueueAsync(json);
@@ -266,9 +264,9 @@ public static class ReverseFunctionWithMobileSdkTests
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        int[] actual = JsonSerializer.Deserialize<int[]>(json);
 
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }
 ```
@@ -285,10 +283,10 @@ An example of this customisation for an xunit test is shown below:
 
 ```csharp
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MyFunctions;
@@ -311,8 +309,8 @@ public static class ReverseFunctionWithCustomOptionsTests
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
-        string json = JsonConvert.SerializeObject(value);
+        int[] value = [1, 2, 3];
+        string json = JsonSerializer.Serialize(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
 
@@ -326,9 +324,9 @@ public static class ReverseFunctionWithCustomOptionsTests
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        int[] actual = JsonSerializer.Deserialize<int[]>(json);
 
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }
 ```
@@ -341,13 +339,13 @@ Here's an example of configuring the test server to route its logs to xunit usin
 
 ```csharp
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -374,8 +372,8 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = new[] { 1, 2, 3 };
-        string json = JsonConvert.SerializeObject(value);
+        int[] value = [1, 2, 3 ];
+        string json = JsonSerializer.Serialize(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
 
@@ -389,9 +387,9 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonConvert.DeserializeObject<int[]>(json);
+        int[] actual = JsonSerializer.Deserialize<int[]>(json);
 
-        Assert.Equal(new[] { 3, 2, 1 }, actual);
+        Assert.Equal([3, 2, 1], actual);
     }
 }
 ```

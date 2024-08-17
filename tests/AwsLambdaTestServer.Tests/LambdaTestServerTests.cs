@@ -173,7 +173,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         await server.StartAsync(cts.Token);
 
-        var context = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
+        var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
 
         CancelWhenResponseAvailable(context, cts);
 
@@ -189,7 +189,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         response!.IsSuccessful.ShouldBeTrue();
         response.Content.ShouldNotBeNull();
         response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
-        Encoding.UTF8.GetString(response.Content).ShouldBe(@"{""Sum"":6}");
+        Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         await server.StartAsync(cts.Token);
 
-        byte[] content = Encoding.UTF8.GetBytes(@"{""Values"": [ 1, 2, 3 ]}");
+        byte[] content = Encoding.UTF8.GetBytes("""{"Values": [ 1, 2, 3 ]}""");
 
         var request = new LambdaTestRequest(content)
         {
@@ -234,7 +234,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         await server.StartAsync(cts.Token);
 
-        var context = await server.EnqueueAsync(@"{""Values"": null}");
+        var context = await server.EnqueueAsync("""{"Values": null}""");
 
         CancelWhenResponseAvailable(context, cts);
 
@@ -260,7 +260,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         await server.StartAsync(cts.Token);
 
-        var context = await server.EnqueueAsync(@"{""Values"": null}");
+        var context = await server.EnqueueAsync("""{"Values": null}""");
 
         CancelWhenResponseAvailable(context, cts);
 
@@ -376,8 +376,8 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
         var request = new LambdaTestRequest([], "my-request-id")
         {
-            ClientContext = @"{""client"":{""app_title"":""my-app""}}",
-            CognitoIdentity = @"{""cognitoIdentityId"":""my-identity""}",
+            ClientContext = """{"client":{"app_title":"my-app"}}""",
+            CognitoIdentity = """{"cognitoIdentityId":"my-identity"}""",
         };
 
         var context = await server.EnqueueAsync(request);
