@@ -372,7 +372,7 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
 
         await server.StartAsync(cancellationTokenSource.Token);
 
-        int[] value = [1, 2, 3 ];
+        int[] value = [1, 2, 3];
         string json = JsonSerializer.Serialize(value);
 
         LambdaTestContext context = await server.EnqueueAsync(json);
