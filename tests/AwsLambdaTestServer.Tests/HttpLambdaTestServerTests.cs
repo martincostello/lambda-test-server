@@ -29,7 +29,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
 
         cts.CancelAfter(TimeSpan.FromSeconds(2));
 
-        var context = await server.EnqueueAsync(@"{""Values"": [ 1, 2, 3 ]}");
+        var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
 
         _ = Task.Run(async () =>
         {
@@ -53,7 +53,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
         response!.IsSuccessful.ShouldBeTrue();
         response.Content.ShouldNotBeNull();
         response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
-        Encoding.UTF8.GetString(response.Content).ShouldBe(@"{""Sum"":6}");
+        Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
 
         cts.CancelAfter(TimeSpan.FromSeconds(2));
 
-        var context = await server.EnqueueAsync(@"{""Values"": null}");
+        var context = await server.EnqueueAsync("""{"Values": null}""");
 
         _ = Task.Run(async () =>
         {
