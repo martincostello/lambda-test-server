@@ -1,6 +1,6 @@
 # AWS Lambda Test Server for .NET
 
-[![NuGet](https://buildstats.info/nuget/MartinCostello.Testing.AwsLambdaTestServer?includePreReleases=true)](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
+[![NuGet](https://img.shields.io/nuget/v/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=NuGet&color=blue)](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
 
 [![Build status](https://github.com/martincostello/lambda-test-server/workflows/build/badge.svg?branch=main&event=push)](https://github.com/martincostello/lambda-test-server/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush)
 [![codecov](https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg)](https://codecov.io/gh/martincostello/lambda-test-server)
