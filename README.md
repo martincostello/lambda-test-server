@@ -441,7 +441,7 @@ Any feedback or issues can be added to the issues for this project in [GitHub](h
 
 ## Repository
 
-The repository is hosted in [GitHub](https://github.com/martincostello/lambda-test-server "This project on GitHub.com"): [https://github.com/martincostello/lambda-test-server.git](https://github.com/martincostello/lambda-test-server.git)
+The repository is hosted in [GitHub](https://github.com/martincostello/lambda-test-server "This project on GitHub.com"): <https://github.com/martincostello/lambda-test-server.git>
 
 ## License
 
@@ -449,7 +449,7 @@ This project is licensed under the [Apache 2.0](https://www.apache.org/licenses/
 
 ## Building and Testing
 
-Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/en-us/download "Download the .NET SDK") to be installed.
+Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/download "Download the .NET SDK") to be installed.
 
 To build and test the library locally from a terminal/command-line, run one of the following set of commands:
 
