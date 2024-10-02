@@ -104,11 +104,11 @@ function DotNetTest {
     }
 }
 
-Write-Information "Packaging library..." -ForegroundColor Green
+Write-Information "Packaging library..."
 DotNetPack $libraryProject
 
 if (-Not $SkipTests) {
-    Write-Information "Running tests..." -ForegroundColor Green
+    Write-Information "Running tests..."
     ForEach ($testProject in $testProjects) {
         DotNetTest $testProject
     }
