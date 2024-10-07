@@ -330,7 +330,11 @@ internal sealed class RuntimeHandler : IDisposable
         bool isSuccessful,
         CancellationToken cancellationToken)
     {
-        var context = _responses[awsRequestId];
+        if (!_responses.TryRemove(awsRequestId, out var context))
+        {
+            throw new InvalidOperationException($"Failed to complete channel for AWS request Id {awsRequestId}.");
+        }
+
         context.DurationTimer!.Stop();
 
         Logger?.LogInformation(
