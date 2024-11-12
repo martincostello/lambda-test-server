@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
     <!-- TODO Update baseline version once .NET 9 support published -->
-    <PackageValidationBaselineVersion>0.7.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>0.8.1</PackageValidationBaselineVersion>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
@@ -24,7 +24,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="8.0.0" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="9.0.0-rc.2.24474.3" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="9.0.0" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="PublicAPI\PublicAPI.Shipped.txt" />
