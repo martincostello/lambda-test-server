@@ -7,8 +7,7 @@
     <IsPackable>true</IsPackable>
     <OutputType>Library</OutputType>
     <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
-    <!-- TODO Update baseline version once .NET 9 support published -->
-    <PackageValidationBaselineVersion>0.8.1</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>0.9.0</PackageValidationBaselineVersion>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <Summary>$(Description)</Summary>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
