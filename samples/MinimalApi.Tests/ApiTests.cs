@@ -128,12 +128,23 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
     private static bool LambdaServerWasShutDown(Exception exception)
     {
         if (exception is not TargetInvocationException targetException ||
-            targetException.InnerException is not HttpRequestException httpException ||
-            httpException.InnerException is not SocketException socketException)
+            targetException.InnerException is not HttpRequestException httpException)
         {
             return false;
         }
 
-        return socketException.SocketErrorCode == SocketError.ConnectionRefused;
+        var inner = httpException.InnerException;
+
+        while (inner is not null)
+        {
+            if (inner is SocketException socketException)
+            {
+                return socketException.SocketErrorCode is SocketError.ConnectionRefused or SocketError.ConnectionReset;
+            }
+
+            inner = inner.InnerException;
+        }
+
+        return false;
     }
 }
