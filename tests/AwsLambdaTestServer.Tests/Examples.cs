@@ -39,15 +39,17 @@ public static class Examples
         LambdaTestContext context = await server.EnqueueAsync(requestJson);
 
         // Queue a task to stop the test server from listening as soon as the response is available
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
-
-            if (!cancellationTokenSource.IsCancellationRequested)
+        _ = Task.Run(
+            async () =>
             {
-                await cancellationTokenSource.CancelAsync();
-            }
-        });
+                await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
+
+                if (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    await cancellationTokenSource.CancelAsync();
+                }
+            },
+            cancellationTokenSource.Token);
 
         // Create an HttpClient for the Lambda to use with LambdaBootstrap
         using var httpClient = server.CreateClient();

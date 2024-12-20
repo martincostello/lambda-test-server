@@ -2,21 +2,20 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using Xunit.Sdk;
+using MartinCostello.Testing.AwsLambdaTestServer;
 
-[assembly: TestFramework("MartinCostello.Testing.AwsLambdaTestServer.AssemblyFixture", "MartinCostello.Testing.AwsLambdaTestServer.Tests")]
+[assembly: AssemblyFixture(typeof(AssemblyFixture))]
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
-public sealed class AssemblyFixture : XunitTestFramework
+public sealed class AssemblyFixture
 {
     // Read the default memory limits before any of the tests execute any code that may change it.
     // The cast to ulong is required for the setting to be respected by the runtime.
     // See https://github.com/aws/aws-lambda-dotnet/pull/1595#issuecomment-1771747410.
     private static readonly ulong DefaultMemory = (ulong)GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
 
-    public AssemblyFixture(IMessageSink messageSink)
-      : base(messageSink)
+    public AssemblyFixture()
     {
         ResetMemoryLimits();
     }

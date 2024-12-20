@@ -10,7 +10,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 #pragma warning disable JSON002
 
-[Collection(nameof(LambdaTestServerCollection))]
+[Collection<LambdaTestServerCollection>]
 public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
     public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
@@ -31,15 +31,17 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
 
         var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
+        _ = Task.Run(
+            async () =>
             {
-                await cts.CancelAsync();
-            }
-        });
+                await context.Response.WaitToReadAsync(cts.Token);
+
+                if (!cts.IsCancellationRequested)
+                {
+                    await cts.CancelAsync();
+                }
+            },
+            cts.Token);
 
         using var httpClient = server.CreateClient();
 
@@ -72,15 +74,17 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
 
         var context = await server.EnqueueAsync("""{"Values": null}""");
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cts.Token);
-
-            if (!cts.IsCancellationRequested)
+        _ = Task.Run(
+            async () =>
             {
-                await cts.CancelAsync();
-            }
-        });
+                await context.Response.WaitToReadAsync(cts.Token);
+
+                if (!cts.IsCancellationRequested)
+                {
+                    await cts.CancelAsync();
+                }
+            },
+            cts.Token);
 
         using var httpClient = server.CreateClient();
 
@@ -121,18 +125,20 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
         }
 
-        _ = Task.Run(async () =>
-        {
-            foreach ((var _, var context) in channels)
+        _ = Task.Run(
+            async () =>
             {
-                await context.Response.WaitToReadAsync(cts.Token);
-            }
+                foreach ((var _, var context) in channels)
+                {
+                    await context.Response.WaitToReadAsync(cts.Token);
+                }
 
-            if (!cts.IsCancellationRequested)
-            {
-                await cts.CancelAsync();
-            }
-        });
+                if (!cts.IsCancellationRequested)
+                {
+                    await cts.CancelAsync();
+                }
+            },
+            cts.Token);
 
         using var httpClient = server.CreateClient();
 

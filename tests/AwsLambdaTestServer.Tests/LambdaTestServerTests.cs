@@ -17,7 +17,7 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 #pragma warning disable JSON002
 
-[Collection(nameof(LambdaTestServerCollection))]
+[Collection<LambdaTestServerCollection>]
 public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
     public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
@@ -95,7 +95,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         using var target = new LambdaTestServer();
         var request = new LambdaTestRequest([]);
 
-        await target.StartAsync();
+        await target.StartAsync(TestContext.Current.CancellationToken);
 
         var context = await target.EnqueueAsync(request);
 
@@ -118,13 +118,13 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         target.IsStarted.ShouldBeFalse();
 
         // Act
-        await target.StartAsync();
+        await target.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         target.IsStarted.ShouldBeTrue();
 
         // Act and Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         using var target = new NullServerLambdaTestServer();
 
         // Act and Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync(TestContext.Current.CancellationToken));
 
         target.IsStarted.ShouldBeFalse();
         exception.Message.ShouldBe("No IServer was returned by the CreateServer() method.");
@@ -147,7 +147,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         using var target = new NullServerAddressesLambdaTestServer();
 
         // Act and Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync());
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync(TestContext.Current.CancellationToken));
 
         target.IsStarted.ShouldBeFalse();
         exception.Message.ShouldBe("No server addresses are available.");
@@ -160,7 +160,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         using var target = new NullWebHostBuilderLambdaTestServer();
 
         // Act and Assert
-        await Assert.ThrowsAsync<ArgumentNullException>("builder", () => target.StartAsync());
+        await Assert.ThrowsAsync<ArgumentNullException>("builder", () => target.StartAsync(TestContext.Current.CancellationToken));
         target.IsStarted.ShouldBeFalse();
     }
 
@@ -292,18 +292,20 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
             channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
         }
 
-        _ = Task.Run(async () =>
-        {
-            foreach ((var _, var context) in channels)
+        _ = Task.Run(
+            async () =>
             {
-                await context.Response.WaitToReadAsync(cts.Token);
-            }
+                foreach ((var _, var context) in channels)
+                {
+                    await context.Response.WaitToReadAsync(cts.Token);
+                }
 
-            if (!cts.IsCancellationRequested)
-            {
-                await cts.CancelAsync();
-            }
-        });
+                if (!cts.IsCancellationRequested)
+                {
+                    await cts.CancelAsync();
+                }
+            },
+            cts.Token);
 
         using var httpClient = server.CreateClient();
 
@@ -415,12 +417,12 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
     }
 
-    [SkippableTheory]
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task Can_Enforce_Memory_Limit(bool disableMemoryLimitCheck)
     {
-        Xunit.Skip.If(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
+        Assert.SkipWhen(OperatingSystem.IsMacOS(), "Changing the GC memory limits is not supported on macOS.");
 
         // Arrange
         LambdaTestServer.ClearLambdaEnvironmentVariables();

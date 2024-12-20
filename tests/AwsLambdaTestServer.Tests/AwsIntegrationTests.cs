@@ -12,11 +12,11 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 public static class AwsIntegrationTests
 {
-    [SkippableFact]
+    [Fact]
     public static async Task Runtime_Generates_Valid_Aws_Trace_Id()
     {
         // Arrange
-        Xunit.Skip.If(GetAwsCredentials() is null, "No AWS credentials are configured.");
+        Assert.SkipWhen(GetAwsCredentials() is null, "No AWS credentials are configured.");
 
         using var server = new LambdaTestServer();
         using var cancellationTokenSource = new CancellationTokenSource();
@@ -33,15 +33,17 @@ public static class AwsIntegrationTests
         var json = System.Text.Json.JsonSerializer.Serialize(request);
         var context = await server.EnqueueAsync(json);
 
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
-
-            if (!cancellationTokenSource.IsCancellationRequested)
+        _ = Task.Run(
+            async () =>
             {
-                await cancellationTokenSource.CancelAsync();
-            }
-        });
+                await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
+
+                if (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    await cancellationTokenSource.CancelAsync();
+                }
+            },
+            cancellationTokenSource.Token);
 
         using var httpClient = server.CreateClient();
 

@@ -9,7 +9,7 @@ namespace MyFunctions;
 
 public static class ReverseFunctionWithMobileSdkTests
 {
-    [RetryFact]
+    [Fact]
     public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
     {
         // Arrange

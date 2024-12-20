@@ -22,10 +22,10 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
     public void Dispose()
         => _server.Dispose();
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
         => await _server.DisposeAsync();
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
         => await _server.InitializeAsync();
 
     [Fact(Timeout = 5_000)]

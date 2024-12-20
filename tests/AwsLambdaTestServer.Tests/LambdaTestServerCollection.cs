@@ -4,6 +4,4 @@
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
 [CollectionDefinition(nameof(LambdaTestServerCollection), DisableParallelization = true)]
-public static class LambdaTestServerCollection
-{
-}
+public class LambdaTestServerCollection;
