@@ -9,7 +9,7 @@ namespace MyFunctions;
 
 public static class ReverseFunctionTests
 {
-    [RetryFact]
+    [Fact]
     public static async Task Function_Reverses_Numbers()
     {
         // Arrange

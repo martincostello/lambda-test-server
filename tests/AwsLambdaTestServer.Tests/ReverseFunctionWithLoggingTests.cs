@@ -14,7 +14,7 @@ public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : I
 {
     public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
-    [RetryFact]
+    [Fact]
     public async Task Function_Reverses_Numbers_With_Logging()
     {
         // Arrange

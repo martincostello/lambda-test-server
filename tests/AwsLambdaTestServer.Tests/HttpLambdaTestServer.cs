@@ -27,7 +27,7 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
 
     public ITestOutputHelper? OutputHelper { get; set; }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_webHost is not null)
         {
@@ -37,7 +37,7 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
         Dispose();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Options.Configure = (services) =>
             services.AddLogging((builder) => builder.AddXUnit(this));
