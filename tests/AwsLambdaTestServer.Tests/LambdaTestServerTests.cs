@@ -286,7 +286,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         {
             var request = new MyRequest()
             {
-                Values = Enumerable.Range(1, i + 1).ToArray(),
+                Values = [.. Enumerable.Range(1, i + 1)],
             };
 
             channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
