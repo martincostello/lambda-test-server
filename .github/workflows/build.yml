@@ -79,7 +79,7 @@ jobs:
         github.event.repository.fork == false &&
         !contains('["costellobot[bot]", "dependabot[bot]", "github-actions[bot]"]', github.actor)
       with:
-        role-to-assume: arn:aws:iam::492538393790:role/github-actions-test
+        role-to-assume: arn:aws:iam::492538393790:role/github-actions-martincostello-lambda-test-server
         role-session-name: ${{ github.event.repository.name }}-${{ github.run_id }}-build
         aws-region: eu-west-2
 
