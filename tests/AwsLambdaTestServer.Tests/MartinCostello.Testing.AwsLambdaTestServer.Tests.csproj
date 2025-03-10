@@ -1,12 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Tests for MartinCostello.Testing.AwsLambdaTestServer.</Description>
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);CA1062;CA1707;CA1711;CA1861;CA2007;CA2234;SA1600</NoWarn>
+    <NoWarn>$(NoWarn);CA2234</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
-    <Summary>$(Description)</Summary>
     <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
@@ -16,9 +13,12 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" />
     <PackageReference Include="AWSSDK.SQS" />
+    <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="GitHubActionsTestLogger" NoWarn="RT0003" />
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="ReportGenerator" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.v3" />
@@ -28,9 +28,11 @@
   </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
-    <CoverletOutput>$([System.IO.Path]::Combine($(ArtifactsPath), 'coverage', 'coverage'))</CoverletOutput>
-    <CoverletOutputFormat>cobertura,json</CoverletOutputFormat>
-    <Exclude>[Amazon.Lambda*]*,[MathsFunctions*]*,[MinimalApi*]*,[xunit.*]*</Exclude>
     <Threshold>84</Threshold>
   </PropertyGroup>
+  <ItemGroup>
+    <CoverletExclude Include="$([MSBuild]::Escape('[Amazon.Lambda*]*'))" />
+    <CoverletExclude Include="$([MSBuild]::Escape('[MathsFunctions*]*'))" />
+    <CoverletExclude Include="$([MSBuild]::Escape('[MinimalApi*]*'))" />
+  </ItemGroup>
 </Project>
