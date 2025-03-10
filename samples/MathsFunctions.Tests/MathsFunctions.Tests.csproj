@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);CA1062;CA1707;CA2007;CA2234;SA1600</NoWarn>
+    <NoWarn>$(NoWarn);CA1062;CA2234</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>MathsFunctions</RootNamespace>
     <TargetFramework>net9.0</TargetFramework>
