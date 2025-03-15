@@ -4,7 +4,7 @@
     <NoWarn>$(NoWarn);CA2000;CA2007;SA1600</NoWarn>
     <OutputType>Library</OutputType>
     <RootNamespace>MathsFunctions</RootNamespace>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
