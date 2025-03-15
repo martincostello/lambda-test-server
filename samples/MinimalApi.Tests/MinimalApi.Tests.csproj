@@ -3,7 +3,7 @@
     <NoWarn>$(NoWarn);CA1062;CA2234</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>MinimalApi</RootNamespace>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
