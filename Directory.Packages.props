@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.7.4" />
-    <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.12.3" />
+    <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.13.0" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="2.2.4" />
     <PackageVersion Include="AWSSDK.SQS" Version="3.7.400.3" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
