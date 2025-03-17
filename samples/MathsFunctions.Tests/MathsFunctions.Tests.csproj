@@ -1,14 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);CA1062;CA2234</NoWarn>
     <OutputType>Exe</OutputType>
     <RootNamespace>MathsFunctions</RootNamespace>
     <TargetFramework>net9.0</TargetFramework>
+    <UseDefaultCodeAnalysisRuleSet>true</UseDefaultCodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GitHubActionsTestLogger" NoWarn="RT0003" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
