@@ -88,9 +88,9 @@ function DotNetTest {
 
     $additionalArgs = @()
 
-    if (![string]::IsNullOrEmpty($env:GITHUB_SHA)) {
-        $additionalArgs += "--logger"
-        $additionalArgs += "GitHubActions;report-warnings=false"
+    if (-Not [string]::IsNullOrEmpty($env:GITHUB_SHA)) {
+        $additionalArgs += "--logger:GitHubActions;report-warnings=false"
+        $additionalArgs += "--logger:junit;LogFilePath=junit.xml"
     }
 
     & $dotnet test $Project --configuration "Release" $additionalArgs -- RunConfiguration.TestSessionTimeout=300000
