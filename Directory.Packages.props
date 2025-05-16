@@ -1,12 +1,12 @@
 <Project>
   <ItemGroup>
     <GlobalPackageReference Include="MartinCostello.BuildKit" Version="0.6.2" />
-    <GlobalPackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" PrivateAssets="All" />
+    <GlobalPackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="4.14.0" PrivateAssets="All" />
     <GlobalPackageReference Include="ReferenceTrimmer" Version="3.3.11" PrivateAssets="All" />
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.8.0" />
+    <PackageVersion Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.8.1" />
     <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.13.0" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="2.2.4" />
     <PackageVersion Include="AWSSDK.SQS" Version="4.0.0" />
