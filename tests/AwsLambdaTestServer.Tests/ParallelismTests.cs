@@ -53,7 +53,7 @@ public static class ParallelismTests
         int messages,
         CancellationTokenSource cts)
     {
-        var completionSource = new TaskCompletionSource<int>();
+        var completionSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         _ = Task.Run(async () =>
         {
