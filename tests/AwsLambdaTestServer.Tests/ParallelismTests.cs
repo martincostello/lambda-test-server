@@ -22,8 +22,10 @@ public static class ParallelismTests
 
         using var httpClient = server.CreateClient();
 
+#pragma warning disable CA2025
         // Enqueue the requests to process in the background
         var addTask = EnqueueInParallel(messageCount, server);
+#pragma warning restore CA2025
 
         // Start a task to consume the responses in the background
         var processTask = Assert(addTask, messageCount, cts);
