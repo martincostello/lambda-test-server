@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "extends": ["monorepo:aws-sdk-net"],
+      "description": ["Disable patch version updates for the AWS SDK"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    }
+  ]
+}
