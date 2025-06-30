@@ -77,7 +77,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
       if: |
         github.event.repository.fork == false &&
-        !contains('["costellobot[bot]", "dependabot[bot]", "github-actions[bot]"]', github.actor)
+        !contains('["costellobot[bot]", "dependabot[bot]", "github-actions[bot]", "renovate[bot]"]', github.actor)
       with:
         role-to-assume: arn:aws:iam::492538393790:role/github-actions-martincostello-lambda-test-server
         role-session-name: ${{ github.event.repository.name }}-${{ github.run_id }}-build
