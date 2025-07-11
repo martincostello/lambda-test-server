@@ -3,7 +3,7 @@
     <Description>Tests for MartinCostello.Testing.AwsLambdaTestServer.</Description>
     <OutputType>Exe</OutputType>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <UseDefaultCodeAnalysisRuleSet>true</UseDefaultCodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
