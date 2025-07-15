@@ -5,6 +5,7 @@
     <EnablePackageValidation>true</EnablePackageValidation>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CA1873</NoWarn>
     <OutputType>Library</OutputType>
     <PackageId>MartinCostello.Testing.AwsLambdaTestServer</PackageId>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
