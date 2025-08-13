@@ -76,6 +76,12 @@ public class LambdaTestServer : IDisposable
     public LambdaTestServerOptions Options { get; }
 
     /// <summary>
+    /// Gets or sets an optional delegate to invoke when a request to the Lambda function has completed
+    /// processing that receives the AWS request ID and whether the invocation was successful to the invocation.
+    /// </summary>
+    public Func<string, bool, ValueTask>? OnInvocationCompleted { get; set; }
+
+    /// <summary>
     /// Clears any AWS Lambda environment variables set by instances of <see cref="LambdaTestServer"/>.
     /// </summary>
     public static void ClearLambdaEnvironmentVariables()
@@ -179,7 +185,17 @@ public class LambdaTestServer : IDisposable
         }
 
         _onStopped = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _onDisposed.Token);
-        _handler = new RuntimeHandler(Options, _onStopped.Token);
+
+        _handler = new RuntimeHandler(Options, _onStopped.Token)
+        {
+            OnInvocationHandled = async (requestId, successful) =>
+            {
+                if (OnInvocationCompleted is { } callback)
+                {
+                    await callback(requestId, successful).ConfigureAwait(false);
+                }
+            },
+        };
 
         var builder = new WebHostBuilder();
 

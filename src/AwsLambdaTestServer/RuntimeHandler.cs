@@ -73,6 +73,11 @@ internal sealed class RuntimeHandler : IDisposable
     /// </summary>
     internal ILogger? Logger { get; set; }
 
+    /// <summary>
+    /// Gets an optional delegate to invoke when an invocation has completed being handled.
+    /// </summary>
+    internal required Func<string, bool, ValueTask> OnInvocationHandled { get; init; }
+
     /// <inheritdoc />
     public void Dispose()
     {
@@ -217,6 +222,8 @@ internal sealed class RuntimeHandler : IDisposable
             httpContext.RequestAborted).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
+
+        await OnInvocationHandled(awsRequestId!, true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -245,6 +252,8 @@ internal sealed class RuntimeHandler : IDisposable
             httpContext.RequestAborted).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
+
+        await OnInvocationHandled(awsRequestId!, false).ConfigureAwait(false);
     }
 
     /// <summary>

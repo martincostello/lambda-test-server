@@ -10,50 +10,38 @@ using Amazon.SQS.Model;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
-public static class AwsIntegrationTests
+public class AwsIntegrationTests(ITestOutputHelper outputHelper) : FunctionTests(outputHelper)
 {
+    protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+
     [Fact]
-    public static async Task Runtime_Generates_Valid_Aws_Trace_Id()
+    public async Task Runtime_Generates_Valid_Aws_Trace_Id()
     {
         // Arrange
         Assert.SkipWhen(GetAwsCredentials() is null, "No AWS credentials are configured.");
 
         using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource();
 
-        await server.StartAsync(cancellationTokenSource.Token);
-
-        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
-
-        var request = new QueueExistsRequest()
+        await WithServerAsync(server, async static (server, cts) =>
         {
-            QueueName = Guid.NewGuid().ToString(),
-        };
-
-        var json = System.Text.Json.JsonSerializer.Serialize(request);
-        var context = await server.EnqueueAsync(json);
-
-        _ = Task.Run(
-            async () =>
+            var request = new QueueExistsRequest()
             {
-                await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
+                QueueName = Guid.NewGuid().ToString(),
+            };
 
-                if (!cancellationTokenSource.IsCancellationRequested)
-                {
-                    await cancellationTokenSource.CancelAsync();
-                }
-            },
-            cancellationTokenSource.Token);
+            var json = System.Text.Json.JsonSerializer.Serialize(request);
+            var context = await server.EnqueueAsync(json);
 
-        using var httpClient = server.CreateClient();
+            using var httpClient = server.CreateClient();
 
-        // Act
-        await RunAsync(httpClient, cancellationTokenSource.Token);
+            // Act
+            await RunAsync(httpClient, cts.Token);
 
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-        response.ShouldNotBeNull();
-        response.IsSuccessful.ShouldBeTrue();
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
+            response.ShouldNotBeNull();
+            response.IsSuccessful.ShouldBeTrue();
+        });
     }
 
     private static async Task RunAsync(HttpClient? httpClient, CancellationToken cancellationToken)

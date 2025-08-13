@@ -1,3 +1,5 @@
 #nullable enable
 *REMOVED*virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.OnInvocationCompleted.get -> System.Func<string!, bool, System.Threading.Tasks.ValueTask>?
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.OnInvocationCompleted.set -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!

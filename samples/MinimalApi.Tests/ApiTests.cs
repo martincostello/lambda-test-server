@@ -57,7 +57,8 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
 
         LambdaTestContext context = await _server.EnqueueAsync(json);
 
-        using var cts = GetCancellationTokenSourceForResponseAvailable(context);
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(shutdownAfter.Token, TestContext.Current.CancellationToken);
 
         // Act
         _ = Task.Run(
@@ -72,10 +73,10 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
                     // The Lambda runtime server was shut down
                 }
             },
-            cts.Token);
+            linkedToken.Token);
 
         // Assert
-        await context.Response.WaitToReadAsync(cts.IsCancellationRequested ? default : cts.Token);
+        await context.Response.WaitToReadAsync(linkedToken.Token);
 
         context.Response.TryRead(out LambdaTestResponse? response).ShouldBeTrue();
         response.IsSuccessful.ShouldBeTrue($"Failed to process request: {await response.ReadAsStringAsync()}");
@@ -96,33 +97,6 @@ public sealed class ApiTests : IAsyncLifetime, IDisposable
 
         hash.ShouldNotBeNull();
         hash.Hash.ShouldBe("XXE/IcKhlw/yjLTH7cCWPSr7JfOw5LuYXeBuE5skNfA=");
-    }
-
-    private static CancellationTokenSource GetCancellationTokenSourceForResponseAvailable(
-        LambdaTestContext context,
-        TimeSpan? timeout = null)
-    {
-        if (timeout == null)
-        {
-            timeout = System.Diagnostics.Debugger.IsAttached ? Timeout.InfiniteTimeSpan : TimeSpan.FromSeconds(3);
-        }
-
-        var cts = new CancellationTokenSource(timeout.Value);
-
-        // Queue a task to stop the test server from listening as soon as the response is available
-        _ = Task.Run(
-            async () =>
-            {
-                await context.Response.WaitToReadAsync(cts.Token);
-
-                if (!cts.IsCancellationRequested)
-                {
-                    await cts.CancelAsync();
-                }
-            },
-            cts.Token);
-
-        return cts;
     }
 
     private static bool LambdaServerWasShutDown(Exception exception)
