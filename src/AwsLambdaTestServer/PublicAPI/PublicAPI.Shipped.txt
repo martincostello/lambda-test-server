@@ -22,6 +22,8 @@ MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.IsStarted.get -> boo
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions! options) -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection!>! configure) -> void
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.OnInvocationCompleted.get -> System.Func<string!, bool, System.Threading.Tasks.ValueTask>?
+MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.OnInvocationCompleted.set -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Options.get -> MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions!
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.~LambdaTestServer() -> void
 MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerExtensions
@@ -55,6 +57,6 @@ virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Configure(Mi
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient!
-virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
+virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose(bool disposing) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.StartAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
