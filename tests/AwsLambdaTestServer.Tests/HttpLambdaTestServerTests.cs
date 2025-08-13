@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
-using MartinCostello.Logging.XUnit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +9,8 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 #pragma warning disable JSON002
 
 [Collection<LambdaTestServerCollection>]
-public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
+public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTests(outputHelper)
 {
-    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
-
     [Fact]
     public async Task Function_Can_Process_Request()
     {
@@ -22,39 +19,25 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new HttpLambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource();
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
 
-        cts.CancelAfter(TimeSpan.FromSeconds(2));
+            using var httpClient = server.CreateClient();
 
-        var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        _ = Task.Run(
-            async () =>
-            {
-                await context.Response.WaitToReadAsync(cts.Token);
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-                if (!cts.IsCancellationRequested)
-                {
-                    await cts.CancelAsync();
-                }
-            },
-            cts.Token);
-
-        using var httpClient = server.CreateClient();
-
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeTrue();
-        response.Content.ShouldNotBeNull();
-        response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
-        Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+            response.Content.ShouldNotBeNull();
+            response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
+            Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
+        });
     }
 
     [Fact]
@@ -65,37 +48,23 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource();
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": null}""");
 
-        cts.CancelAfter(TimeSpan.FromSeconds(2));
+            using var httpClient = server.CreateClient();
 
-        var context = await server.EnqueueAsync("""{"Values": null}""");
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        _ = Task.Run(
-            async () =>
-            {
-                await context.Response.WaitToReadAsync(cts.Token);
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-                if (!cts.IsCancellationRequested)
-                {
-                    await cts.CancelAsync();
-                }
-            },
-            cts.Token);
-
-        using var httpClient = server.CreateClient();
-
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeFalse();
-        response.Content.ShouldNotBeNull();
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeFalse();
+            response.Content.ShouldNotBeNull();
+        });
     }
 
     [Fact]
@@ -106,55 +75,51 @@ public class HttpLambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOu
             => services.AddLogging((builder) => builder.AddXUnit(this));
 
         using var server = new LambdaTestServer(Configure);
-        using var cts = new CancellationTokenSource();
 
-        await server.StartAsync(cts.Token);
-
-        cts.CancelAfter(TimeSpan.FromSeconds(2));
-
-        var channels = new List<(int Expected, LambdaTestContext Context)>();
-
-        for (int i = 0; i < 10; i++)
+        await WithServerAsync(server, async static (server, cts) =>
         {
-            var request = new MyRequest()
+            int received = 0;
+            int count = 10;
+
+            server.OnInvocationCompleted = async (_, _) =>
             {
-                Values = [.. Enumerable.Range(1, i + 1)],
-            };
-
-            channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
-        }
-
-        _ = Task.Run(
-            async () =>
-            {
-                foreach ((var _, var context) in channels)
-                {
-                    await context.Response.WaitToReadAsync(cts.Token);
-                }
-
-                if (!cts.IsCancellationRequested)
+                if (Interlocked.Increment(ref received) == count)
                 {
                     await cts.CancelAsync();
                 }
-            },
-            cts.Token);
+            };
 
-        using var httpClient = server.CreateClient();
+            var channels = new List<(int Expected, LambdaTestContext Context)>();
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+            for (int i = 0; i < count; i++)
+            {
+                var request = new MyRequest()
+                {
+                    Values = [.. Enumerable.Range(1, i + 1)],
+                };
 
-        // Assert
-        foreach ((int expected, var context) in channels)
-        {
-            context.Response.TryRead(out var response).ShouldBeTrue();
+                channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
+            }
 
-            response.ShouldNotBeNull();
-            response!.IsSuccessful.ShouldBeTrue();
-            response.Content.ShouldNotBeNull();
+            using var httpClient = server.CreateClient();
 
-            var deserialized = response.ReadAs<MyResponse>();
-            deserialized.Sum.ShouldBe(expected);
-        }
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            foreach ((int expected, var context) in channels)
+            {
+                context.Response.TryRead(out var response).ShouldBeTrue();
+
+                response.ShouldNotBeNull();
+                response!.IsSuccessful.ShouldBeTrue();
+                response.Content.ShouldNotBeNull();
+
+                var deserialized = response.ReadAs<MyResponse>();
+                deserialized.Sum.ShouldBe(expected);
+            }
+
+            received.ShouldBe(count, "Not all requests were processed.");
+        });
     }
 }

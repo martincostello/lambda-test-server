@@ -1,4 +1,4 @@
-// Copyright (c) Martin Costello, 2019. All rights reserved.
+﻿// Copyright (c) Martin Costello, 2019. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
@@ -18,10 +18,15 @@ public static class MathsFunctionTests
     public static async Task Function_Computes_Results(double left, string op, double right, double expected)
     {
         // Arrange
-        using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(shutdownAfter.Token, TestContext.Current.CancellationToken);
 
-        await server.StartAsync(cancellationTokenSource.Token);
+        using var server = new LambdaTestServer()
+        {
+            OnInvocationCompleted = async (_, _) => await shutdownAfter.CancelAsync(),
+        };
+
+        await server.StartAsync(timeout.Token);
 
         var value = new MathsRequest() { Left = left, Operator = op, Right = right };
         string json = JsonSerializer.Serialize(value);
@@ -31,7 +36,7 @@ public static class MathsFunctionTests
         using var httpClient = server.CreateClient();
 
         // Act
-        await MathsFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        await MathsFunction.RunAsync(httpClient, timeout.Token);
 
         // Assert
         Assert.True(context.Response.TryRead(out var response));

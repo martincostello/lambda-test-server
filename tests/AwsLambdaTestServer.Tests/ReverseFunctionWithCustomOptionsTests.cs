@@ -7,10 +7,10 @@ using MartinCostello.Testing.AwsLambdaTestServer;
 #pragma warning disable IDE0130
 namespace MyFunctions;
 
-public static class ReverseFunctionWithCustomOptionsTests
+public class ReverseFunctionWithCustomOptionsTests(ITestOutputHelper outputHelper) : FunctionTests(outputHelper)
 {
     [Fact]
-    public static async Task Function_Reverses_Numbers_With_Custom_Options()
+    public async Task Function_Reverses_Numbers_With_Custom_Options()
     {
         // Arrange
         var options = new LambdaTestServerOptions()
@@ -21,28 +21,28 @@ public static class ReverseFunctionWithCustomOptionsTests
         };
 
         using var server = new LambdaTestServer(options);
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cancellationTokenSource.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            int[] value = [1, 2, 3];
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
 
-        int[] value = [1, 2, 3];
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
+            LambdaTestContext context = await server.EnqueueAsync(json);
 
-        LambdaTestContext context = await server.EnqueueAsync(json);
+            using var httpClient = server.CreateClient();
 
-        using var httpClient = server.CreateClient();
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cts.Token);
 
-        // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
+            Assert.True(response!.IsSuccessful);
 
-        // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
-        Assert.True(response!.IsSuccessful);
+            var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
-        var actual = JsonSerializer.Deserialize<int[]>(response.Content);
-
-        Assert.NotNull(actual);
-        int[] expected = [3, 2, 1];
-        Assert.Equal(expected, actual);
+            Assert.NotNull(actual);
+            int[] expected = [3, 2, 1];
+            Assert.Equal(expected, actual);
+        });
     }
 }

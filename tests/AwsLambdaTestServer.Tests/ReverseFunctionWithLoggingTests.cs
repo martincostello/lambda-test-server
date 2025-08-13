@@ -2,7 +2,6 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
 using System.Text.Json;
-using MartinCostello.Logging.XUnit;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,10 +9,8 @@ using Microsoft.Extensions.Logging;
 #pragma warning disable IDE0130
 namespace MyFunctions;
 
-public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
+public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : FunctionTests(outputHelper)
 {
-    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
-
     [Fact]
     public async Task Function_Reverses_Numbers_With_Logging()
     {
@@ -22,29 +19,28 @@ public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : I
             (services) => services.AddLogging(
                 (builder) => builder.AddXUnit(this)));
 
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            int[] value = [1, 2, 3];
+            byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
 
-        await server.StartAsync(cancellationTokenSource.Token);
+            LambdaTestContext context = await server.EnqueueAsync(json);
 
-        int[] value = [1, 2, 3];
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(value);
+            using var httpClient = server.CreateClient();
 
-        LambdaTestContext context = await server.EnqueueAsync(json);
+            // Act
+            await ReverseFunction.RunAsync(httpClient, cts.Token);
 
-        using var httpClient = server.CreateClient();
+            // Assert
+            Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
+            Assert.NotNull(response);
+            Assert.True(response!.IsSuccessful);
 
-        // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+            var actual = JsonSerializer.Deserialize<int[]>(response.Content);
 
-        // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
-        Assert.NotNull(response);
-        Assert.True(response!.IsSuccessful);
-
-        var actual = JsonSerializer.Deserialize<int[]>(response.Content);
-
-        Assert.NotNull(actual);
-        int[] expected = [3, 2, 1];
-        Assert.Equal(expected, actual);
+            Assert.NotNull(actual);
+            int[] expected = [3, 2, 1];
+            Assert.Equal(expected, actual);
+        });
     }
 }

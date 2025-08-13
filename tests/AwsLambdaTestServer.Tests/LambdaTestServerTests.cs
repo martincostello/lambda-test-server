@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using Amazon.Lambda.RuntimeSupport;
-using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -17,10 +16,8 @@ namespace MartinCostello.Testing.AwsLambdaTestServer;
 #pragma warning disable JSON002
 
 [Collection<LambdaTestServerCollection>]
-public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
+public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTests(outputHelper)
 {
-    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
-
     [Fact]
     public void Constructor_Validates_Parameters()
     {
@@ -168,27 +165,25 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
 
-        var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
+            using var httpClient = server.CreateClient();
 
-        CancelWhenResponseAvailable(context, cts);
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        using var httpClient = server.CreateClient();
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeTrue();
-        response.Content.ShouldNotBeNull();
-        response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
-        Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+            response.Content.ShouldNotBeNull();
+            response.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
+            Encoding.UTF8.GetString(response.Content).ShouldBe("""{"Sum":6}""");
+        });
     }
 
     [Fact]
@@ -196,32 +191,30 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
-
-        byte[] content = Encoding.UTF8.GetBytes("""{"Values": [ 1, 2, 3 ]}""");
-
-        var request = new LambdaTestRequest(content)
+        await WithServerAsync(server, async static (server, cts) =>
         {
-            ClientContext = "{}",
-            CognitoIdentity = "{}",
-        };
+            byte[] content = Encoding.UTF8.GetBytes("""{"Values": [ 1, 2, 3 ]}""");
 
-        var context = await server.EnqueueAsync(request);
+            var request = new LambdaTestRequest(content)
+            {
+                ClientContext = "{}",
+                CognitoIdentity = "{}",
+            };
 
-        CancelWhenResponseAvailable(context, cts);
+            var context = await server.EnqueueAsync(request);
 
-        using var httpClient = server.CreateClient();
+            using var httpClient = server.CreateClient();
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeTrue();
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+        });
     }
 
     [Fact]
@@ -229,25 +222,23 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": null}""");
 
-        var context = await server.EnqueueAsync("""{"Values": null}""");
+            using var httpClient = server.CreateClient();
 
-        CancelWhenResponseAvailable(context, cts);
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        using var httpClient = server.CreateClient();
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeFalse();
-        response.Content.ShouldNotBeNull();
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeFalse();
+            response.Content.ShouldNotBeNull();
+        });
     }
 
     [Fact]
@@ -255,19 +246,17 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": null}""");
 
-        var context = await server.EnqueueAsync("""{"Values": null}""");
+            using var httpClient = server.CreateClient();
 
-        CancelWhenResponseAvailable(context, cts);
-
-        using var httpClient = server.CreateClient();
-
-        // Act
-        await Assert.ThrowsAsync<InvalidOperationException>(
-            () => FunctionRunner.RunAsync<MyFailedInitializationHandler>(httpClient, cts.Token));
+            // Act and Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => FunctionRunner.RunAsync<MyFailedInitializationHandler>(httpClient, cts.Token));
+        });
     }
 
     [Fact]
@@ -275,54 +264,52 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
-
-        var channels = new List<(int Expected, LambdaTestContext Context)>();
-
-        for (int i = 0; i < 10; i++)
+        await WithServerAsync(server, async static (server, cts) =>
         {
-            var request = new MyRequest()
+            int received = 0;
+            int count = 10;
+
+            server.OnInvocationCompleted = async (_, _) =>
             {
-                Values = [.. Enumerable.Range(1, i + 1)],
-            };
-
-            channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
-        }
-
-        _ = Task.Run(
-            async () =>
-            {
-                foreach ((var _, var context) in channels)
-                {
-                    await context.Response.WaitToReadAsync(cts.Token);
-                }
-
-                if (!cts.IsCancellationRequested)
+                if (Interlocked.Increment(ref received) == count)
                 {
                     await cts.CancelAsync();
                 }
-            },
-            cts.Token);
+            };
 
-        using var httpClient = server.CreateClient();
+            var channels = new List<(int Expected, LambdaTestContext Context)>();
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+            for (int i = 0; i < count; i++)
+            {
+                var request = new MyRequest()
+                {
+                    Values = [.. Enumerable.Range(1, i + 1)],
+                };
 
-        // Assert
-        foreach ((int expected, var context) in channels)
-        {
-            context.Response.TryRead(out var response).ShouldBeTrue();
+                channels.Add((request.Values.Sum(), await server.EnqueueAsync(request)));
+            }
 
-            response.ShouldNotBeNull();
-            response!.IsSuccessful.ShouldBeTrue();
-            response.Content.ShouldNotBeNull();
+            using var httpClient = server.CreateClient();
 
-            var deserialized = response.ReadAs<MyResponse>();
-            deserialized.Sum.ShouldBe(expected);
-        }
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            foreach ((int expected, var context) in channels)
+            {
+                context.Response.TryRead(out var response).ShouldBeTrue();
+
+                response.ShouldNotBeNull();
+                response!.IsSuccessful.ShouldBeTrue();
+                response.Content.ShouldNotBeNull();
+
+                var deserialized = response.ReadAs<MyResponse>();
+                deserialized.Sum.ShouldBe(expected);
+            }
+
+            received.ShouldBe(count, "Not all requests were processed.");
+        });
     }
 
     [Fact(Timeout = 5_000)]
@@ -330,17 +317,17 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            using var httpClient = server.CreateClient();
 
-        using var httpClient = server.CreateClient();
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
 
-        // Act
-        await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        cts.IsCancellationRequested.ShouldBeTrue();
+            // Assert
+            cts.IsCancellationRequested.ShouldBeTrue();
+        });
     }
 
     [Fact]
@@ -371,49 +358,47 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         };
 
         using var server = new LambdaTestServer(options);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
-
-        var request = new LambdaTestRequest([], "my-request-id")
+        await WithServerAsync(server, async (server, cts) =>
         {
-            ClientContext = """{"client":{"app_title":"my-app"}}""",
-            CognitoIdentity = """{"cognitoIdentityId":"my-identity"}""",
-        };
+            var request = new LambdaTestRequest([], "my-request-id")
+            {
+                ClientContext = """{"client":{"app_title":"my-app"}}""",
+                CognitoIdentity = """{"cognitoIdentityId":"my-identity"}""",
+            };
 
-        var context = await server.EnqueueAsync(request);
+            var context = await server.EnqueueAsync(request);
 
-        CancelWhenResponseAvailable(context, cts);
+            using var httpClient = server.CreateClient();
 
-        using var httpClient = server.CreateClient();
+            // Act
+            await CustomFunction.RunAsync(httpClient, cts.Token);
 
-        // Act
-        await CustomFunction.RunAsync(httpClient, cts.Token);
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
 
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+            response.Content.ShouldNotBeNull();
 
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeTrue();
-        response.Content.ShouldNotBeNull();
+            var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+            lambdaContext.ShouldContainKeyAndValue("AwsRequestId", request.AwsRequestId);
+            lambdaContext.ShouldContainKeyAndValue("ClientContext", "my-app");
+            lambdaContext.ShouldContainKeyAndValue("FunctionName", options.FunctionName);
+            lambdaContext.ShouldContainKeyAndValue("FunctionVersion", "42");
+            lambdaContext.ShouldContainKeyAndValue("IdentityId", "my-identity");
+            lambdaContext.ShouldContainKeyAndValue("InvokedFunctionArn", options.FunctionArn);
+            lambdaContext.ShouldContainKeyAndValue("LogGroupName", options.LogGroupName);
+            lambdaContext.ShouldContainKeyAndValue("LogStreamName", options.LogStreamName);
+            lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "1024");
 
-        var lambdaContext = response.ReadAs<IDictionary<string, string>>();
-        lambdaContext.ShouldContainKeyAndValue("AwsRequestId", request.AwsRequestId);
-        lambdaContext.ShouldContainKeyAndValue("ClientContext", "my-app");
-        lambdaContext.ShouldContainKeyAndValue("FunctionName", options.FunctionName);
-        lambdaContext.ShouldContainKeyAndValue("FunctionVersion", "42");
-        lambdaContext.ShouldContainKeyAndValue("IdentityId", "my-identity");
-        lambdaContext.ShouldContainKeyAndValue("InvokedFunctionArn", options.FunctionArn);
-        lambdaContext.ShouldContainKeyAndValue("LogGroupName", options.LogGroupName);
-        lambdaContext.ShouldContainKeyAndValue("LogStreamName", options.LogStreamName);
-        lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "1024");
+            lambdaContext.ShouldContainKey("RemainingTime");
+            string remainingTimeString = lambdaContext["RemainingTime"];
 
-        lambdaContext.ShouldContainKey("RemainingTime");
-        string remainingTimeString = lambdaContext["RemainingTime"];
+            TimeSpan.TryParse(remainingTimeString, out var remainingTime).ShouldBeTrue();
 
-        TimeSpan.TryParse(remainingTimeString, out var remainingTime).ShouldBeTrue();
-
-        remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
+            remainingTime.Minutes.ShouldBe(options.FunctionTimeout.Minutes);
+        });
     }
 
     [Theory]
@@ -434,55 +419,38 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
         };
 
         using var server = new LambdaTestServer(options);
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        await server.StartAsync(cts.Token);
-
-        var request = new LambdaTestRequest([]);
-
-        var context = await server.EnqueueAsync(request);
-
-        CancelWhenResponseAvailable(context, cts);
-
-        using var httpClient = server.CreateClient();
-
-        // Act
-        await MemoryInfoFunction.RunAsync(httpClient, cts.Token);
-
-        // Assert
-        context.Response.TryRead(out var response).ShouldBeTrue();
-
-        response.ShouldNotBeNull();
-        response!.IsSuccessful.ShouldBeTrue();
-        response.Content.ShouldNotBeNull();
-
-        var lambdaContext = response.ReadAs<IDictionary<string, string>>();
-        lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "128");
-
-        lambdaContext.ShouldContainKey("TotalAvailableMemoryBytes");
-        var availableMemory = lambdaContext["TotalAvailableMemoryBytes"];
-
-        if (disableMemoryLimitCheck)
+        await WithServerAsync(server, async (server, cts) =>
         {
-            availableMemory.ShouldNotBe("134217728");
-        }
-        else
-        {
-            availableMemory.ShouldBe("134217728");
-        }
-    }
+            var request = new LambdaTestRequest([]);
 
-    private static void CancelWhenResponseAvailable(
-        LambdaTestContext context,
-        CancellationTokenSource cancellationTokenSource)
-    {
-        _ = Task.Run(async () =>
-        {
-            await context.Response.WaitToReadAsync(cancellationTokenSource.Token);
+            var context = await server.EnqueueAsync(request);
 
-            if (!cancellationTokenSource.IsCancellationRequested)
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await MemoryInfoFunction.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
+
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+            response.Content.ShouldNotBeNull();
+
+            var lambdaContext = response.ReadAs<IDictionary<string, string>>();
+            lambdaContext.ShouldContainKeyAndValue("MemoryLimitInMB", "128");
+
+            lambdaContext.ShouldContainKey("TotalAvailableMemoryBytes");
+            var availableMemory = lambdaContext["TotalAvailableMemoryBytes"];
+
+            if (disableMemoryLimitCheck)
             {
-                await cancellationTokenSource.CancelAsync();
+                availableMemory.ShouldNotBe("134217728");
+            }
+            else
+            {
+                availableMemory.ShouldBe("134217728");
             }
         });
     }
