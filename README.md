@@ -1,21 +1,21 @@
 # AWS Lambda Test Server for .NET
 
-[![NuGet](https://img.shields.io/nuget/v/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=Latest&color=blue)](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
-[![NuGet Downloads](https://img.shields.io/nuget/dt/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=Downloads&color=blue)](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet")
+[![NuGet][package-badge-version]][package-download]
+[![NuGet Downloads][package-badge-downloads]][package-download]
 
-[![Build status](https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml?query=branch%3Amain+event%3Apush)
-[![codecov](https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg)](https://codecov.io/gh/martincostello/lambda-test-server)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/martincostello/lambda-test-server/badge)](https://securityscorecards.dev/viewer/?uri=github.com/martincostello/lambda-test-server)
+[![Build status][build-badge]][build-status]
+[![codecov][coverage-badge]][coverage-report]
+[![OpenSSF Scorecard][scorecard-badge]][scorecard-report]
 
 ## Introduction
 
-A NuGet package that builds on top of the `TestServer` class in the [Microsoft.AspNetCore.TestHost](https://www.nuget.org/packages/Microsoft.AspNetCore.TestHost) NuGet package to provide infrastructure to use with end-to-end/integration tests of .NET 6 AWS Lambda Functions using a custom runtime with the `LambdaBootstrap` class from the [Amazon.Lambda.RuntimeSupport](https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/) NuGet package.
+A NuGet package that builds on top of the `TestServer` class in the [Microsoft.AspNetCore.TestHost][testhost] NuGet package to provide infrastructure to use with end-to-end/integration tests of .NET 6 AWS Lambda Functions using a custom runtime with the `LambdaBootstrap` class from the [Amazon.Lambda.RuntimeSupport][lambda-runtime-support] NuGet package.
 
-[_.NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime_](https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog")
+[_.NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime_][custom-lambda-runtime]
 
 ### Installation
 
-To install the library from [NuGet](https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer/ "MartinCostello.Testing.AwsLambdaTestServer on NuGet.org") using the .NET SDK run:
+To install the library from [NuGet][package-download] using the .NET SDK run:
 
 ```sh
 dotnet add package MartinCostello.Testing.AwsLambdaTestServer
@@ -212,9 +212,9 @@ Generated with https://mermaid.live/.
 
 You can find examples of how to factor your Lambda function and how to test it:
 
-  1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests");
-  1. In the [unit tests](https://github.com/martincostello/lambda-test-server/blob/main/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project;
-  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/e50ca325101d5b57a64feaffe0a868e573dc2e40/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L208-L252 "Alexa London Travel's end-to-end tests").
+  1. In the [samples][samples];
+  1. In the [unit tests][tests] for this project;
+  1. How I use the library in the tests for my own [Alexa skill][skill].
 
 ### Advanced Usage
 
@@ -350,7 +350,7 @@ public static class ReverseFunctionWithCustomOptionsTests
 
 To help diagnose failing tests, the `LambdaTestServer` outputs logs of the requests it receives to the emulated AWS Lambda Runtime it provides. To route the logging output to a location of your choosing, you can use the configuration callbacks, such as the constructor overload that accepts an `Action<IServiceCollection>` or the `Configure` property on the `LambdaTestServerOptions` class.
 
-Here's an example of configuring the test server to route its logs to xunit using the [xunit-logging](https://www.nuget.org/packages/MartinCostello.Logging.XUnit) library:
+Here's an example of configuring the test server to route its logs to xunit using the [xunit-logging][xunit-logging] library:
 
 ```csharp
 using System.Text.Json;
@@ -443,27 +443,27 @@ Result StandardOutput:
 
 #### Custom Lambda Server
 
-It is also possible to use `LambdaTestServer` with a custom [`IServer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.server.iserver "IServer Interface on docs.microsoft.com") implementation by overriding the [`CreateServer()`](https://github.com/martincostello/lambda-test-server/blob/cd5e038660d6e607d06833c03a4a0e8740d643a2/src/AwsLambdaTestServer/LambdaTestServer.cs#L209-L217 "LambdaTestServer.CreateServer() method") method in a derived class.
+It is also possible to use `LambdaTestServer` with a custom [`IServer`][iserver] implementation by overriding the [`CreateServer()`][create-server] method in a derived class.
 
-This can be used, for example, to host the Lambda test server in a real HTTP server that can be accessed remotely instead of being hosted in-memory with the [`TestServer`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.testhost.testserver "TestServer Class on docs.microsoft.com") class.
+This can be used, for example, to host the Lambda test server in a real HTTP server that can be accessed remotely instead of being hosted in-memory with the [`TestServer`][testserver] class.
 
-For examples of this use case, see the `MinimalApi` example project and its test project in the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests").
+For examples of this use case, see the `MinimalApi` example project and its test project in the [samples][samples].
 
 ## Feedback
 
-Any feedback or issues can be added to the issues for this project in [GitHub](https://github.com/martincostello/lambda-test-server/issues "Issues for this project on GitHub.com").
+Any feedback or issues can be added to the issues for this project in [GitHub][issues].
 
 ## Repository
 
-The repository is hosted in [GitHub](https://github.com/martincostello/lambda-test-server "This project on GitHub.com"): <https://github.com/martincostello/lambda-test-server.git>
+The repository is hosted in [GitHub][repo]: <https://github.com/martincostello/lambda-test-server.git>
 
 ## License
 
-This project is licensed under the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt "The Apache 2.0 license") license.
+This project is licensed under the [Apache 2.0][license] license.
 
 ## Building and Testing
 
-Compiling the library yourself requires Git and the [.NET SDK](https://dotnet.microsoft.com/download "Download the .NET SDK") to be installed.
+Compiling the library yourself requires Git and the [.NET SDK][dotnet-sdk] to be installed.
 
 To build and test the library locally from a terminal/command-line, run one of the following set of commands:
 
@@ -472,3 +472,27 @@ git clone https://github.com/martincostello/lambda-test-server.git
 cd lambda-test-server
 ./build.ps1
 ```
+
+[build-badge]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml/badge.svg?branch=main&event=push
+[build-status]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml?query=branch%3Amain+event%3Apush "Continuous Integration for this project"
+[coverage-badge]: https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg
+[coverage-report]: https://codecov.io/gh/martincostello/lambda-test-server "Code coverage report for this project"
+[create-server]: https://github.com/martincostello/lambda-test-server/blob/cd5e038660d6e607d06833c03a4a0e8740d643a2/src/AwsLambdaTestServer/LambdaTestServer.cs#L209-L217 "LambdaTestServer.CreateServer() method"
+[custom-lambda-runtime]: https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog"
+[dotnet-sdk]: https://dotnet.microsoft.com/download "Download the .NET SDK"
+[iserver]: https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.hosting.server.iserver "IServer Interface on docs.microsoft.com"
+[issues]: https://github.com/martincostello/lambda-test-server/issues "Issues for this project on GitHub.com"
+[lambda-runtime-support]: https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/ "Download Amazon.Lambda.RuntimeSupport from NuGet"
+[license]: https://www.apache.org/licenses/LICENSE-2.0.txt "The Apache 2.0 license"
+[package-badge-downloads]: https://img.shields.io/nuget/dt/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=Downloads&color=blue
+[package-badge-version]: https://img.shields.io/nuget/v/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=Latest&color=blue
+[package-download]: https://www.nuget.org/packages/MartinCostello.Testing.AwsLambdaTestServer "Download MartinCostello.Testing.AwsLambdaTestServer from NuGet"
+[repo]: https://github.com/martincostello/lambda-test-server "This project on GitHub.com"
+[samples]: https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests"
+[scorecard-badge]: https://api.securityscorecards.dev/projects/github.com/martincostello/lambda-test-server/badge
+[scorecard-report]: https://securityscorecards.dev/viewer/?uri=github.com/martincostello/lambda-test-server "OpenSSF Scorecard for this project"
+[skill]: https://github.com/martincostello/alexa-london-travel/blob/e50ca325101d5b57a64feaffe0a868e573dc2e40/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L208-L252 "Alexa London Travel's end-to-end tests"
+[testhost]: https://www.nuget.org/packages/Microsoft.AspNetCore.TestHost "Download Microsoft.AspNetCore.TestHost from NuGet"
+[tests]: https://github.com/martincostello/lambda-test-server/blob/main/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples"
+[testserver]: https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.testhost.testserver "TestServer Class on docs.microsoft.com"
+[xunit-logging]: https://www.nuget.org/packages/MartinCostello.Logging.XUnit "Download MartinCostello.Logging.XUnit from NuGet"
