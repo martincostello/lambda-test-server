@@ -249,7 +249,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
 
         await WithServerAsync(server, async static (server, cts) =>
         {
-            var context = await server.EnqueueAsync("""{"Values": null}""");
+            await server.EnqueueAsync("""{"Values": null}""");
 
             using var httpClient = server.CreateClient();
 
