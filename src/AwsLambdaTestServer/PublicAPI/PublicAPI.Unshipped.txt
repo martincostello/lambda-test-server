@@ -1,1 +1,3 @@
 #nullable enable
+*REMOVED*virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
+virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!

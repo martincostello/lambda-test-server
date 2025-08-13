@@ -209,11 +209,11 @@ public class LambdaTestServer : IDisposable
     /// <summary>
     /// Creates the server to use for the Lambda runtime.
     /// </summary>
-    /// <param name="builder">The <see cref="WebHostBuilder"/> to use to create the server.</param>
+    /// <param name="builder">The <see cref="IWebHostBuilder"/> to use to create the server.</param>
     /// <returns>
     /// The <see cref="IServer"/> to use.
     /// </returns>
-    protected virtual IServer CreateServer(WebHostBuilder builder)
+    protected virtual IServer CreateServer(IWebHostBuilder builder)
         => new TestServer(builder);
 
     /// <summary>

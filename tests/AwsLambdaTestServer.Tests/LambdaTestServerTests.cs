@@ -581,12 +581,12 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : ITestOutput
 
     private sealed class NullServerLambdaTestServer : LambdaTestServer
     {
-        protected override IServer CreateServer(WebHostBuilder builder) => null!;
+        protected override IServer CreateServer(IWebHostBuilder builder) => null!;
     }
 
     private sealed class NullServerAddressesLambdaTestServer : LambdaTestServer
     {
-        protected override IServer CreateServer(WebHostBuilder builder)
+        protected override IServer CreateServer(IWebHostBuilder builder)
         {
             var serverAddresses = Substitute.For<IServerAddressesFeature>();
 
