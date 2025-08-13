@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Suppressions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder)</Target>
+    <Left>lib/net8.0/MartinCostello.Testing.AwsLambdaTestServer.dll</Left>
+    <Right>lib/net8.0/MartinCostello.Testing.AwsLambdaTestServer.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.WebHostBuilder)</Target>
+    <Left>lib/net9.0/MartinCostello.Testing.AwsLambdaTestServer.dll</Left>
+    <Right>lib/net9.0/MartinCostello.Testing.AwsLambdaTestServer.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+</Suppressions>

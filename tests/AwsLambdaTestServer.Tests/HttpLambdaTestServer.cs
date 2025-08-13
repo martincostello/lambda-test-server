@@ -45,7 +45,7 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
         await StartAsync(_cts.Token);
     }
 
-    protected override IServer CreateServer(WebHostBuilder builder)
+    protected override IServer CreateServer(IWebHostBuilder builder)
     {
         _webHost = builder
             .UseKestrel((p) => p.Listen(System.Net.IPAddress.Loopback, 0))
