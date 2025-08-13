@@ -48,9 +48,8 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
     protected override IServer CreateServer(WebHostBuilder builder)
     {
         _webHost = builder
-            .UseKestrel()
+            .UseKestrel((p) => p.Listen(System.Net.IPAddress.Loopback, 0))
             .ConfigureServices((services) => services.AddLogging((builder) => builder.AddXUnit(this)))
-            .UseUrls("http://127.0.0.1:0")
             .Build();
 
         _webHost.Start();
