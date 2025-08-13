@@ -29,10 +29,6 @@ in such a way that you can supply both a `HttpClient` and `CancellationToken` to
 Here's an example of how to do this with a simple Lambda function that takes an array of integers and returns them in reverse order:
 
 ```csharp
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.Json;
 
@@ -65,10 +61,7 @@ Once you've done that, you can use `LambdaTestServer` in your tests with your fu
 Here's an example using xunit to verify that `ReverseFunction` works as intended:
 
 ```csharp
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Xunit;
 
@@ -80,10 +73,18 @@ public static class ReverseFunctionTests
     public static async Task Function_Reverses_Numbers()
     {
         // Arrange
-        using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-        await server.StartAsync(cancellationTokenSource.Token);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(
+            shutdownAfter.Token,
+            TestContext.Current.CancellationToken);
+
+        using var server = new LambdaTestServer()
+        {
+            OnInvocationCompleted = async (_, _) => await shutdownAfter.CancelAsync(),
+        };
+
+        await server.StartAsync(timeout.Token);
 
         int[] value = [1, 2, 3];
         string json = JsonSerializer.Serialize(value);
@@ -93,15 +94,16 @@ public static class ReverseFunctionTests
         using var httpClient = server.CreateClient();
 
         // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        await ReverseFunction.RunAsync(httpClient, timeout.Token);
 
         // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonSerializer.Deserialize<int[]>(json);
+        int[]? actual = JsonSerializer.Deserialize<int[]>(json);
 
+        Assert.NotNull(actual);
         Assert.Equal([3, 2, 1], actual);
     }
 }
@@ -212,7 +214,7 @@ You can find examples of how to factor your Lambda function and how to test it:
 
   1. In the [samples](https://github.com/martincostello/lambda-test-server/tree/main/samples "Sample functions and tests");
   1. In the [unit tests](https://github.com/martincostello/lambda-test-server/blob/main/tests/AwsLambdaTestServer.Tests/Examples.cs "Unit test examples") for this project;
-  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/e363ff77a1368e9da694c37fff33a1102ea6accf/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L22 "Alexa London Travel's end-to-end tests").
+  1. How I use the library in the tests for my own [Alexa skill](https://github.com/martincostello/alexa-london-travel/blob/e50ca325101d5b57a64feaffe0a868e573dc2e40/test/LondonTravel.Skill.Tests/EndToEndTests.cs#L208-L252 "Alexa London Travel's end-to-end tests").
 
 ### Advanced Usage
 
@@ -223,10 +225,7 @@ If you use either the `ClientContext` or `Identity` properties on `ILambdaContex
 An example of providing these values from an xunit test is shown below:
 
 ```csharp
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Xunit;
 
@@ -238,10 +237,18 @@ public static class ReverseFunctionWithMobileSdkTests
     public static async Task Function_Reverses_Numbers_With_Mobile_Sdk()
     {
         // Arrange
-        using var server = new LambdaTestServer();
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
-        await server.StartAsync(cancellationTokenSource.Token);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(
+            shutdownAfter.Token,
+            TestContext.Current.CancellationToken);
+
+        using var server = new LambdaTestServer()
+        {
+            OnInvocationCompleted = async (_, _) => await shutdownAfter.CancelAsync(),
+        };
+
+        await server.StartAsync(timeout.Token);
 
         int[] value = [1, 2, 3];
         string json = JsonSerializer.Serialize(value);
@@ -258,15 +265,16 @@ public static class ReverseFunctionWithMobileSdkTests
         using var httpClient = server.CreateClient();
 
         // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        await ReverseFunction.RunAsync(httpClient, timeout.Token);
 
         // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonSerializer.Deserialize<int[]>(json);
+        int[]? actual = JsonSerializer.Deserialize<int[]>(json);
 
+        Assert.NotNull(actual);
         Assert.Equal([3, 2, 1], actual);
     }
 }
@@ -283,10 +291,7 @@ Options you can specify include the function memory size, timeout and ARN.
 An example of this customisation for an xunit test is shown below:
 
 ```csharp
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Xunit;
 
@@ -298,6 +303,12 @@ public static class ReverseFunctionWithCustomOptionsTests
     public static async Task Function_Reverses_Numbers_With_Custom_Options()
     {
         // Arrange
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(
+            shutdownAfter.Token,
+            TestContext.Current.CancellationToken);
+
         var options = new LambdaTestServerOptions()
         {
             FunctionMemorySize = 256,
@@ -305,10 +316,12 @@ public static class ReverseFunctionWithCustomOptionsTests
             FunctionVersion = 42,
         };
 
-        using var server = new LambdaTestServer(options);
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        using var server = new LambdaTestServer(options)
+        {
+            OnInvocationCompleted = async (_, _) => await shutdownAfter.CancelAsync(),
+        };
 
-        await server.StartAsync(cancellationTokenSource.Token);
+        await server.StartAsync(timeout.Token);
 
         int[] value = [1, 2, 3];
         string json = JsonSerializer.Serialize(value);
@@ -318,15 +331,16 @@ public static class ReverseFunctionWithCustomOptionsTests
         using var httpClient = server.CreateClient();
 
         // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        await ReverseFunction.RunAsync(httpClient, timeout.Token);
 
         // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonSerializer.Deserialize<int[]>(json);
+        int[]? actual = JsonSerializer.Deserialize<int[]>(json);
 
+        Assert.NotNull(actual);
         Assert.Equal([3, 2, 1], actual);
     }
 }
@@ -339,10 +353,7 @@ To help diagnose failing tests, the `LambdaTestServer` outputs logs of the reque
 Here's an example of configuring the test server to route its logs to xunit using the [xunit-logging](https://www.nuget.org/packages/MartinCostello.Logging.XUnit) library:
 
 ```csharp
-using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using MartinCostello.Logging.XUnit;
 using MartinCostello.Testing.AwsLambdaTestServer;
 using Microsoft.Extensions.DependencyInjection;
@@ -352,26 +363,28 @@ using Xunit.Abstractions;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
-public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
+public class ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper) : ITestOutputHelperAccessor
 {
-    public ReverseFunctionWithLoggingTests(ITestOutputHelper outputHelper)
-    {
-        OutputHelper = outputHelper;
-    }
-
-    public ITestOutputHelper OutputHelper { get; set; }
+    public ITestOutputHelper? OutputHelper { get; set; } = outputHelper;
 
     [Fact]
     public async Task Function_Reverses_Numbers_With_Logging()
     {
         // Arrange
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(
+            shutdownAfter.Token,
+            TestContext.Current.CancellationToken);
+
         using var server = new LambdaTestServer(
             (services) => services.AddLogging(
-                (builder) => builder.AddXUnit(this)));
+                (builder) => builder.AddXUnit(this)))
+        {
+            OnInvocationCompleted = async (_, _) => await shutdownAfter.CancelAsync(),
+        };
 
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-
-        await server.StartAsync(cancellationTokenSource.Token);
+        await server.StartAsync(timeout.Token);
 
         int[] value = [1, 2, 3];
         string json = JsonSerializer.Serialize(value);
@@ -381,15 +394,16 @@ public class ReverseFunctionWithLoggingTests : ITestOutputHelperAccessor
         using var httpClient = server.CreateClient();
 
         // Act
-        await ReverseFunction.RunAsync(httpClient, cancellationTokenSource.Token);
+        await ReverseFunction.RunAsync(httpClient, timeout.Token);
 
         // Assert
-        Assert.True(context.Response.TryRead(out LambdaTestResponse response));
+        Assert.True(context.Response.TryRead(out LambdaTestResponse? response));
         Assert.True(response.IsSuccessful);
 
         json = await response.ReadAsStringAsync();
-        int[] actual = JsonSerializer.Deserialize<int[]>(json);
+        int[]? actual = JsonSerializer.Deserialize<int[]>(json);
 
+        Assert.NotNull(actual);
         Assert.Equal([3, 2, 1], actual);
     }
 }
@@ -401,30 +415,30 @@ This then outputs logs similar to the below into the xunit test results:
 Test Name:     Function_Reverses_Numbers_With_Logging
 Test Outcome:  Passed
 Result StandardOutput:
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint '/{LambdaVersion}/runtime/invocation/next HTTP: GET'
-[2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next - - -
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: GET /{LambdaVersion}/runtime/invocation/next'
+[2025-08-13 14:02:42Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
       Waiting for new request for Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function.
-[2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
-      Invoking Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 7e1a283d-6268-4401-921c-0d0d67da1da4 and trace Id 51792f7f-2c1e-4934-bfd9-f5f7c6f0d628.
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint '/{LambdaVersion}/runtime/invocation/next HTTP: GET'
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished in 71.9334ms 200 application/json
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/7e1a283d-6268-4401-921c-0d0d67da1da4/response application/json
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
-[2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
-      Invoked Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 7e1a283d-6268-4401-921c-0d0d67da1da4: [3,2,1].
-[2019-11-04 15:21:06Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
-      Completed processing AWS request Id 7e1a283d-6268-4401-921c-0d0d67da1da4 for Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function in 107 milliseconds.
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint '/{LambdaVersion}/runtime/invocation/{AwsRequestId}/response HTTP: POST'
-[2019-11-04 15:21:06Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished in 26.6306ms 204
+[2025-08-13 14:02:42Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Invoking Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 0bd92f10-4b53-4fa4-a522-0728d378069d and trace Id Root=1-689c9b02-c20648da88f4e3dc13b4a3dc.
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /{LambdaVersion}/runtime/invocation/next'
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost/2018-06-01/runtime/invocation/next - 200 - application/json 22.6349ms
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/0bd92f10-4b53-4fa4-a522-0728d378069d/response - application/json 7
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /{LambdaVersion}/runtime/invocation/{AwsRequestId}/response'
+[2025-08-13 14:02:42Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Invoked Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function for request Id 0bd92f10-4b53-4fa4-a522-0728d378069d: [3,2,1].
+[2025-08-13 14:02:42Z] info: MartinCostello.Testing.AwsLambdaTestServer.RuntimeHandler[0]
+      Completed processing AWS request Id 0bd92f10-4b53-4fa4-a522-0728d378069d for Lambda function with ARN arn:aws:lambda:eu-west-1:123456789012:function:test-function in 52 milliseconds.
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /{LambdaVersion}/runtime/invocation/{AwsRequestId}/response'
+[2025-08-13 14:02:42Z] info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://localhost/2018-06-01/runtime/invocation/0bd92f10-4b53-4fa4-a522-0728d378069d/response - 204 - - 9.3711ms
 ```
 
 #### Custom Lambda Server
