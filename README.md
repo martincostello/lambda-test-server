@@ -443,9 +443,9 @@ Result StandardOutput:
 
 #### Custom Lambda Server
 
-It is also possible to use `LambdaTestServer` with a custom [`IServer`][iserver] implementation by overriding the [`CreateServer()`][create-server] method in a derived class.
+It is also possible to use `LambdaTestServer` with a custom [`IServer`][iserver] implementation by overriding the [`ConfigureWebHost()`][configure-webhost] method in a derived class.
 
-This can be used, for example, to host the Lambda test server in a real HTTP server that can be accessed remotely instead of being hosted in-memory with the [`TestServer`][testserver] class.
+This can be used, for example, to host the Lambda test server in a real HTTP server with [Kestrel][kestrel] that can be accessed remotely instead of being hosted in-memory with the [`TestServer`][testserver] class.
 
 For examples of this use case, see the `MinimalApi` example project and its test project in the [samples][samples].
 
@@ -475,13 +475,14 @@ cd lambda-test-server
 
 [build-badge]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml/badge.svg?branch=main&event=push
 [build-status]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml?query=branch%3Amain+event%3Apush "Continuous Integration for this project"
+[configure-webhost]: https://github.com/martincostello/lambda-test-server/blob/CHANGEME/src/AwsLambdaTestServer/LambdaTestServer.cs#L308-L323 "LambdaTestServer.ConfigureWebHost() method"
 [coverage-badge]: https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg
 [coverage-report]: https://codecov.io/gh/martincostello/lambda-test-server "Code coverage report for this project"
-[create-server]: https://github.com/martincostello/lambda-test-server/blob/cd5e038660d6e607d06833c03a4a0e8740d643a2/src/AwsLambdaTestServer/LambdaTestServer.cs#L209-L217 "LambdaTestServer.CreateServer() method"
 [custom-lambda-runtime]: https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog"
 [dotnet-sdk]: https://dotnet.microsoft.com/download "Download the .NET SDK"
 [iserver]: https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.hosting.server.iserver "IServer Interface on docs.microsoft.com"
 [issues]: https://github.com/martincostello/lambda-test-server/issues "Issues for this project on GitHub.com"
+[kestrel]: https://learn.microsoft.com/aspnet/core/fundamentals/servers/kestrel "Kestrel web server in ASP.NET Core"
 [lambda-runtime-support]: https://www.nuget.org/packages/Amazon.Lambda.RuntimeSupport/ "Download Amazon.Lambda.RuntimeSupport from NuGet"
 [license]: https://www.apache.org/licenses/LICENSE-2.0.txt "The Apache 2.0 license"
 [package-badge-downloads]: https://img.shields.io/nuget/dt/MartinCostello.Testing.AwsLambdaTestServer?logo=nuget&label=Downloads&color=blue

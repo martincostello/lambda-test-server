@@ -124,19 +124,6 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
     }
 
     [Fact]
-    public async Task StartAsync_Throws_If_Server_Null()
-    {
-        // Arrange
-        using var target = new NullServerLambdaTestServer();
-
-        // Act and Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => target.StartAsync(TestContext.Current.CancellationToken));
-
-        target.IsStarted.ShouldBeFalse();
-        exception.Message.ShouldBe("No IServer was returned by the CreateServer() method.");
-    }
-
-    [Fact]
     public async Task StartAsync_Throws_If_Server_Has_No_Addresses()
     {
         // Arrange
@@ -455,6 +442,23 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
         });
     }
 
+    [Fact]
+    [Obsolete("Tests obsolete CreateServer() method.")]
+    public async Task CreateServer_Returns_A_Non_Functional_Server()
+    {
+        // Arrange
+        var builder = Substitute.For<IWebHostBuilder>();
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        using var target = new ObsoleteLambdaTestServer();
+        using var server = target.CreateTestServer(builder);
+
+        // Act and Assert
+        Assert.Throws<NotSupportedException>(() => server.Features);
+        await Assert.ThrowsAsync<NotSupportedException>(() => server.StartAsync<object>(default!, cancellationToken));
+        await Assert.ThrowsAsync<NotSupportedException>(() => server.StopAsync(TestContext.Current.CancellationToken));
+    }
+
     private void ConfigureLogging(IServiceCollection services)
         => services.AddLogging((builder) => builder.AddXUnit(this));
 
@@ -547,15 +551,12 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
         }
     }
 
-    private sealed class NullServerLambdaTestServer : LambdaTestServer
-    {
-        protected override IServer CreateServer(IWebHostBuilder builder) => null!;
-    }
-
     private sealed class NullServerAddressesLambdaTestServer : LambdaTestServer
     {
-        protected override IServer CreateServer(IWebHostBuilder builder)
+        protected override void ConfigureServices(IServiceCollection services)
         {
+            base.ConfigureServices(services);
+
             var serverAddresses = Substitute.For<IServerAddressesFeature>();
 
             serverAddresses.Addresses.Returns([]);
@@ -566,7 +567,14 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
 
             server.Features.Returns(featureCollection);
 
-            return server;
+            services.AddSingleton(server);
         }
+    }
+
+    private sealed class ObsoleteLambdaTestServer() : LambdaTestServer(new LambdaTestServerOptions())
+    {
+        [Obsolete]
+        public IServer CreateTestServer(IWebHostBuilder builder)
+            => base.CreateServer(builder);
     }
 }

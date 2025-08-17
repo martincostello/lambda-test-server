@@ -3,7 +3,6 @@
 
 using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +12,6 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
 {
     private readonly CancellationTokenSource _cts = new();
     private bool _disposed;
-    private IWebHost? _webHost;
 
     public HttpLambdaTestServer()
         : base()
@@ -27,14 +25,10 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
 
     public ITestOutputHelper? OutputHelper { get; set; }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        if (_webHost is not null)
-        {
-            await _webHost.StopAsync();
-        }
-
         Dispose();
+        return ValueTask.CompletedTask;
     }
 
     public async ValueTask InitializeAsync()
@@ -45,16 +39,12 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
         await StartAsync(_cts.Token);
     }
 
-    protected override IServer CreateServer(IWebHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        _webHost = builder
-            .UseKestrel((p) => p.Listen(System.Net.IPAddress.Loopback, 0))
-            .ConfigureServices((services) => services.AddLogging((builder) => builder.AddXUnit(this)))
-            .Build();
+        base.ConfigureWebHost(builder);
 
-        _webHost.Start();
-
-        return _webHost.Services.GetRequiredService<IServer>();
+        builder.UseKestrel((p) => p.Listen(System.Net.IPAddress.Loopback, 0))
+               .ConfigureServices((services) => services.AddLogging((builder) => builder.AddXUnit(this)));
     }
 
     protected override void Dispose(bool disposing)
@@ -63,8 +53,6 @@ internal sealed class HttpLambdaTestServer : LambdaTestServer, IAsyncLifetime, I
         {
             if (disposing)
             {
-                _webHost?.Dispose();
-
                 _cts.Cancel();
                 _cts.Dispose();
             }
