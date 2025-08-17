@@ -57,6 +57,5 @@ virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Configure(Mi
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateClient() -> System.Net.Http.HttpClient!
-virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.CreateServer(Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.Server.IServer!
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Dispose(bool disposing) -> void
 virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.StartAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
