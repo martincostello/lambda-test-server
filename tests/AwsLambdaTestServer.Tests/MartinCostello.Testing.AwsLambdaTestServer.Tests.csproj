@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Tests for MartinCostello.Testing.AwsLambdaTestServer.</Description>
     <OutputType>Exe</OutputType>
@@ -26,7 +26,7 @@
   </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
-    <Threshold>84</Threshold>
+    <Threshold>95,83,95</Threshold>
   </PropertyGroup>
   <ItemGroup>
     <CoverletExclude Include="$([MSBuild]::Escape('[Amazon.Lambda*]*'))" />

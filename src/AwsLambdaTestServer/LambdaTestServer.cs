@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace MartinCostello.Testing.AwsLambdaTestServer;
 
@@ -23,7 +24,8 @@ public class LambdaTestServer : IDisposable
     private bool _disposed;
     private RuntimeHandler? _handler;
     private bool _isStarted;
-    private IServer? _server;
+    private LambdaEnvironmentVariables? _environment;
+    private IHost? _host;
     private CancellationTokenSource? _onStopped;
 
     /// <summary>
@@ -60,10 +62,7 @@ public class LambdaTestServer : IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="LambdaTestServer"/> class.
     /// </summary>
-    ~LambdaTestServer()
-    {
-        Dispose(false);
-    }
+    ~LambdaTestServer() => Dispose(false);
 
     /// <summary>
     /// Gets a value indicating whether the test Lambda runtime server has been started.
@@ -120,12 +119,12 @@ public class LambdaTestServer : IDisposable
         ThrowIfDisposed();
         ThrowIfNotStarted();
 
-        if (_server is TestServer testServer)
+        if (_host.Services.GetService<IServer>() is TestServer testServer)
         {
             return testServer.CreateClient();
         }
 
-        var baseAddress = GetServerBaseAddress();
+        var baseAddress = GetServerAddress(_host);
 
         return new() { BaseAddress = baseAddress };
     }
@@ -175,11 +174,11 @@ public class LambdaTestServer : IDisposable
     /// <exception cref="ObjectDisposedException">
     /// The instance has been disposed.
     /// </exception>
-    public virtual Task StartAsync(CancellationToken cancellationToken = default)
+    public virtual async Task StartAsync(CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
 
-        if (_server != null)
+        if (_host != null)
         {
             throw new InvalidOperationException("The test server has already been started.");
         }
@@ -197,29 +196,39 @@ public class LambdaTestServer : IDisposable
             },
         };
 
-        var builder = new WebHostBuilder();
+        var builder = WebApplication.CreateSlimBuilder();
 
-        ConfigureWebHost(builder);
+        ConfigureWebHost(builder.WebHost);
+        ConfigureServices(builder.Services);
 
-        _server = CreateServer(builder) ?? throw new InvalidOperationException($"No {nameof(IServer)} was returned by the {nameof(CreateServer)}() method.");
+        // Ensure the server will have environment variable configuration available
+        builder.Configuration.AddEnvironmentVariables();
 
-        Uri baseAddress;
+        var app = builder.Build();
 
-        if (_server is TestServer testServer)
+        try
         {
-            _handler.Logger = testServer.Services.GetRequiredService<ILogger<RuntimeHandler>>();
-            baseAddress = testServer.BaseAddress;
+            Configure(app);
+
+            await app.StartAsync(cancellationToken).ConfigureAwait(false);
+
+            // Now the server address is known, we can set the Lambda environment variables
+            _environment = new LambdaEnvironmentVariables(GetServerAddress(app), Options);
+
+            // Reload the configuration to ensure it picks up the new environment variables
+            if (app.Services.GetRequiredService<IConfiguration>() is IConfigurationRoot configuration)
+            {
+                configuration.Reload();
+            }
+
+            _host = app;
+            _isStarted = true;
         }
-        else
+        catch (Exception)
         {
-            baseAddress = GetServerBaseAddress();
+            await app.DisposeAsync().ConfigureAwait(false);
+            throw;
         }
-
-        SetLambdaEnvironmentVariables(baseAddress);
-
-        _isStarted = true;
-
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -229,8 +238,8 @@ public class LambdaTestServer : IDisposable
     /// <returns>
     /// The <see cref="IServer"/> to use.
     /// </returns>
-    protected virtual IServer CreateServer(IWebHostBuilder builder)
-        => new TestServer(builder);
+    [Obsolete($"This method is no longer used to create the IServer implementation and will be removed in a future release. Use the {nameof(ConfigureWebHost)}() method to customize the server instead.")]
+    protected virtual IServer CreateServer(IWebHostBuilder builder) => new ObsoleteServer();
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -257,8 +266,9 @@ public class LambdaTestServer : IDisposable
                     _onStopped?.Dispose();
                 }
 
-                _server?.Dispose();
+                _host?.Dispose();
                 _handler?.Dispose();
+                _environment?.Dispose();
             }
 
             _disposed = true;
@@ -306,51 +316,95 @@ public class LambdaTestServer : IDisposable
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        builder.UseTestServer();
+
         builder.UseContentRoot(Environment.CurrentDirectory);
         builder.UseShutdownTimeout(TimeSpan.Zero);
-
-        builder.ConfigureServices(ConfigureServices);
-        builder.Configure(Configure);
     }
 
-    private void SetLambdaEnvironmentVariables(Uri baseAddress)
+    private static Uri GetServerAddress(IHost host)
     {
-        var provider = CultureInfo.InvariantCulture;
+        var server = host.Services.GetRequiredService<IServer>();
 
-        // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Context/LambdaEnvironment.cs#L46-L52
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", Options.FunctionMemorySize.ToString(provider));
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME", Options.FunctionName);
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_VERSION", Options.FunctionVersion.ToString(provider));
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_LOG_GROUP_NAME", Options.LogGroupName);
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_LOG_STREAM_NAME", Options.LogStreamName);
-        Environment.SetEnvironmentVariable("AWS_LAMBDA_RUNTIME_API", $"{baseAddress.Host}:{baseAddress.Port}");
-        Environment.SetEnvironmentVariable("_HANDLER", Options.FunctionHandler);
-
-        // See https://github.com/aws/aws-lambda-dotnet/pull/1595
-        if (Options.DisableMemoryLimitCheck)
+        if (server is TestServer testServer)
         {
-            Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", bool.TrueString);
+            return testServer.BaseAddress;
         }
-    }
 
-    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
-
-    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(_server))]
-    private void ThrowIfNotStarted()
-    {
-        if (_server is null)
-        {
-            throw new InvalidOperationException("The test server has not been started.");
-        }
-    }
-
-    private Uri GetServerBaseAddress()
-    {
-        var serverAddresses = _server!.Features.Get<IServerAddressesFeature>();
+        var serverAddresses = server?.Features.Get<IServerAddressesFeature>();
         var serverUrl = serverAddresses?.Addresses?.FirstOrDefault();
 
         return serverUrl is null
             ? throw new InvalidOperationException("No server addresses are available.")
             : new Uri(serverUrl, UriKind.Absolute);
+    }
+
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
+
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(_host))]
+    private void ThrowIfNotStarted()
+    {
+        if (_host is null)
+        {
+            throw new InvalidOperationException("The test server has not been started.");
+        }
+    }
+
+    private sealed class LambdaEnvironmentVariables : IDisposable
+    {
+        private readonly Dictionary<string, string?> _originalEnvironment = [];
+
+        public LambdaEnvironmentVariables(Uri baseAddress, LambdaTestServerOptions options)
+        {
+            var provider = CultureInfo.InvariantCulture;
+
+            // See https://github.com/aws/aws-lambda-dotnet/blob/4f9142b95b376bd238bce6be43f4e1ec1f983592/Libraries/src/Amazon.Lambda.RuntimeSupport/Context/LambdaEnvironment.cs#L46-L52
+            ReplaceVariable("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", options.FunctionMemorySize.ToString(provider));
+            ReplaceVariable("AWS_LAMBDA_FUNCTION_NAME", options.FunctionName);
+            ReplaceVariable("AWS_LAMBDA_FUNCTION_VERSION", options.FunctionVersion.ToString(provider));
+            ReplaceVariable("AWS_LAMBDA_LOG_GROUP_NAME", options.LogGroupName);
+            ReplaceVariable("AWS_LAMBDA_LOG_STREAM_NAME", options.LogStreamName);
+            ReplaceVariable("AWS_LAMBDA_RUNTIME_API", $"{baseAddress.Host}:{baseAddress.Port}");
+            ReplaceVariable("_HANDLER", options.FunctionHandler);
+
+            // See https://github.com/aws/aws-lambda-dotnet/pull/1595
+            if (options.DisableMemoryLimitCheck)
+            {
+                ReplaceVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", bool.TrueString);
+            }
+
+            void ReplaceVariable(string name, string? value)
+            {
+                _originalEnvironment[name] = Environment.GetEnvironmentVariable(name);
+                Environment.SetEnvironmentVariable(name, value);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach ((var name, var originalValue) in _originalEnvironment)
+            {
+                Environment.SetEnvironmentVariable(name, originalValue);
+            }
+        }
+    }
+
+    private sealed class ObsoleteServer : IServer
+    {
+        private const string ObsoleteMessage = $"This IServer implementation is no longer supported and will be removed in a future release. Use the {nameof(ConfigureWebHost)}() method to customize the server instead.";
+
+        public IFeatureCollection Features => throw new NotSupportedException(ObsoleteMessage);
+
+        public void Dispose()
+        {
+            // No-op
+        }
+
+        public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
+            where TContext : notnull
+            => throw new NotSupportedException(ObsoleteMessage);
+
+        public Task StopAsync(CancellationToken cancellationToken)
+            => throw new NotSupportedException(ObsoleteMessage);
     }
 }
