@@ -442,23 +442,6 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
         });
     }
 
-    [Fact]
-    [Obsolete("Tests obsolete CreateServer() method.")]
-    public async Task CreateServer_Returns_A_Non_Functional_Server()
-    {
-        // Arrange
-        var builder = Substitute.For<IWebHostBuilder>();
-        var cancellationToken = TestContext.Current.CancellationToken;
-
-        using var target = new ObsoleteLambdaTestServer();
-        using var server = target.CreateTestServer(builder);
-
-        // Act and Assert
-        Assert.Throws<NotSupportedException>(() => server.Features);
-        await Assert.ThrowsAsync<NotSupportedException>(() => server.StartAsync<object>(default!, cancellationToken));
-        await Assert.ThrowsAsync<NotSupportedException>(() => server.StopAsync(TestContext.Current.CancellationToken));
-    }
-
     private void ConfigureLogging(IServiceCollection services)
         => services.AddLogging((builder) => builder.AddXUnit(this));
 
@@ -569,12 +552,5 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
 
             services.AddSingleton(server);
         }
-    }
-
-    private sealed class ObsoleteLambdaTestServer() : LambdaTestServer(new LambdaTestServerOptions())
-    {
-        [Obsolete]
-        public IServer CreateTestServer(IWebHostBuilder builder)
-            => base.CreateServer(builder);
     }
 }
