@@ -475,7 +475,7 @@ cd lambda-test-server
 
 [build-badge]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml/badge.svg?branch=main&event=push
 [build-status]: https://github.com/martincostello/lambda-test-server/actions/workflows/build.yml?query=branch%3Amain+event%3Apush "Continuous Integration for this project"
-[configure-webhost]: https://github.com/martincostello/lambda-test-server/blob/CHANGEME/src/AwsLambdaTestServer/LambdaTestServer.cs#L308-L323 "LambdaTestServer.ConfigureWebHost() method"
+[configure-webhost]: https://github.com/martincostello/lambda-test-server/blob/4e78b4077c4b20dcd5b6976c115a4c5bdfeba7d4/src/AwsLambdaTestServer/LambdaTestServer.cs#L308-L323 "LambdaTestServer.ConfigureWebHost() method"
 [coverage-badge]: https://codecov.io/gh/martincostello/lambda-test-server/branch/main/graph/badge.svg
 [coverage-report]: https://codecov.io/gh/martincostello/lambda-test-server "Code coverage report for this project"
 [custom-lambda-runtime]: https://aws.amazon.com/blogs/developer/net-core-3-0-on-lambda-with-aws-lambdas-custom-runtime/ ".NET Core 3.0 on Lambda with AWS Lambda's Custom Runtime on the AWS Developer Blog"
