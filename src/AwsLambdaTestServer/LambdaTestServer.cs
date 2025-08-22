@@ -232,16 +232,6 @@ public class LambdaTestServer : IDisposable
     }
 
     /// <summary>
-    /// Creates the server to use for the Lambda runtime.
-    /// </summary>
-    /// <param name="builder">The <see cref="IWebHostBuilder"/> to use to create the server.</param>
-    /// <returns>
-    /// The <see cref="IServer"/> to use.
-    /// </returns>
-    [Obsolete($"This method is no longer used to create the IServer implementation and will be removed in a future release. Use the {nameof(ConfigureWebHost)}() method to customize the server instead.")]
-    protected virtual IServer CreateServer(IWebHostBuilder builder) => new ObsoleteServer();
-
-    /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     /// <param name="disposing">
@@ -387,24 +377,5 @@ public class LambdaTestServer : IDisposable
                 Environment.SetEnvironmentVariable(name, originalValue);
             }
         }
-    }
-
-    private sealed class ObsoleteServer : IServer
-    {
-        private const string ObsoleteMessage = $"This IServer implementation is no longer supported and will be removed in a future release. Use the {nameof(ConfigureWebHost)}() method to customize the server instead.";
-
-        public IFeatureCollection Features => throw new NotSupportedException(ObsoleteMessage);
-
-        public void Dispose()
-        {
-            // No-op
-        }
-
-        public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
-            where TContext : notnull
-            => throw new NotSupportedException(ObsoleteMessage);
-
-        public Task StopAsync(CancellationToken cancellationToken)
-            => throw new NotSupportedException(ObsoleteMessage);
     }
 }
