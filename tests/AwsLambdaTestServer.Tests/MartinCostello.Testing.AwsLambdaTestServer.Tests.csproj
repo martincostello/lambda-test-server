@@ -3,6 +3,7 @@
     <Description>Tests for MartinCostello.Testing.AwsLambdaTestServer.</Description>
     <OutputType>Exe</OutputType>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
+    <SignAssembly>false</SignAssembly>
     <TargetFramework>net9.0</TargetFramework>
     <UseDefaultCodeAnalysisRuleSet>true</UseDefaultCodeAnalysisRuleSet>
   </PropertyGroup>
