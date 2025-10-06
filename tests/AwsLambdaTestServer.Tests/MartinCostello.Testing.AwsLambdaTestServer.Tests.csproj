@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Description>Tests for MartinCostello.Testing.AwsLambdaTestServer.</Description>
     <OutputType>Exe</OutputType>
+    <PublicSign>false</PublicSign>
     <RootNamespace>MartinCostello.Testing.AwsLambdaTestServer</RootNamespace>
     <SignAssembly>false</SignAssembly>
     <TargetFramework>net9.0</TargetFramework>

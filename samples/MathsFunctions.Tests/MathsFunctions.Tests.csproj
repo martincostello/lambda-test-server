@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <PublicSign>false</PublicSign>
     <RootNamespace>MathsFunctions</RootNamespace>
     <SignAssembly>false</SignAssembly>
     <TargetFramework>net9.0</TargetFramework>
