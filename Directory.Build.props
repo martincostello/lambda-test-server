@@ -4,8 +4,6 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)AwsLambdaTestServer.snk</AssemblyOriginatorKeyFile>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AwsLambdaTestServer.ruleset</CodeAnalysisRuleSet>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <!-- TODO Remove when .NET 10 is stable -->
-    <NoWarn>$(NoWarn);NU5104</NoWarn>
     <PackageTags>aws;lambda;testserver;testing</PackageTags>
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <UseSharedCompilation>false</UseSharedCompilation>
