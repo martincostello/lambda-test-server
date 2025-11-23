@@ -19,7 +19,7 @@
     <PackageReference Include="ReportGenerator" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.v3.mtp-off" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj" />
