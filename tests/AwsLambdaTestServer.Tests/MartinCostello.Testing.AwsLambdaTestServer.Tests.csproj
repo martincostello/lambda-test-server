@@ -24,6 +24,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
     <Threshold>95,83,95</Threshold>

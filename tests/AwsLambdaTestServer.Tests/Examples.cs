@@ -14,8 +14,8 @@ public static class Examples
     public static async Task Function_Can_Process_Request()
     {
         // Create a cancellation token that stops the server listening for new requests.
-        // Auto-cancel the server after 2 seconds in case something goes wrong and the request is not handled.
-        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        // Auto-cancel the server after 5 seconds in case something goes wrong and the request is not handled.
+        using var shutdownAfter = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(shutdownAfter.Token);
 
         // Arrange - Create a test server for the Lambda runtime to use

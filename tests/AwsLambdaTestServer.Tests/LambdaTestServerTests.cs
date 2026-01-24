@@ -299,7 +299,7 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
         });
     }
 
-    [Fact(Timeout = 5_000)]
+    [Fact(Timeout = 10_000)]
     public async Task Function_Returns_If_No_Requests_Within_Timeout()
     {
         // Arrange

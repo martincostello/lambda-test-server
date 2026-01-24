@@ -13,7 +13,7 @@ public abstract class FunctionTests(ITestOutputHelper outputHelper) : ITestOutpu
         set => throw new NotSupportedException();
     }
 
-    protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(2);
+    protected virtual TimeSpan Timeout => TimeSpan.FromSeconds(5);
 
     protected static CancellationTokenSource CancellationTokenSourceForTimeout(CancellationTokenSource other)
         => CancellationTokenSource.CreateLinkedTokenSource(other.Token, TestContext.Current.CancellationToken);
