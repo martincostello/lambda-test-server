@@ -124,7 +124,7 @@ public class LambdaTestServer : IDisposable
             return testServer.CreateClient();
         }
 
-        var baseAddress = GetServerAddress(_host);
+        var baseAddress = GetServerAddress((IHost)_host);
 
         return new() { BaseAddress = baseAddress };
     }
