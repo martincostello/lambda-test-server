@@ -14,8 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="[8.0.0,)" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="[9.0.0,)" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="[10.0.0,)" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="8.0.24" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="9.0.13" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" VersionOverride="10.0.3" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))" />
   </ItemGroup>
 </Project>
