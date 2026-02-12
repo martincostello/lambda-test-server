@@ -1,6 +1,1 @@
 #nullable enable
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.LambdaTestServer(System.Action<IServiceCollection!>! configure) -> void
-MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServerOptions.Configure.get -> System.Action<IServiceCollection!>?
-virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.Configure(IApplicationBuilder! app) -> void
-virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureServices(IServiceCollection! services) -> void
-virtual MartinCostello.Testing.AwsLambdaTestServer.LambdaTestServer.ConfigureWebHost(IWebHostBuilder! builder) -> void
