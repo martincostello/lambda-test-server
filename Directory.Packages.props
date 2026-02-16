@@ -10,7 +10,7 @@
     <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.14.2" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="2.2.5" />
     <PackageVersion Include="AWSSDK.SQS" Version="4.0.2.9" />
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
+    <PackageVersion Include="coverlet.msbuild" Version="8.0.0" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.1" />
     <PackageVersion Include="JunitXml.TestLogger" Version="8.0.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit.v3" Version="0.7.0" />
