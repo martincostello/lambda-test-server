@@ -2,7 +2,7 @@
   <ItemGroup>
     <GlobalPackageReference Include="MartinCostello.BuildKit" Version="0.8.5" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="4.14.0" PrivateAssets="All" />
-    <GlobalPackageReference Include="ReferenceTrimmer" Version="3.4.4" PrivateAssets="All" />
+    <GlobalPackageReference Include="ReferenceTrimmer" Version="3.4.5" PrivateAssets="All" />
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
