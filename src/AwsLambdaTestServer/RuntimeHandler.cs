@@ -137,25 +137,8 @@ internal sealed class RuntimeHandler : IDisposable
             // Additionally cancel the listen loop if the processing is stopped
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(httpContext.RequestAborted, _cancellationToken);
 
-            // Wait until there is a request to process
-            if (!await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false))
-            {
-                cts.Token.ThrowIfCancellationRequested();
-            }
-
-            // Use TryRead rather than ReadAsync to avoid a race condition where the
-            // cancellation token fires between WaitToReadAsync returning true and
-            // ReadAsync being called. The ReadAsync method checks the cancellation
-            // token before it attempts to read from the channel, which means that a
-            // pending request could be silently lost if cancellation races with the
-            // WaitToReadAsync returning true.
-            if (!_requests.Reader.TryRead(out var readRequest))
-            {
-                cts.Token.ThrowIfCancellationRequested();
-                throw new ChannelClosedException();
-            }
-
-            request = readRequest;
+            // Wait for a request to process
+            request = await _requests.Reader.ReadAsync(cts.Token).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is OperationCanceledException or ChannelClosedException)
         {
