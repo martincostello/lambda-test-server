@@ -143,7 +143,19 @@ internal sealed class RuntimeHandler : IDisposable
                 cts.Token.ThrowIfCancellationRequested();
             }
 
-            request = await _requests.Reader.ReadAsync(cts.Token).ConfigureAwait(false);
+            // Use TryRead rather than ReadAsync to avoid a race condition where the
+            // cancellation token fires between WaitToReadAsync returning true and
+            // ReadAsync being called. The ReadAsync method checks the cancellation
+            // token before it attempts to read from the channel, which means that a
+            // pending request could be silently lost if cancellation races with the
+            // WaitToReadAsync returning true.
+            if (!_requests.Reader.TryRead(out var readRequest))
+            {
+                cts.Token.ThrowIfCancellationRequested();
+                throw new ChannelClosedException();
+            }
+
+            request = readRequest;
         }
         catch (Exception ex) when (ex is OperationCanceledException or ChannelClosedException)
         {
@@ -218,8 +230,7 @@ internal sealed class RuntimeHandler : IDisposable
         await CompleteRequestChannelAsync(
             awsRequestId!,
             content,
-            isSuccessful: true,
-            httpContext.RequestAborted).ConfigureAwait(false);
+            isSuccessful: true).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
 
@@ -248,8 +259,7 @@ internal sealed class RuntimeHandler : IDisposable
         await CompleteRequestChannelAsync(
             awsRequestId!,
             content,
-            isSuccessful: false,
-            httpContext.RequestAborted).ConfigureAwait(false);
+            isSuccessful: false).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
 
@@ -332,15 +342,13 @@ internal sealed class RuntimeHandler : IDisposable
     /// <param name="awsRequestId">The AWS request Id to complete the response for.</param>
     /// <param name="content">The raw content associated with the request's response.</param>
     /// <param name="isSuccessful">Whether the response indicates the request was successfully handled.</param>
-    /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     private async Task CompleteRequestChannelAsync(
         string awsRequestId,
         byte[] content,
-        bool isSuccessful,
-        CancellationToken cancellationToken)
+        bool isSuccessful)
     {
         if (!_responses.TryRemove(awsRequestId, out var context))
         {
@@ -355,9 +363,13 @@ internal sealed class RuntimeHandler : IDisposable
             _options.FunctionArn,
             context.DurationTimer.ElapsedMilliseconds);
 
-        // Make the response available to read by the enqueuer
+        // Make the response available to read by the enqueuer.
+        // Use CancellationToken.None to avoid a race condition where the HTTP request's
+        // RequestAborted token fires between the content being read and WriteAsync being called.
+        // The WriteAsync method checks the cancellation token before writing, even if the bounded
+        // channel has capacity, which could cause the response to be silently lost.
         var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
-        await context.Channel.Writer.WriteAsync(response, cancellationToken).ConfigureAwait(false);
+        await context.Channel.Writer.WriteAsync(response, CancellationToken.None).ConfigureAwait(false);
 
         // Mark the channel as complete as there will be no more responses written
         context.Channel.Writer.Complete();
