@@ -363,11 +363,8 @@ internal sealed class RuntimeHandler : IDisposable
             _options.FunctionArn,
             context.DurationTimer.ElapsedMilliseconds);
 
-        // Make the response available to read by the enqueuer.
-        // Use CancellationToken.None to avoid a race condition where the HTTP request's
-        // RequestAborted token fires between the content being read and WriteAsync being called.
-        // The WriteAsync method checks the cancellation token before writing, even if the bounded
-        // channel has capacity, which could cause the response to be silently lost.
+        // Make the response available to read by the enqueuer. If we got as far as having
+        // content to write (i.e. the handler completed), then always complete the channel.
         var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
         await context.Channel.Writer.WriteAsync(response, CancellationToken.None).ConfigureAwait(false);
 
