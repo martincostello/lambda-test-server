@@ -137,12 +137,7 @@ internal sealed class RuntimeHandler : IDisposable
             // Additionally cancel the listen loop if the processing is stopped
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(httpContext.RequestAborted, _cancellationToken);
 
-            // Wait until there is a request to process
-            if (!await _requests.Reader.WaitToReadAsync(cts.Token).ConfigureAwait(false))
-            {
-                cts.Token.ThrowIfCancellationRequested();
-            }
-
+            // Wait for a request to process
             request = await _requests.Reader.ReadAsync(cts.Token).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is OperationCanceledException or ChannelClosedException)
@@ -218,8 +213,7 @@ internal sealed class RuntimeHandler : IDisposable
         await CompleteRequestChannelAsync(
             awsRequestId!,
             content,
-            isSuccessful: true,
-            httpContext.RequestAborted).ConfigureAwait(false);
+            isSuccessful: true).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
 
@@ -248,8 +242,7 @@ internal sealed class RuntimeHandler : IDisposable
         await CompleteRequestChannelAsync(
             awsRequestId!,
             content,
-            isSuccessful: false,
-            httpContext.RequestAborted).ConfigureAwait(false);
+            isSuccessful: false).ConfigureAwait(false);
 
         httpContext.Response.StatusCode = StatusCodes.Status204NoContent;
 
@@ -332,15 +325,13 @@ internal sealed class RuntimeHandler : IDisposable
     /// <param name="awsRequestId">The AWS request Id to complete the response for.</param>
     /// <param name="content">The raw content associated with the request's response.</param>
     /// <param name="isSuccessful">Whether the response indicates the request was successfully handled.</param>
-    /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     private async Task CompleteRequestChannelAsync(
         string awsRequestId,
         byte[] content,
-        bool isSuccessful,
-        CancellationToken cancellationToken)
+        bool isSuccessful)
     {
         if (!_responses.TryRemove(awsRequestId, out var context))
         {
@@ -355,9 +346,10 @@ internal sealed class RuntimeHandler : IDisposable
             _options.FunctionArn,
             context.DurationTimer.ElapsedMilliseconds);
 
-        // Make the response available to read by the enqueuer
+        // Make the response available to read by the enqueuer. If we got as far as having
+        // content to write (i.e. the handler completed), then always complete the channel.
         var response = new LambdaTestResponse(content, isSuccessful, context.DurationTimer.Elapsed);
-        await context.Channel.Writer.WriteAsync(response, cancellationToken).ConfigureAwait(false);
+        await context.Channel.Writer.WriteAsync(response, CancellationToken.None).ConfigureAwait(false);
 
         // Mark the channel as complete as there will be no more responses written
         context.Channel.Writer.Complete();
