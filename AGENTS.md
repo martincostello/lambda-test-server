@@ -5,11 +5,11 @@ This file provides guidance to coding agents when working with code in this repo
 ## Build, test, and lint commands
 
 - Prefer `./build.ps1` from the repository root. It bootstraps the exact SDK from `global.json`, packs `src\AwsLambdaTestServer`, and runs the main test project plus the sample test projects.
-- Build only: `dotnet build .\AwsLambdaTestServer.slnx -c Release`
-- Run the main test project: `dotnet test .\tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release`
-- Run a sample test project: `dotnet test .\samples\MathsFunctions.Tests\MathsFunctions.Tests.csproj -c Release`
-- Run a single test from the main test project: `dotnet test .\tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --filter "DisplayName=Function_Reverses_Numbers"`
-- List tests in the main test project: `dotnet test .\tests\AwsLambdaTestServer.Tests\MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --list-tests`
+- Build only: `dotnet build ./AwsLambdaTestServer.slnx -c Release`
+- Run the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release`
+- Run a sample test project: `dotnet test ./samples/MathsFunctions.Tests/MathsFunctions.Tests.csproj -c Release`
+- Run a single test from the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --filter "DisplayName=Function_Reverses_Numbers"`
+- List tests in the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --list-tests`
 - There is no single local lint script. CI linting is defined in `.github\workflows\lint.yml` and runs:
   - `actionlint` for GitHub Actions workflows
   - `zizmor` for workflow security linting
