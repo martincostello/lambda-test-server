@@ -4,13 +4,13 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## Build, test, and lint commands
 
-- Prefer `./build.ps1` from the repository root. It bootstraps the exact SDK from `global.json`, packs `src\AwsLambdaTestServer`, and runs the main test project plus the sample test projects.
+- Prefer `./build.ps1` from the repository root. It bootstraps the exact SDK from `global.json`, packs `src/AwsLambdaTestServer`, and runs the main test project plus the sample test projects.
 - Build only: `dotnet build ./AwsLambdaTestServer.slnx -c Release`
 - Run the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release`
 - Run a sample test project: `dotnet test ./samples/MathsFunctions.Tests/MathsFunctions.Tests.csproj -c Release`
 - Run a single test from the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --filter "DisplayName=Function_Reverses_Numbers"`
 - List tests in the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --list-tests`
-- There is no single local lint script. CI linting is defined in `.github\workflows\lint.yml` and runs:
+- There is no single local lint script. CI linting is defined in `.github/workflows/lint.yml` and runs:
   - `actionlint` for GitHub Actions workflows
   - `zizmor` for workflow security linting
   - `markdownlint-cli2` for Markdown
@@ -28,9 +28,9 @@ This file provides guidance to coding agents when working with code in this repo
 - Each enqueued request returns a `LambdaTestContext` whose `Response` is a channel reader. Tests enqueue input first, then run the Lambda entrypoint against `server.CreateClient()`, then read the response from that channel.
 - The default server is fully in-memory, but tests also exercise a real loopback HTTP server path through `HttpLambdaTestServer`, which overrides the web host to use Kestrel instead of `TestServer`.
 - The solution layout is deliberate:
-  - `src\AwsLambdaTestServer` contains the reusable package
-  - `tests\AwsLambdaTestServer.Tests` contains library tests plus executable examples of the intended testing pattern
-  - `samples\*` and `samples\*.Tests` show real Lambda functions and how the library is expected to be consumed
+  - `src/AwsLambdaTestServer` contains the reusable package
+  - `tests/AwsLambdaTestServer.Tests` contains library tests plus executable examples of the intended testing pattern
+  - `samples/*` and `samples/*.Tests` show real Lambda functions and how the library is expected to be consumed
 
 ## Key conventions
 
@@ -38,7 +38,7 @@ This file provides guidance to coding agents when working with code in this repo
 - Tests usually stop the Lambda bootstrap loop by linking a timeout token with `TestContext.Current.CancellationToken` and setting `server.OnInvocationCompleted` to cancel the shutdown token after the queued invocation completes.
 - Do not assume tests are safe to parallelize. The test assembly disables collection parallelization, and `LambdaTestServer` mutates process-wide Lambda environment variables and memory-limit state.
 - The main test project enforces coverage thresholds in the project file. For single-test runs or `--list-tests`, disable coverage with `-p:CollectCoverage=false` or the run can fail even when discovery succeeds.
-- Public API changes need a matching update under `src\AwsLambdaTestServer\PublicAPI\` because the repository uses `Microsoft.CodeAnalysis.PublicApiAnalyzers`.
+- Public API changes need a matching update under `src/AwsLambdaTestServer/PublicAPI/` because the repository uses `Microsoft.CodeAnalysis.PublicApiAnalyzers`.
 - Style is enforced by repository-level configuration rather than ad hoc formatting:
   - C# files use file-scoped namespaces and the standard Apache license header
   - public and internal API surface is expected to stay XML-documented
