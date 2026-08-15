@@ -304,17 +304,22 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
     {
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
+        using var shutdownAfter = CancellationTokenSourceForShutdown();
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            shutdownAfter.Token,
+            TestContext.Current.CancellationToken);
 
-        await WithServerAsync(server, async static (server, cts) =>
-        {
-            using var httpClient = server.CreateClient();
+        server.OnInvocationCompleted = async (_, _) => await linkedCts.CancelAsync();
 
-            // Act
-            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+        await server.StartAsync(linkedCts.Token);
 
-            // Assert
-            cts.IsCancellationRequested.ShouldBeTrue();
-        });
+        using var httpClient = server.CreateClient();
+
+        // Act
+        await MyFunctionEntrypoint.RunAsync(httpClient, linkedCts.Token);
+
+        // Assert
+        linkedCts.IsCancellationRequested.ShouldBeTrue();
     }
 
     [Fact]
