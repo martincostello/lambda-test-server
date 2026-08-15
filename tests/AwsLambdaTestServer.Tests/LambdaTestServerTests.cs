@@ -302,6 +302,8 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
     [Fact(Timeout = 10_000)]
     public async Task Function_Returns_If_No_Requests_Within_Timeout()
     {
+        _ = TestContext.Current.CancellationToken;
+
         // Arrange
         using var server = new LambdaTestServer(ConfigureLogging);
 

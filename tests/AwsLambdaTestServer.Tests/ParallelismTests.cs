@@ -16,7 +16,7 @@ public static class ParallelismTests
         int expected = Enumerable.Range(0, messageCount).Sum();
 
         using var server = new LambdaTestServer();
-        using var cts = new CancellationTokenSource();
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
 
         await server.StartAsync(cts.Token);
 
@@ -59,16 +59,16 @@ public static class ParallelismTests
 
         _ = Task.Run(async () =>
         {
-            var collection = await addTask;
+            var collection = await addTask.WaitAsync(cts.Token);
             collection.Count.ShouldBe(messages);
 
             int actual = 0;
 
             foreach (var context in collection)
             {
-                await context.Response.WaitToReadAsync();
+                await context.Response.WaitToReadAsync(cts.Token);
 
-                var result = await context.Response.ReadAsync();
+                var result = await context.Response.ReadAsync(cts.Token);
 
                 var response = result.ReadAs<int[]>();
 
