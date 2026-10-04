@@ -4,11 +4,11 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## Build, test, and lint commands
 
-- Prefer `./build.ps1` from the repository root. It bootstraps the exact SDK from `global.json`, packs `src/AwsLambdaTestServer`, and runs the main test project plus the sample test projects.
+- Prefer `./build.ps1` from the repository root. It bootstraps the exact SDK from `global.json`, packs `src/AwsLambdaTestServer`, runs the main test project plus the sample test projects, and generates code coverage reports with the `reportgenerator` .NET tool (run `dotnet tool restore` first).
 - Build only: `dotnet build ./AwsLambdaTestServer.slnx -c Release`
 - Run the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release`
 - Run a sample test project: `dotnet test ./samples/MathsFunctions.Tests/MathsFunctions.Tests.csproj -c Release`
-- Run a single test from the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --filter "DisplayName=Function_Reverses_Numbers"`
+- Run a single test from the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --filter-method "*Function_Reverses_Numbers"`
 - List tests in the main test project: `dotnet test ./tests/AwsLambdaTestServer.Tests/MartinCostello.Testing.AwsLambdaTestServer.Tests.csproj -c Release -p:CollectCoverage=false --list-tests`
 - There is no single local lint script. CI linting is defined in `.github/workflows/lint.yml` and runs:
   - `actionlint` for GitHub Actions workflows
@@ -37,7 +37,8 @@ This file provides guidance to coding agents when working with code in this repo
 - Lambda entrypoints used with this library are factored into a `RunAsync(HttpClient? httpClient = null, CancellationToken cancellationToken = default)` shape. Tests inject `server.CreateClient()` into `LambdaBootstrap` through that method instead of invoking opaque `Main()` logic.
 - Tests usually stop the Lambda bootstrap loop by linking a timeout token with `TestContext.Current.CancellationToken` and setting `server.OnInvocationCompleted` to cancel the shutdown token after the queued invocation completes.
 - Do not assume tests are safe to parallelize. The test assembly disables collection parallelization, and `LambdaTestServer` mutates process-wide Lambda environment variables and memory-limit state.
-- The main test project enforces coverage thresholds in the project file. For single-test runs or `--list-tests`, disable coverage with `-p:CollectCoverage=false` or the run can fail even when discovery succeeds.
+- Tests run on Microsoft Testing Platform (configured in `global.json`) using `xunit.v3.mtp-v2`, so uses MTP options such as `--filter-method` and `--list-tests` rather than VSTest options such as `--filter` and `--logger`.
+- The main test project collects code coverage with `Microsoft.Testing.Extensions.CodeCoverage`, using `tests/AwsLambdaTestServer.Tests/tests.runsettings` to exclude non-library assemblies. Coverage is written to `artifacts/coverage`. For single-test runs or `--list-tests`, disable coverage with `-p:CollectCoverage=false` to avoid overwriting the full coverage report with partial results.
 - Public API changes need a matching update under `src/AwsLambdaTestServer/PublicAPI/` because the repository uses `Microsoft.CodeAnalysis.PublicApiAnalyzers`.
 - Style is enforced by repository-level configuration rather than ad hoc formatting:
   - C# files use file-scoped namespaces and the standard Apache license header

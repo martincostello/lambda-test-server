@@ -174,6 +174,35 @@ public class LambdaTestServerTests(ITestOutputHelper outputHelper) : FunctionTes
     }
 
     [Fact]
+    public async Task Function_Does_Not_Replace_Console_Writers()
+    {
+        // Arrange
+        var stdout = Console.Out;
+        var stderr = Console.Error;
+
+        using var server = new LambdaTestServer(ConfigureLogging);
+
+        await WithServerAsync(server, async static (server, cts) =>
+        {
+            var context = await server.EnqueueAsync("""{"Values": [ 1, 2, 3 ]}""");
+
+            using var httpClient = server.CreateClient();
+
+            // Act
+            await MyFunctionEntrypoint.RunAsync(httpClient, cts.Token);
+
+            // Assert
+            context.Response.TryRead(out var response).ShouldBeTrue();
+
+            response.ShouldNotBeNull();
+            response!.IsSuccessful.ShouldBeTrue();
+        });
+
+        Console.Out.ShouldBeSameAs(stdout);
+        Console.Error.ShouldBeSameAs(stderr);
+    }
+
+    [Fact]
     public async Task Function_Can_Process_Request_With_Mobile_Sdk_Headers()
     {
         // Arrange
