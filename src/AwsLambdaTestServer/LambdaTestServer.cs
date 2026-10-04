@@ -85,6 +85,7 @@ public class LambdaTestServer : IDisposable
     /// </summary>
     public static void ClearLambdaEnvironmentVariables()
     {
+        Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_CONSOLE_CAPTURE", null);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_DOTNET_DISABLE_MEMORY_LIMIT_CHECK", null);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", null);
         Environment.SetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME", null);
@@ -356,6 +357,11 @@ public class LambdaTestServer : IDisposable
             ReplaceVariable("AWS_LAMBDA_LOG_STREAM_NAME", options.LogStreamName);
             ReplaceVariable("AWS_LAMBDA_RUNTIME_API", $"{baseAddress.Host}:{baseAddress.Port}");
             ReplaceVariable("_HANDLER", options.FunctionHandler);
+
+            // Stop Amazon.Lambda.RuntimeSupport from replacing Console.Out and Console.Error for the whole process.
+            // The replacements are never removed, so they accumulate across tests in the same process and can cause
+            // deadlocks between threads writing to the console.
+            ReplaceVariable("AWS_LAMBDA_DOTNET_DISABLE_CONSOLE_CAPTURE", bool.TrueString);
 
             // See https://github.com/aws/aws-lambda-dotnet/pull/1595
             if (options.DisableMemoryLimitCheck)
