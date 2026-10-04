@@ -71,6 +71,10 @@ jobs:
       uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
       id: setup-dotnet
 
+    - name: Install .NET Tools
+      shell: pwsh
+      run: dotnet tool restore
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
       if: |

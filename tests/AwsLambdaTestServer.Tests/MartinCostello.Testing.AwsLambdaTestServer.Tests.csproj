@@ -10,16 +10,14 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" />
     <PackageReference Include="AWSSDK.SQS" />
-    <PackageReference Include="coverlet.msbuild" />
-    <PackageReference Include="GitHubActionsTestLogger" NoWarn="RT0003" />
-    <PackageReference Include="JunitXml.TestLogger" NoWarn="RT0003" />
+    <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="NSubstitute" />
-    <PackageReference Include="ReportGenerator" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="xunit.v3.mtp-off" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambdaTestServer\MartinCostello.Testing.AwsLambdaTestServer.csproj" />
@@ -29,11 +27,7 @@
   </ItemGroup>
   <PropertyGroup>
     <CollectCoverage>true</CollectCoverage>
+    <CoverageRunSettings>$(MSBuildThisFileDirectory)tests.runsettings</CoverageRunSettings>
     <Threshold>95,75,95</Threshold>
   </PropertyGroup>
-  <ItemGroup>
-    <CoverletExclude Include="$([MSBuild]::Escape('[Amazon.Lambda*]*'))" />
-    <CoverletExclude Include="$([MSBuild]::Escape('[MathsFunctions*]*'))" />
-    <CoverletExclude Include="$([MSBuild]::Escape('[MinimalApi*]*'))" />
-  </ItemGroup>
 </Project>
