@@ -12,11 +12,9 @@
     <PackageReference Include="AWSSDK.SQS" />
     <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
-    <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
   <ItemGroup>
