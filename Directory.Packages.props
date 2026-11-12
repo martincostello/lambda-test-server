@@ -9,7 +9,7 @@
     <PackageVersion Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="2.2.1" />
     <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="2.3.1" />
     <PackageVersion Include="Amazon.Lambda.Serialization.Json" Version="3.0.0" />
-    <PackageVersion Include="AWSSDK.SQS" Version="4.0.2.9" />
+    <PackageVersion Include="AWSSDK.SQS" Version="4.1.0" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.5" />
     <PackageVersion Include="MartinCostello.Logging.XUnit.v3" Version="0.7.1" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="11.0.0" />
